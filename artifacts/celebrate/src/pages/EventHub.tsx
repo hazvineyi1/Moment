@@ -89,7 +89,7 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="font-medium text-sm">Your context for this event</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">Cele reads this. Different from your global profile — specific to this plan.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Moment reads this. Different from your global profile — specific to this plan.</p>
         </div>
         {!editing && (
           <button
@@ -129,7 +129,7 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
         <p className="text-sm text-foreground/80 leading-relaxed italic">{existing}</p>
       ) : (
         <p className="text-sm text-muted-foreground/60 italic">
-          Tell Cele who you are in the context of this specific event — your role, constraints, what this group means to you.
+          Tell Moment who you are in the context of this specific event — your role, constraints, what this group means to you.
         </p>
       )}
     </div>
@@ -435,6 +435,14 @@ export function EventHub() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+
+  const toggleStep = (i: number) =>
+    setCompletedSteps(prev => {
+      const next = new Set(prev);
+      next.has(i) ? next.delete(i) : next.add(i);
+      return next;
+    });
 
   const handleResetPlan = () => {
     if (actionBusy) return;
@@ -556,15 +564,31 @@ export function EventHub() {
             <h2 className="text-xl font-serif mb-4">Next steps</h2>
             <div className="space-y-3">
               {summary.nextSteps && summary.nextSteps.length > 0 ? (
-                summary.nextSteps.map((step, i) => (
-                  <div key={i} className="flex items-start gap-4 p-4 bg-card rounded-xl border border-border/50 hover:border-primary/30 transition-colors">
-                    <div className="w-6 h-6 rounded-full border-2 border-muted-foreground/30 flex-shrink-0 mt-0.5" />
-                    <p className="text-foreground leading-relaxed">{step}</p>
-                  </div>
-                ))
+                summary.nextSteps.map((step, i) => {
+                  const done = completedSteps.has(i);
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => toggleStep(i)}
+                      className={`w-full flex items-start gap-4 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer group ${
+                        done
+                          ? 'bg-primary/5 border-primary/30'
+                          : 'bg-card border-border/50 hover:border-primary/40 hover:bg-primary/3'
+                      }`}
+                    >
+                      <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-colors ${
+                        done ? 'border-primary bg-primary' : 'border-muted-foreground/30 group-hover:border-primary/50'
+                      }`}>
+                        {done && <CheckCircle2 className="w-4 h-4 text-primary-foreground" strokeWidth={3} />}
+                      </div>
+                      <p className={`leading-relaxed transition-colors ${done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{step}</p>
+                    </button>
+                  );
+                })
               ) : (
                 <div className="p-6 text-center text-muted-foreground bg-card rounded-xl border border-border/50">
-                  <p>All caught up. Chat with Cele to figure out what's next.</p>
+                  <p>All caught up. Chat with Moment to figure out what&apos;s next.</p>
                 </div>
               )}
             </div>
@@ -573,7 +597,7 @@ export function EventHub() {
               className="w-full mt-6 flex items-center justify-between p-4 bg-foreground text-background rounded-xl hover:bg-primary transition-colors group"
             >
               <span className="font-medium flex items-center gap-2">
-                <Sparkles className="w-5 h-5" /> Ask Cele what to do next
+                <Sparkles className="w-5 h-5" /> Ask Moment what to do next
               </span>
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -612,7 +636,7 @@ export function EventHub() {
             onManage={() => setLocation(`/events/${eventId}/guests`)}
           />
 
-          {/* Per-event context for Cele */}
+          {/* Per-event context for Moment */}
           <EventContextPanel eventId={id} description={event.description} />
 
           {/* Cost snapshot */}
@@ -621,7 +645,7 @@ export function EventHub() {
           {/* Quick nav */}
           <div className="space-y-2">
             {[
-              { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with Cele', color: 'bg-primary/10 text-primary', href: `plan` },
+              { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with Moment', color: 'bg-primary/10 text-primary', href: `plan` },
               { icon: <Sparkles className="w-5 h-5" />, label: 'View / change plan options', color: 'bg-accent/20 text-foreground', href: `options` },
               { icon: <Users className="w-5 h-5" />, label: 'Manage Guests', color: 'bg-muted text-muted-foreground', href: `guests` },
             ].map((item) => (
