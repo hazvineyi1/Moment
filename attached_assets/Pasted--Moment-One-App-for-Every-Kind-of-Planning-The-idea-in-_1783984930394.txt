@@ -1,0 +1,86 @@
+# Moment — One App for Every Kind of Planning
+
+**The idea in one line:** a conversational planning assistant that adapts to *who* it's planning for (you, a couple, a group, a surprise recipient) and *what kind* of thing it's planning (a party, a wedding, a trip, a date, a gift) — without ever feeling like a form.
+
+---
+
+## The core insight
+
+Surprise planning, wedding planning, party planning, and trip planning all *look* different but are structurally the same problem:
+
+> Gather constraints from multiple people (or infer them without tipping off one person) → generate options → get lightweight approval → book/execute → adapt in real time.
+
+Most apps build a separate rigid tool for each of these. Moment builds **one flexible engine** with different "skins" depending on context.
+
+---
+
+## 1. Entry point: talk, don't type
+
+Opening screen is a single chat/voice bubble: *"What are we planning?"*
+
+- No menus up front. The person just says it: *"My sister's 30th, keep it a surprise"* or *"Our wedding, 120 guests, outdoor"* or *"Something fun this weekend, just us"*
+- Moment infers the **mode** (surprise / collab / solo / on-behalf-of) from language cues — "keep it a secret," "for my partner," "just me" — and confirms with one tap, not a form: *"Got it — surprise planning. Should I keep [name] out of the loop entirely?"* [Yes / They can know once it's booked]
+
+This single move — conversational intake instead of a form — is what makes it feel different from Pinterest boards or spreadsheet-based planning tools.
+
+---
+
+## 2. Adaptive profiling (the part that makes it smart)
+
+Instead of a big preference quiz, Moment builds a **taste profile** invisibly, through:
+
+- **Micro-questions embedded in the conversation**, one at a time, never a wall of checkboxes: *"Chill vibe or high energy?"* with two tappable image cards, not text
+- **Passive inference** — if connected, pulls signal from past bookings, calendar patterns, even Spotify/Instagram saves (opt-in) to skip questions the person would otherwise have to answer
+- **Proxy profiling for surprises** — when planning *for* someone who can't be asked directly, Moment interviews the *planner* about the recipient instead: *"What's [name] into lately?"* *"Any past parties/trips they loved?"* — building a profile by proxy, clearly labeled as inferred, not confirmed
+
+This produces a lightweight **taste vector** per person: pace, budget comfort, adventure vs. comfort, social energy, aesthetic (rustic/modern/playful/elegant), dealbreakers (allergies, mobility, dates).
+
+---
+
+## 3. Matching and grouping engine
+
+For anything involving multiple people (wedding guests, party crews, group trips):
+
+- **Hard filters first** — budget ceiling, dates, dietary/mobility needs. These aren't negotiable and get resolved before anything else.
+- **Soft clustering second** — groups people by overlapping taste vectors to suggest things like seating charts, activity tracks at a wedding weekend, or "who should room together" on a trip
+- **Complementarity, not sameness** — the algorithm doesn't look for identical people, it looks for enough shared ground on the *big* decisions (date, budget, location) and enough tolerance for divergence on the *small* ones (some guests want the dance floor, some want the quiet patio) — and builds branching options instead of forcing consensus
+
+---
+
+## 4. Conversational decision-making (no more group chats)
+
+- Instead of a 40-message thread, Moment sends each collaborator **one tappable card at a time**: *"Venue A or Venue B?"* with a photo, price, and one line of context
+- Async ranked-choice voting settles ties without a debate
+- The planner (or couple, or birthday-committee-of-one) sees a simple **consensus meter**, not a spreadsheet of everyone's raw answers
+
+---
+
+## 5. Mode-specific behavior
+
+| Mode | What's different |
+|---|---|
+| **Surprise** | Recipient is invisible to the system. Planner gets a "secrecy mode" — no notifications reach the recipient's devices, shared calendar entries appear as vague blocks ("hold this date") |
+| **Wedding** | Longer time horizon, budget tracking against a master number, vendor contract/deadline reminders, guest-side RSVP + dietary + song requests folded into the same taste-profile system |
+| **Party** | Fast turnaround, guest list import from contacts, one-tap "who's in" polling, playlist/menu generated from the aggregated group taste vector |
+| **Solo** | Skips consensus features entirely, leans harder into the "surprise me" dial and mood-based discovery |
+| **On behalf of** (assistant/EA use case) | Planner acts as proxy for someone else's whole calendar — profile is built from that person's past behavior + a short proxy-interview, and every decision routes through the planner for approval, not the end recipient |
+
+---
+
+## 6. The genuinely novel piece: the "reveal" layer
+
+No existing tool designs for the *emotional payoff moment* — this is where Moment could actually be new:
+
+- For surprises: a built-in **reveal script generator** — suggests how/when/where to tell them, timed countdown, optional "reveal video" prompt
+- For weddings/parties: a **day-of mode** that flips the app from planning-tool to live-conductor — timeline pings ("cake in 10"), vendor check-ins, guest-facing mini-site with just the info they need (no login)
+- A **post-event memory reel** — auto-assembles photos/videos/RSVPs/highlights into a shareable recap, which quietly feeds back into everyone's taste profile for next time
+
+---
+
+## Why this holds together as one app instead of four
+
+The underlying data model (taste vectors, hard constraints, decision cards, reveal timing) is identical across use cases — only the *inputs* (who can see what) and *outputs* (a seating chart vs. a surprise countdown) change. That's what lets it feel effortless and conversational instead of like four different tools stitched together.
+
+---
+
+**Where I'd push further if you want to go deeper:** the recommendation engine's cold-start problem (what do you suggest before there's any behavior data?), or fleshing out the proxy-interview flow for surprise/EA mode, since that's the least-precedented piece.
