@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'wouter';
-import { useGetEvent, useGetEventSummary, useListGuests } from '@workspace/api-client-react';
+import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent } from '@workspace/api-client-react';
 import {
   MessageSquare, Users, Sparkles, Send, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
   Pencil, Check, X,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const CTX_MARKER = '__HOST_CONTEXT__:';
 const PLAN_MARKER = '__CHOSEN_PLAN__:';
@@ -49,23 +47,21 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
   const existing = extractHostContext(description);
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(existing);
-  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const updateEvent = useUpdateEvent();
 
   useEffect(() => { setValue(extractHostContext(description)); }, [description]);
 
-  const save = async () => {
-    setSaving(true);
+  const save = () => {
     const newDesc = buildDescriptionWithContext(description, value);
-    try {
-      await fetch(`${BASE}/api/events/${eventId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: newDesc }),
-      });
-      setEditing(false);
-    } finally {
-      setSaving(false);
-    }
+    setSaveError('');
+    updateEvent.mutate(
+      { eventId, data: { description: newDesc } },
+      {
+        onSuccess: () => setEditing(false),
+        onError: () => setSaveError('Could not save. Try again.'),
+      }
+    );
   };
 
   const cancel = () => { setValue(existing); setEditing(false); };
@@ -103,12 +99,13 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
             </button>
             <button
               onClick={save}
-              disabled={saving}
+              disabled={updateEvent.isPending}
               className="flex items-center gap-1.5 px-4 py-1.5 text-xs bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
-              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />} Save
+              {updateEvent.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />} Save
             </button>
           </div>
+          {saveError && <p className="text-xs text-destructive mt-2">{saveError}</p>}
         </div>
       ) : existing ? (
         <p className="text-sm text-foreground/80 leading-relaxed italic">{existing}</p>
@@ -243,9 +240,7 @@ function CostEstimateWidget({ eventId }: { eventId: number }) {
     setLoading(true);
     setError(false);
     try {
-      const base = (window as any).__VITE_BASE__ ?? import.meta.env.BASE_URL ?? '/';
-      const apiBase = base.replace(/\/$/, '');
-      const res = await fetch(`${apiBase}/api/events/${eventId}/cost-estimate`, {
+      const res = await fetch(`/api/events/${eventId}/cost-estimate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });

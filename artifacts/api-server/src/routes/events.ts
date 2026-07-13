@@ -53,7 +53,11 @@ router.get("/events/dashboard", requireAuth, async (req, res): Promise<void> => 
   const now = new Date().toISOString().slice(0, 10);
   const upcoming = events.filter((e) => !e.startDate || e.startDate >= now);
 
-  const guestRows = await db.select({ count: count() }).from(guestsTable);
+  const guestRows = await db
+    .select({ count: count() })
+    .from(guestsTable)
+    .innerJoin(eventsTable, eq(guestsTable.eventId, eventsTable.id))
+    .where(eq(eventsTable.clerkUserId, userId));
   const totalGuests = Number(guestRows[0]?.count ?? 0);
 
   res.json(GetDashboardResponse.parse({

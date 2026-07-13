@@ -9,7 +9,7 @@ export type ChatMessage = { role: "user" | "assistant" | "system"; content: stri
 
 const AI_TIMEOUT_MS = 45_000;
 
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>

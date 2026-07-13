@@ -198,6 +198,7 @@ function AppRouter() {
       appearance={clerkAppearance}
       signInUrl={`${basePath}/sign-in`}
       signUpUrl={`${basePath}/sign-up`}
+      afterSignOutUrl={`${basePath || '/'}`}
       localization={{
         signIn: { start: { title: 'Welcome back to Cele', subtitle: 'Sign in to your planning workspace' } },
         signUp: { start: { title: 'Start planning with Cele', subtitle: 'Create your account to get started' } },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
-import { useGetEvent } from '@workspace/api-client-react';
+import { useGetEvent, useUpdateEvent } from '@workspace/api-client-react';
 import { ArrowRight, ChevronDown, ChevronUp, Sparkles, MapPin, Clock, Users } from 'lucide-react';
 
 interface PlanOption {
@@ -16,8 +16,6 @@ interface PlanOption {
   whyThisWorks: string;
   vibe?: string;
 }
-
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const LOADING_LINES = [
   "Consulting my contact at the Aman…",
@@ -183,37 +181,48 @@ export function EventOptions() {
 
   const { data: event } = useGetEvent(id, { query: { enabled: !!id } });
 
+  const updateEvent = useUpdateEvent();
+
   const [options, setOptions] = useState<PlanOption[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [choosing, setChoosing] = useState(false);
 
+  const loadOptions = async (force = false) => {
+    if (!id) return;
+    setLoading(true);
+    setError('');
+    setOptions(null);
+    try {
+      const url = `/api/events/${id}/plan-options${force ? '?force=true' : ''}`;
+      const res = await fetch(url, { method: 'POST' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      if (!Array.isArray(data.options) || data.options.length === 0) {
+        throw new Error('No options returned');
+      }
+      setOptions(data.options);
+    } catch (e: any) {
+      console.error('plan-options fetch error:', e);
+      setError(e.message ?? 'Something went wrong. Try again?');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!id) return;
-
-    const fetchOptions = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const res = await fetch(`${BASE}/api/events/${id}/plan-options`, { method: 'POST' });
-        if (!res.ok) throw new Error('Failed to generate options');
-        const data = await res.json();
-        setOptions(data.options);
-      } catch (e) {
-        setError('Something went wrong. Cele had a moment. Try again?');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOptions();
+    loadOptions();
   }, [id]);
 
   const handleChoose = async (option: PlanOption) => {
     if (!id || choosing) return;
     setChoosing(true);
 
-    // Build a new description: existing base notes + chosen plan JSON
+    // Build a new description: preserve everything before __CHOSEN_PLAN__ marker
     const existingDesc = event?.description ?? '';
     const baseDesc = existingDesc.includes('__CHOSEN_PLAN__:')
       ? existingDesc.slice(0, existingDesc.indexOf('__CHOSEN_PLAN__:')).trim()
@@ -221,27 +230,16 @@ export function EventOptions() {
 
     const newDescription = `${baseDesc}${baseDesc ? '\n' : ''}__CHOSEN_PLAN__:${JSON.stringify(option)}`;
 
-    try {
-      await fetch(`${BASE}/api/events/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: newDescription }),
-      });
-      setLocation(`/events/${id}/plan`);
-    } catch {
-      setChoosing(false);
-    }
+    updateEvent.mutate(
+      { eventId: id, data: { description: newDescription } },
+      {
+        onSuccess: () => setLocation(`/events/${id}/plan`),
+        onError: () => setChoosing(false),
+      }
+    );
   };
 
-  const handleRetry = () => {
-    setError('');
-    setOptions(null);
-    setLoading(true);
-    fetch(`${BASE}/api/events/${id}/plan-options`, { method: 'POST' })
-      .then((r) => r.json())
-      .then((d) => { setOptions(d.options); setLoading(false); })
-      .catch(() => { setError('Still struggling. Check your connection and try again.'); setLoading(false); });
-  };
+  const handleRetry = () => loadOptions(true);
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
