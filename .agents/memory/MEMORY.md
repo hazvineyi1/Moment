@@ -1,0 +1,2 @@
+- [TSX string apostrophes](tsx-apostrophes.md) — apostrophes inside single-quoted JSX string props cause Babel parse errors; always use double quotes or unicode escapes for strings containing contractions.
+- [Cele session bug](cele-session-bug.md) — useCreateSession mutate must pass { eventId, data } not just { data }; missing eventId causes /api/events/undefined/sessions infinite 400 loop and perpetual spinner.

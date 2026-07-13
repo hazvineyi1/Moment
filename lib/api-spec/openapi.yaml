@@ -1,22 +1,34 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Celebration Planner API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: profile
+    description: User profile and preferences
+  - name: events
+    description: Celebration events
+  - name: sessions
+    description: AI planning sessions
+  - name: messages
+    description: Conversational messages
+  - name: guests
+    description: Guest management
+  - name: suggestions
+    description: AI-generated venue and activity suggestions
+  - name: invites
+    description: Event invites
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +36,579 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /events:
+    get:
+      operationId: listEvents
+      tags: [events]
+      summary: List all events
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+    post:
+      operationId: createEvent
+      tags: [events]
+      summary: Create a new celebration event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInput"
+      responses:
+        "201":
+          description: Created event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  /events/dashboard:
+    get:
+      operationId: getDashboard
+      tags: [events]
+      summary: Dashboard summary of all events with status
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+
+  /events/{eventId}:
+    get:
+      operationId: getEvent
+      tags: [events]
+      summary: Get a single event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateEvent
+      tags: [events]
+      summary: Update event details
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventUpdate"
+      responses:
+        "200":
+          description: Updated event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+    delete:
+      operationId: deleteEvent
+      tags: [events]
+      summary: Delete an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /events/{eventId}/summary:
+    get:
+      operationId: getEventSummary
+      tags: [events]
+      summary: Get event planning summary
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventSummary"
+
+  /events/{eventId}/sessions:
+    get:
+      operationId: listSessions
+      tags: [sessions]
+      summary: List planning sessions for an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlanningSession"
+    post:
+      operationId: createSession
+      tags: [sessions]
+      summary: Start a new AI planning session
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionInput"
+      responses:
+        "201":
+          description: Created session with initial AI message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanningSession"
+
+  /events/{eventId}/sessions/{sessionId}:
+    get:
+      operationId: getSession
+      tags: [sessions]
+      summary: Get a planning session
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Planning session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanningSession"
+
+  /events/{eventId}/sessions/{sessionId}/messages:
+    get:
+      operationId: listMessages
+      tags: [messages]
+      summary: Get all messages in a session
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message and get AI response
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: User message and AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessagePair"
+
+  /events/{eventId}/guests:
+    get:
+      operationId: listGuests
+      tags: [guests]
+      summary: List guests for an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of guests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Guest"
+    post:
+      operationId: addGuest
+      tags: [guests]
+      summary: Add a guest to an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GuestInput"
+      responses:
+        "201":
+          description: Added guest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+
+  /events/{eventId}/guests/{guestId}:
+    get:
+      operationId: getGuest
+      tags: [guests]
+      summary: Get a guest
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: guestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Guest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+    patch:
+      operationId: updateGuest
+      tags: [guests]
+      summary: Update guest details
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: guestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GuestUpdate"
+      responses:
+        "200":
+          description: Updated guest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+    delete:
+      operationId: deleteGuest
+      tags: [guests]
+      summary: Remove a guest
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: guestId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed
+
+  /events/{eventId}/guests/pairings:
+    get:
+      operationId: getGuestPairings
+      tags: [guests]
+      summary: Get AI-suggested roommate, travel buddy, and seating pairings
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pairing suggestions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuestPairings"
+
+  /events/{eventId}/suggestions:
+    get:
+      operationId: listSuggestions
+      tags: [suggestions]
+      summary: List venue and activity suggestions for an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Suggestion"
+
+  /events/{eventId}/suggestions/generate:
+    post:
+      operationId: generateSuggestions
+      tags: [suggestions]
+      summary: Generate AI-powered venue and activity suggestions
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestionGenerateInput"
+      responses:
+        "201":
+          description: Generated suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Suggestion"
+
+  /events/{eventId}/suggestions/{suggestionId}:
+    patch:
+      operationId: updateSuggestion
+      tags: [suggestions]
+      summary: Save or update a suggestion
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: suggestionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestionUpdate"
+      responses:
+        "200":
+          description: Updated suggestion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Suggestion"
+    delete:
+      operationId: deleteSuggestion
+      tags: [suggestions]
+      summary: Delete a suggestion
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: suggestionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /events/{eventId}/invites:
+    get:
+      operationId: listInvites
+      tags: [invites]
+      summary: List invites for an event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of invites
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invite"
+
+  /events/{eventId}/invites/generate:
+    post:
+      operationId: generateInvite
+      tags: [invites]
+      summary: Generate an invite for the event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteGenerateInput"
+      responses:
+        "201":
+          description: Generated invite
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+
+  /events/{eventId}/invites/{inviteId}:
+    get:
+      operationId: getInvite
+      tags: [invites]
+      summary: Get a specific invite
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: inviteId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Invite
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +616,455 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        personality:
+          type: ["string", "null"]
+          description: JSON-encoded personality traits
+        preferences:
+          type: ["string", "null"]
+          description: JSON-encoded preferences (budget, travel style, dietary, etc.)
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, createdAt]
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        location:
+          type: string
+        bio:
+          type: string
+        personality:
+          type: string
+        preferences:
+          type: string
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+          description: "wedding, birthday, funeral, vacation, reunion, corporate, other"
+        description:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        isInternational:
+          type: boolean
+        startDate:
+          type: ["string", "null"]
+          format: date
+        endDate:
+          type: ["string", "null"]
+          format: date
+        budget:
+          type: ["string", "null"]
+        guestCount:
+          type: ["integer", "null"]
+        status:
+          type: string
+          description: "planning, confirmed, completed, cancelled"
+        coverImage:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, title, type, status, isInternational, createdAt]
+
+    EventInput:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        isInternational:
+          type: boolean
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        budget:
+          type: string
+        guestCount:
+          type: integer
+      required: [title, type]
+
+    EventUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        isInternational:
+          type: boolean
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        budget:
+          type: string
+        guestCount:
+          type: integer
+        status:
+          type: string
+        coverImage:
+          type: string
+
+    EventSummary:
+      type: object
+      properties:
+        eventId:
+          type: integer
+        title:
+          type: string
+        guestCount:
+          type: integer
+        confirmedGuests:
+          type: integer
+        savedSuggestions:
+          type: integer
+        sessionCount:
+          type: integer
+        inviteCount:
+          type: integer
+        completionPercent:
+          type: integer
+        nextSteps:
+          type: array
+          items:
+            type: string
+      required: [eventId, title, guestCount, confirmedGuests, savedSuggestions, sessionCount, inviteCount, completionPercent, nextSteps]
+
+    Dashboard:
+      type: object
+      properties:
+        totalEvents:
+          type: integer
+        upcomingEvents:
+          type: integer
+        totalGuests:
+          type: integer
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+      required: [totalEvents, upcomingEvents, totalGuests, events]
+
+    PlanningSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventId:
+          type: integer
+        title:
+          type: string
+        focus:
+          type: ["string", "null"]
+          description: "venue, activities, guests, dates, general"
+        messageCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, eventId, title, messageCount, createdAt, updatedAt]
+
+    SessionInput:
+      type: object
+      properties:
+        title:
+          type: string
+        focus:
+          type: string
+      required: [title]
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: integer
+        role:
+          type: string
+          description: "user or assistant"
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, sessionId, role, content, createdAt]
+
+    MessageInput:
+      type: object
+      properties:
+        content:
+          type: string
+      required: [content]
+
+    MessagePair:
+      type: object
+      properties:
+        userMessage:
+          $ref: "#/components/schemas/Message"
+        assistantMessage:
+          $ref: "#/components/schemas/Message"
+      required: [userMessage, assistantMessage]
+
+    Guest:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventId:
+          type: integer
+        name:
+          type: string
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        whatsapp:
+          type: ["string", "null"]
+        rsvpStatus:
+          type: string
+          description: "pending, confirmed, declined"
+        personality:
+          type: ["string", "null"]
+          description: JSON-encoded personality traits
+        dietaryNeeds:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, eventId, name, rsvpStatus, createdAt]
+
+    GuestInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        whatsapp:
+          type: string
+        personality:
+          type: string
+        dietaryNeeds:
+          type: string
+        notes:
+          type: string
+      required: [name]
+
+    GuestUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        whatsapp:
+          type: string
+        rsvpStatus:
+          type: string
+        personality:
+          type: string
+        dietaryNeeds:
+          type: string
+        notes:
+          type: string
+
+    GuestPairings:
+      type: object
+      properties:
+        eventId:
+          type: integer
+        roommates:
+          type: array
+          items:
+            $ref: "#/components/schemas/GuestPair"
+        travelBuddies:
+          type: array
+          items:
+            $ref: "#/components/schemas/GuestPair"
+        seatingGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/SeatingGroup"
+        reasoning:
+          type: string
+      required: [eventId, roommates, travelBuddies, seatingGroups, reasoning]
+
+    GuestPair:
+      type: object
+      properties:
+        guest1:
+          $ref: "#/components/schemas/Guest"
+        guest2:
+          $ref: "#/components/schemas/Guest"
+        compatibilityScore:
+          type: integer
+        reason:
+          type: string
+      required: [guest1, guest2, compatibilityScore, reason]
+
+    SeatingGroup:
+      type: object
+      properties:
+        tableName:
+          type: string
+        guests:
+          type: array
+          items:
+            $ref: "#/components/schemas/Guest"
+        vibe:
+          type: string
+      required: [tableName, guests, vibe]
+
+    Suggestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventId:
+          type: integer
+        type:
+          type: string
+          description: "venue, activity, accommodation, dining, entertainment"
+        name:
+          type: string
+        description:
+          type: string
+        location:
+          type: ["string", "null"]
+        country:
+          type: ["string", "null"]
+        estimatedCost:
+          type: ["string", "null"]
+        bestFor:
+          type: ["string", "null"]
+        highlights:
+          type: ["string", "null"]
+          description: JSON array of highlight strings
+        isSaved:
+          type: boolean
+        imageUrl:
+          type: ["string", "null"]
+        websiteUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, eventId, type, name, description, isSaved, createdAt]
+
+    SuggestionGenerateInput:
+      type: object
+      properties:
+        focus:
+          type: string
+          description: "venue, activities, accommodation, dining, entertainment, all"
+        preferences:
+          type: string
+          description: Additional preferences or constraints
+        count:
+          type: integer
+          description: Number of suggestions to generate
+      required: [focus]
+
+    SuggestionUpdate:
+      type: object
+      properties:
+        isSaved:
+          type: boolean
+        notes:
+          type: string
+
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventId:
+          type: integer
+        title:
+          type: string
+        message:
+          type: string
+        style:
+          type: string
+          description: "formal, casual, playful, elegant"
+        whatsappText:
+          type: string
+        whatsappLink:
+          type: string
+        guestIds:
+          type: ["string", "null"]
+          description: JSON array of guest IDs this invite was sent to
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, eventId, title, message, style, whatsappText, whatsappLink, createdAt]
+
+    InviteGenerateInput:
+      type: object
+      properties:
+        style:
+          type: string
+          description: "formal, casual, playful, elegant"
+        additionalContext:
+          type: string
+        guestIds:
+          type: array
+          items:
+            type: integer
+      required: [style]
