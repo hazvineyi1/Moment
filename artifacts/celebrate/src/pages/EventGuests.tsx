@@ -342,7 +342,7 @@ function AddGuestDrawer({
 
           <div>
             <p className="text-sm font-medium mb-1.5">How would you describe them? <span className="text-muted-foreground font-normal">(optional)</span></p>
-            <p className="text-xs text-muted-foreground mb-2.5">Cele uses this for seating, pairings, and activity design.</p>
+            <p className="text-xs text-muted-foreground mb-2.5">Moment uses this for seating, pairings, and activity design.</p>
             <div className="grid grid-cols-3 gap-1.5">
               {GUEST_ARCHETYPES.map(a => (
                 <button
@@ -384,7 +384,7 @@ function AddGuestDrawer({
           <div>
             <p className="text-sm font-medium mb-2">Notes <span className="text-muted-foreground font-normal">(optional)</span></p>
             <textarea
-              placeholder="Anything Cele should know about them..."
+              placeholder="Anything Moment should know about them..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}

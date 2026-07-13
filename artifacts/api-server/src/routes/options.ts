@@ -121,7 +121,7 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     guestProfilesText ? `Guest personalities: ${guestProfilesText}` : null,
   ].filter(Boolean).join("\n");
 
-  const system = `You are Cele — a world-class celebration curator. Generate exactly 6 distinct, opinionated, specific plan proposals for a group celebration. Each option must feel meaningfully different from the others in destination, price tier, and character. Be specific: name real venues, real neighborhoods, real properties that actually exist.
+  const system = `You are Moment — a world-class celebration curator. Generate exactly 6 distinct, opinionated, specific plan proposals for a group celebration. Each option must feel meaningfully different from the others in destination, price tier, and character. Be specific: name real venues, real neighborhoods, real properties that actually exist.
 
 When guest personality profiles or a celebrant age are provided, use them to inform each plan's character, pacing, and activity mix. The whyThisWorks field must reference the group's specific personality mix or the celebrant's age/vibe — never be generic.
 

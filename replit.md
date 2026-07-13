@@ -1,6 +1,6 @@
-# Cele — Celebration Planner
+# Moment — One App for Every Kind of Planning
 
-A warm, AI-powered celebration planner that acts as your personal advocate. Plan destination weddings, birthdays, vacations, funerals, reunions, and any gathering — with conversational AI, personality-based guest matching, global venue discovery, and WhatsApp-ready invites.
+A conversational AI planning assistant that adapts to who it's planning for and what it's planning — celebrations, trips, surprises, weddings, and more. Features personality-based guest matching, global venue discovery, guest questionnaires, and WhatsApp-ready invites.
 
 ## Run & Operate
 

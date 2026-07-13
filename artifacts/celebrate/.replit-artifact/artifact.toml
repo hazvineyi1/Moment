@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Celebration Planner"
+title = "Moment"
 version = "1.0.0"
 id = "artifacts/celebrate"
 router = "path"

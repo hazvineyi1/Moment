@@ -389,8 +389,8 @@ function QuestionnaireBanner({
         <p className="font-medium text-sm flex items-center gap-2">
           <Link className="w-4 h-4 text-primary" />
           {celebrantName
-            ? `Share with ${celebrantName} — their answers feed into Cele`
-            : 'Send your celebrant the questionnaire — their answers feed into Cele'}
+            ? `Share with ${celebrantName} — their answers feed into Moment`
+            : 'Send your celebrant the questionnaire — their answers feed into Moment'}
         </p>
         {url && (
           <p className="text-xs text-muted-foreground mt-1 font-mono truncate">{url}</p>

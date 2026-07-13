@@ -147,10 +147,10 @@ function LandingPage() {
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-6 text-center">
       <div className="mb-8">
-        <img src={`${basePath}/logo.svg`} alt="Cele" className="w-16 h-16 mx-auto mb-4" />
-        <h1 className="text-5xl font-serif font-medium text-foreground mb-3">Cele</h1>
+        <img src={`${basePath}/logo.svg`} alt="Moment" className="w-16 h-16 mx-auto mb-4" />
+        <h1 className="text-5xl font-serif font-medium text-foreground mb-3">Moment</h1>
         <p className="text-muted-foreground text-lg max-w-sm mx-auto leading-relaxed">
-          Your personal celebration curator. Plan unforgettable experiences with an AI that actually knows what it's doing.
+          One app for every kind of planning. Celebrations, trips, surprises — whatever you are building, Moment handles it.
         </p>
       </div>
       <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -201,8 +201,8 @@ function AppRouter() {
       afterSignInUrl={`${basePath || '/'}`}
       afterSignUpUrl={`${basePath || '/'}`}
       localization={{
-        signIn: { start: { title: 'Welcome back to Cele', subtitle: 'Sign in to your planning workspace' } },
-        signUp: { start: { title: 'Start planning with Cele', subtitle: 'Create your account to get started' } },
+        signIn: { start: { title: 'Welcome back to Moment', subtitle: 'Sign in to your planning workspace' } },
+        signUp: { start: { title: 'Start planning with Moment', subtitle: 'Create your account to get started' } },
       }}
       routerPush={(to) => setLocation(stripBase(to))}
       routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
