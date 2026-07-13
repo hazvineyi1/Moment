@@ -15,8 +15,6 @@ import { EventHub } from '@/pages/EventHub';
 import { EventOptions } from '@/pages/EventOptions';
 import { EventChat } from '@/pages/EventChat';
 import { EventGuests } from '@/pages/EventGuests';
-import { EventDiscover } from '@/pages/EventDiscover';
-import { EventInvites } from '@/pages/EventInvites';
 import { QuestionnairePage } from '@/pages/QuestionnairePage';
 import { ShareQuestionnaire } from '@/pages/ShareQuestionnaire';
 
@@ -223,8 +221,8 @@ function AppRouter() {
             <Route path="/events/:eventId/options">{() => <Protected><EventOptions /></Protected>}</Route>
             <Route path="/events/:eventId/plan">{() => <Protected><EventChat /></Protected>}</Route>
             <Route path="/events/:eventId/guests">{() => <Protected><EventGuests /></Protected>}</Route>
-            <Route path="/events/:eventId/discover">{() => <Protected><EventDiscover /></Protected>}</Route>
-            <Route path="/events/:eventId/invites">{() => <Protected><EventInvites /></Protected>}</Route>
+            <Route path="/events/:eventId/discover">{(p) => <Redirect to={`/events/${p.eventId}`} />}</Route>
+            <Route path="/events/:eventId/invites">{(p) => <Redirect to={`/events/${p.eventId}`} />}</Route>
             <Route component={NotFound} />
           </Switch>
           <Toaster />

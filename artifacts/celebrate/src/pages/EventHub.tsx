@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent } from '@workspace/api-client-react';
 import {
-  MessageSquare, Users, Sparkles, Send, MapPin, Calendar as CalendarIcon,
+  MessageSquare, Users, Sparkles, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
   Pencil, Check, X, Link, Copy,
 } from 'lucide-react';
@@ -138,11 +138,9 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
 function EventTabs({ activeTab, eventId }: { activeTab: string; eventId: string }) {
   const [, setLocation] = useLocation();
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'chat',     label: 'Chat' },
+    { id: 'overview', label: 'Hub' },
+    { id: 'chat',     label: 'Plan' },
     { id: 'guests',   label: 'Guests' },
-    { id: 'discover', label: 'Discover' },
-    { id: 'invites',  label: 'Invites' },
   ];
   return (
     <div className="flex items-center overflow-x-auto no-scrollbar border-b border-border/60 pb-px mb-8">
@@ -583,10 +581,8 @@ export function EventHub() {
           {/* Quick nav */}
           <div className="space-y-2">
             {[
-              { icon: <Users className="w-5 h-5" />, label: 'Manage Guests', color: 'bg-primary/10 text-primary', href: `guests` },
-              { icon: <MapPin className="w-5 h-5" />, label: 'Discover Venues', color: 'bg-accent/10 text-accent', href: `discover` },
-              { icon: <Send className="w-5 h-5" />, label: 'Send Invites', color: 'bg-secondary text-secondary-foreground', href: `invites` },
-              { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with Cele', color: 'bg-muted text-muted-foreground', href: `plan` },
+              { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with Cele', color: 'bg-primary/10 text-primary', href: `plan` },
+              { icon: <Users className="w-5 h-5" />, label: 'Manage Guests', color: 'bg-muted text-muted-foreground', href: `guests` },
             ].map((item) => (
               <button
                 key={item.label}

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and, count } from "drizzle-orm";
-import { db, eventsTable, guestsTable, planningSessionsTable, suggestionsTable, invitesTable } from "@workspace/db";
+import { db, eventsTable, guestsTable, planningSessionsTable } from "@workspace/db";
 import {
   ListEventsResponse,
   CreateEventBody,
@@ -164,37 +164,31 @@ router.get("/events/:eventId/summary", requireAuth, async (req, res): Promise<vo
     .where(and(eq(eventsTable.id, eventId), eq(eventsTable.clerkUserId, userId)));
   if (!event) { res.status(404).json({ error: "Event not found" }); return; }
 
-  const [guestRows, savedRows, sessionRows, inviteRows] = await Promise.all([
+  const [guestRows, sessionRows] = await Promise.all([
     db.select({ count: count() }).from(guestsTable).where(eq(guestsTable.eventId, eventId)),
-    db.select({ count: count() }).from(suggestionsTable).where(eq(suggestionsTable.eventId, eventId)),
     db.select({ count: count() }).from(planningSessionsTable).where(eq(planningSessionsTable.eventId, eventId)),
-    db.select({ count: count() }).from(invitesTable).where(eq(invitesTable.eventId, eventId)),
   ]);
 
   const guestCount = Number(guestRows[0]?.count ?? 0);
-  const savedSuggestions = Number(savedRows[0]?.count ?? 0);
   const sessionCount = Number(sessionRows[0]?.count ?? 0);
-  const inviteCount = Number(inviteRows[0]?.count ?? 0);
 
-  const checks = [!!event.title, !!event.location, !!event.startDate, guestCount > 0, savedSuggestions > 0, sessionCount > 0, inviteCount > 0];
+  const checks = [!!event.title, !!event.location, !!event.startDate, guestCount > 0, sessionCount > 0];
   const completionPercent = Math.round((checks.filter(Boolean).length / checks.length) * 100);
 
   const nextSteps: string[] = [];
   if (!event.location) nextSteps.push("Add a destination or location");
   if (!event.startDate) nextSteps.push("Set event dates");
   if (guestCount === 0) nextSteps.push("Add your first guests");
-  if (savedSuggestions === 0) nextSteps.push("Explore and save venue suggestions");
-  if (sessionCount === 0) nextSteps.push("Start a planning chat session");
-  if (inviteCount === 0) nextSteps.push("Create an invite for your guests");
+  if (sessionCount === 0) nextSteps.push("Start a planning chat with Cele");
 
   res.json(GetEventSummaryResponse.parse({
     eventId,
     title: event.title,
     guestCount,
     confirmedGuests: guestCount,
-    savedSuggestions,
+    savedSuggestions: 0,
     sessionCount,
-    inviteCount,
+    inviteCount: 0,
     completionPercent,
     nextSteps,
   }));
