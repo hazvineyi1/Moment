@@ -128,6 +128,12 @@ router.delete("/events/:eventId", async (req, res): Promise<void> => {
   res.status(204).send();
 });
 
+// Delete ALL events (cascade handles guests, sessions, messages, etc.)
+router.delete("/events", async (req, res): Promise<void> => {
+  await db.delete(eventsTable);
+  res.status(204).send();
+});
+
 router.get("/events/:eventId/summary", async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = GetEventSummaryParams.safeParse({ eventId: parseInt(rawId, 10) });

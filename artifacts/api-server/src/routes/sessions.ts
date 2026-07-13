@@ -46,18 +46,35 @@ async function getUser() {
   return user ?? null;
 }
 
-function extractChosenPlan(description: string | null): { plan: Record<string, unknown> | null; baseDescription: string } {
-  if (!description) return { plan: null, baseDescription: "" };
-  const marker = "__CHOSEN_PLAN__:";
-  const idx = description.indexOf(marker);
-  if (idx === -1) return { plan: null, baseDescription: description };
-  const base = description.slice(0, idx).trim();
-  try {
-    const plan = JSON.parse(description.slice(idx + marker.length).trim());
-    return { plan, baseDescription: base };
-  } catch {
-    return { plan: null, baseDescription: description };
+function parseDescription(description: string | null): {
+  baseNotes: string;
+  hostContext: string | null;
+  chosenPlan: Record<string, unknown> | null;
+} {
+  if (!description) return { baseNotes: "", hostContext: null, chosenPlan: null };
+
+  const PLAN_MARKER = "__CHOSEN_PLAN__:";
+  const CTX_MARKER = "__HOST_CONTEXT__:";
+
+  let remaining = description;
+  let chosenPlan: Record<string, unknown> | null = null;
+  let hostContext: string | null = null;
+
+  // Extract chosen plan (must come last in the string)
+  const planIdx = remaining.indexOf(PLAN_MARKER);
+  if (planIdx !== -1) {
+    try { chosenPlan = JSON.parse(remaining.slice(planIdx + PLAN_MARKER.length).trim()); } catch {}
+    remaining = remaining.slice(0, planIdx).trim();
   }
+
+  // Extract host context
+  const ctxIdx = remaining.indexOf(CTX_MARKER);
+  if (ctxIdx !== -1) {
+    hostContext = remaining.slice(ctxIdx + CTX_MARKER.length).trim() || null;
+    remaining = remaining.slice(0, ctxIdx).trim();
+  }
+
+  return { baseNotes: remaining, hostContext, chosenPlan };
 }
 
 function buildSystemPrompt(
@@ -77,7 +94,7 @@ function buildSystemPrompt(
         .join("\n")
     : "";
 
-  const { plan: chosenPlan, baseDescription } = extractChosenPlan(event.description);
+  const { baseNotes, hostContext, chosenPlan } = parseDescription(event.description);
 
   const eventContext = [
     `Celebration type: ${event.type}`,
@@ -88,7 +105,7 @@ function buildSystemPrompt(
     event.endDate ? `End date: ${new Date(event.endDate).toDateString()}` : null,
     event.budget ? `Budget tier: ${event.budget}` : null,
     event.guestCount ? `Estimated guests: ${event.guestCount}` : null,
-    baseDescription ? `Notes: ${baseDescription}` : null,
+    baseNotes ? `Notes: ${baseNotes}` : null,
   ]
     .filter(Boolean)
     .join("\n");
@@ -134,8 +151,15 @@ CURRENT EVENT:
 ${eventContext}
 
 ${chosenPlanContext ? `${chosenPlanContext}\n\n` : ""}${
+  hostContext
+    ? `HOST CONTEXT FOR THIS EVENT (written by the planner — treat this as their specific brief for this plan, overriding general profile where they differ):
+${hostContext}
+
+`
+    : ""
+}${
   userContext
-    ? `HOST PROFILE:
+    ? `HOST PROFILE (global defaults — use when event-specific context above doesn't override):
 ${userContext}`
     : "No host profile yet — infer personality from how they write and remember it in conversation."
 }

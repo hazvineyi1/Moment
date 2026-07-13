@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useGetProfile, useUpdateProfile } from '@workspace/api-client-react';
-import { User, Loader2, Save, MapPin, Phone, Mail, Sparkles } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { User, Loader2, Save, MapPin, Phone, Mail, Sparkles, Trash2, AlertTriangle } from 'lucide-react';
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 export function Profile() {
   const { data: profile, isLoading } = useGetProfile();
   const updateProfile = useUpdateProfile();
+  const [, setLocation] = useLocation();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -17,6 +21,29 @@ export function Profile() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [deleteWorking, setDeleteWorking] = useState(false);
+
+  const handleDeleteAllEvents = async () => {
+    setDeleteWorking(true);
+    try {
+      await fetch(`${BASE}/api/events`, { method: 'DELETE' });
+      setConfirmDelete(false);
+      setLocation('/');
+    } catch {
+      // silent — the delete likely succeeded even if the response parsing failed
+      setLocation('/');
+    } finally {
+      setDeleteWorking(false);
+    }
+  };
+
+  const handleResetProfile = () => {
+    updateProfile.mutate({
+      data: { name: '', email: '', phone: '', location: '', bio: '', personality: '', preferences: '' }
+    }, { onSuccess: () => setConfirmReset(false) });
+  };
 
   useEffect(() => {
     if (profile) {
@@ -208,6 +235,83 @@ export function Profile() {
           </div>
         )}
       </form>
+
+      {/* ── Danger zone ─────────────────────────────────────────────── */}
+      <div className="mt-16 pt-8 border-t border-border/40">
+        <div className="flex items-center gap-2 mb-6">
+          <AlertTriangle className="w-4 h-4 text-destructive" />
+          <h2 className="text-sm font-semibold text-destructive uppercase tracking-widest">Danger zone</h2>
+        </div>
+
+        <div className="space-y-3">
+          {/* Delete all events */}
+          <div className="flex items-center justify-between p-4 rounded-2xl border border-destructive/20 bg-destructive/5">
+            <div>
+              <p className="font-medium text-sm">Delete all events</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Removes every event, conversation, guest list, and invite. Cannot be undone.</p>
+            </div>
+            {!confirmDelete ? (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-destructive border border-destructive/30 rounded-full hover:bg-destructive hover:text-destructive-foreground transition-all flex-shrink-0 ml-4"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Delete all
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                <span className="text-xs text-destructive font-medium">Sure?</span>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  className="px-3 py-1.5 text-xs rounded-full border border-border hover:bg-muted transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAllEvents}
+                  disabled={deleteWorking}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-destructive text-destructive-foreground rounded-full font-medium hover:bg-destructive/90 disabled:opacity-50 transition-colors"
+                >
+                  {deleteWorking ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                  Yes, delete
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Reset profile */}
+          <div className="flex items-center justify-between p-4 rounded-2xl border border-border/50">
+            <div>
+              <p className="font-medium text-sm">Reset profile</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Clears your name, bio, personality notes, and preferences.</p>
+            </div>
+            {!confirmReset ? (
+              <button
+                onClick={() => setConfirmReset(true)}
+                className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-full hover:bg-muted transition-all flex-shrink-0 ml-4"
+              >
+                Reset
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                <span className="text-xs text-muted-foreground font-medium">Sure?</span>
+                <button
+                  onClick={() => setConfirmReset(false)}
+                  className="px-3 py-1.5 text-xs rounded-full border border-border hover:bg-muted transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleResetProfile}
+                  disabled={updateProfile.isPending}
+                  className="px-3 py-1.5 text-xs bg-foreground text-background rounded-full font-medium hover:bg-primary hover:text-primary-foreground disabled:opacity-50 transition-colors"
+                >
+                  Yes, reset
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

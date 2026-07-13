@@ -1,11 +1,125 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { useGetEvent, useGetEventSummary, useListGuests } from '@workspace/api-client-react';
 import {
   MessageSquare, Users, Sparkles, Send, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
+  Pencil, Check, X,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const CTX_MARKER = '__HOST_CONTEXT__:';
+const PLAN_MARKER = '__CHOSEN_PLAN__:';
+
+function extractHostContext(description: string | null | undefined): string {
+  if (!description) return '';
+  const ctxIdx = description.indexOf(CTX_MARKER);
+  if (ctxIdx === -1) return '';
+  let ctx = description.slice(ctxIdx + CTX_MARKER.length);
+  // strip chosen plan if it follows
+  const planIdx = ctx.indexOf(PLAN_MARKER);
+  if (planIdx !== -1) ctx = ctx.slice(0, planIdx);
+  return ctx.trim();
+}
+
+function buildDescriptionWithContext(existingDesc: string | null | undefined, hostContext: string): string {
+  let desc = existingDesc ?? '';
+  // Extract chosen plan portion (keep it intact at the end)
+  let planPart = '';
+  const planIdx = desc.indexOf(PLAN_MARKER);
+  if (planIdx !== -1) {
+    planPart = desc.slice(planIdx);
+    desc = desc.slice(0, planIdx);
+  }
+  // Remove existing host context from what remains
+  const ctxIdx = desc.indexOf(CTX_MARKER);
+  if (ctxIdx !== -1) desc = desc.slice(0, ctxIdx);
+  desc = desc.trim();
+
+  const parts = [desc];
+  if (hostContext.trim()) parts.push(`${CTX_MARKER}${hostContext.trim()}`);
+  if (planPart) parts.push(planPart);
+  return parts.filter(Boolean).join('\n');
+}
+
+/* ─── Per-event context panel ───────────────────────────────────────── */
+function EventContextPanel({ eventId, description }: { eventId: number; description: string | null | undefined }) {
+  const existing = extractHostContext(description);
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(existing);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setValue(extractHostContext(description)); }, [description]);
+
+  const save = async () => {
+    setSaving(true);
+    const newDesc = buildDescriptionWithContext(description, value);
+    try {
+      await fetch(`${BASE}/api/events/${eventId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: newDesc }),
+      });
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const cancel = () => { setValue(existing); setEditing(false); };
+
+  return (
+    <div className="bg-card rounded-2xl border border-border/50 p-5">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <h3 className="font-medium text-sm">Your context for this event</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Cele reads this. Different from your global profile — specific to this plan.</p>
+        </div>
+        {!editing && (
+          <button
+            onClick={() => setEditing(true)}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full border border-border hover:border-primary/40"
+          >
+            <Pencil className="w-3 h-3" /> {existing ? 'Edit' : 'Add'}
+          </button>
+        )}
+      </div>
+
+      {editing ? (
+        <div>
+          <textarea
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            autoFocus
+            rows={4}
+            placeholder={`E.g., "I'm planning this for my boss's 50th — budget is flexible but it needs to feel effortless, not flashy. He hates surprises and loves wine. The group is 8 executives, most with partners."`}
+            className="w-full text-sm bg-background border border-border rounded-xl px-4 py-3 outline-none focus:border-primary resize-none leading-relaxed placeholder:text-muted-foreground/60"
+          />
+          <div className="flex gap-2 mt-2 justify-end">
+            <button onClick={cancel} className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border border-border hover:bg-muted transition-colors">
+              <X className="w-3 h-3" /> Cancel
+            </button>
+            <button
+              onClick={save}
+              disabled={saving}
+              className="flex items-center gap-1.5 px-4 py-1.5 text-xs bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            >
+              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />} Save
+            </button>
+          </div>
+        </div>
+      ) : existing ? (
+        <p className="text-sm text-foreground/80 leading-relaxed italic">{existing}</p>
+      ) : (
+        <p className="text-sm text-muted-foreground/60 italic">
+          Tell Cele who you are in the context of this specific event — your role, constraints, what this group means to you.
+        </p>
+      )}
+    </div>
+  );
+}
 
 function EventTabs({ activeTab, eventId }: { activeTab: string; eventId: string }) {
   const [, setLocation] = useLocation();
@@ -391,6 +505,9 @@ export function EventHub() {
             total={summary.guestCount}
             onManage={() => setLocation(`/events/${eventId}/guests`)}
           />
+
+          {/* Per-event context for Cele */}
+          <EventContextPanel eventId={id} description={event.description} />
 
           {/* Cost snapshot */}
           <CostEstimateWidget eventId={id} />
