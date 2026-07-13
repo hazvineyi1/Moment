@@ -1,37 +1,134 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Loader2, Check, AlertCircle } from 'lucide-react';
+import { Loader2, Check, AlertCircle, Sparkles } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
+// ─── Balloon animation styles ─────────────────────────────────────────────────
+const BALLOON_STYLES = `
+@keyframes floatUp {
+  0%   { transform: translateY(0) rotate(var(--r)); opacity: 0.95; }
+  100% { transform: translateY(-110vh) rotate(calc(var(--r) + 15deg)); opacity: 0; }
+}
+@keyframes sway {
+  0%, 100% { margin-left: 0; }
+  50%       { margin-left: var(--sway); }
+}
+.balloon {
+  position: absolute;
+  bottom: -10%;
+  animation:
+    floatUp var(--dur) var(--delay) linear forwards,
+    sway    calc(var(--dur) * 0.4) var(--delay) ease-in-out infinite alternate;
+  will-change: transform;
+}
+.balloon-body {
+  width: var(--size);
+  height: calc(var(--size) * 1.2);
+  border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+  background: var(--color);
+  position: relative;
+  box-shadow: inset -6px -6px 12px rgba(0,0,0,.12), inset 4px 4px 8px rgba(255,255,255,.35);
+}
+.balloon-knot {
+  width: 6px;
+  height: 6px;
+  background: var(--color);
+  border-radius: 50% 50% 0 0 / 60% 60% 0 0;
+  margin: 0 auto;
+}
+.balloon-string {
+  width: 1px;
+  height: 60px;
+  background: rgba(0,0,0,.2);
+  margin: 0 auto;
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-text { animation: fadeSlideUp .7s ease both; }
+.hero-text-2 { animation: fadeSlideUp .7s .15s ease both; }
+.hero-text-3 { animation: fadeSlideUp .7s .3s ease both; }
+.hero-btn   { animation: fadeSlideUp .7s .5s ease both; }
+`;
+
+const BALLOON_DATA = [
+  { color: '#F4A261', size: '56px', left: '8%',  dur: '7s',  delay: '0s',    sway: '18px', r: '-6deg' },
+  { color: '#E76F51', size: '44px', left: '22%', dur: '8.5s',delay: '0.4s',  sway: '-14px',r: '4deg'  },
+  { color: '#2A9D8F', size: '62px', left: '38%', dur: '6.8s',delay: '0.1s',  sway: '12px', r: '2deg'  },
+  { color: '#9B5DE5', size: '48px', left: '55%', dur: '9s',  delay: '0.6s',  sway: '-20px',r: '-3deg' },
+  { color: '#F72585', size: '52px', left: '70%', dur: '7.5s',delay: '0.2s',  sway: '16px', r: '5deg'  },
+  { color: '#F4D35E', size: '40px', left: '84%', dur: '8s',  delay: '0.8s',  sway: '-12px',r: '-7deg' },
+  { color: '#3A86FF', size: '58px', left: '92%', dur: '7.2s',delay: '0.35s', sway: '10px', r: '3deg'  },
+  { color: '#06D6A0', size: '46px', left: '14%', dur: '9.5s',delay: '1s',    sway: '-18px',r: '6deg'  },
+  { color: '#FF6B6B', size: '50px', left: '47%', dur: '7.8s',delay: '0.7s',  sway: '22px', r: '-4deg' },
+];
+
+// ─── Questions ────────────────────────────────────────────────────────────────
 const QUESTIONS = [
   {
     key: 'vibe',
-    label: "What's your ideal vibe for this?",
+    label: "What's your ideal vibe?",
+    hint: 'Pick everything that feels right',
     options: ['Intimate & low-key', 'Fun & energetic', 'Luxurious & indulgent', 'Wild & unpredictable', 'Adventurous & outdoorsy', 'Cultural & meaningful'],
     multi: true,
   },
   {
-    key: 'dealbreakers',
-    label: 'What would ruin it for you?',
-    options: ['Too many people', 'Anything too planned/rigid', 'Anything cheesy or generic', 'Being the centre of attention', 'Spending too much', 'Outdoors in bad weather'],
+    key: 'crowd',
+    label: "Who's going to be there?",
+    hint: 'Helps us plan the right atmosphere',
+    options: ['Close friends only', 'Mix of friends & family', 'Mostly family', 'Partner + a few friends', 'Large group (20+)', 'Just the two of us'],
     multi: true,
   },
   {
     key: 'musthaves',
-    label: "What's a must-have?",
+    label: "Non-negotiable must-haves?",
+    hint: 'Pick everything that applies',
     options: ['Great food', 'Good music', 'Dancing', 'Adventure / activity', 'Beautiful setting', 'Good wine / cocktails', 'Privacy', 'Surprises'],
     multi: true,
   },
   {
+    key: 'surprises',
+    label: 'How do you feel about surprises?',
+    hint: 'Be honest — we want to get this right',
+    options: ['I love them — the more the better', 'A few small surprises are nice', 'I prefer to know the plan', 'Please no surprises at all'],
+    multi: false,
+  },
+  {
+    key: 'duration',
+    label: 'Ideal celebration length?',
+    hint: 'Think about what would feel just right',
+    options: ['A few hours (dinner, drinks)', 'A full day out', 'A whole weekend away', 'Multiple days / a trip'],
+    multi: false,
+  },
+  {
+    key: 'dealbreakers',
+    label: 'What should we avoid?',
+    hint: 'Pick all that apply',
+    options: ['Too many people', 'Anything too planned/rigid', 'Anything cheesy or generic', 'Being the centre of attention', 'Spending too much', 'Outdoors in bad weather', 'Loud venues / clubs'],
+    multi: true,
+  },
+  {
+    key: 'dietary',
+    label: 'Any dietary or access needs?',
+    hint: 'So we can plan venues and food properly',
+    options: ['Vegetarian', 'Vegan', 'Gluten-free', 'Halal', 'Kosher', 'No alcohol', 'Wheelchair access needed', 'None'],
+    multi: true,
+    optional: true,
+  },
+  {
     key: 'budget',
-    label: 'Budget comfort zone per person?',
+    label: 'Your budget comfort zone per person?',
+    hint: 'Rough guide — no commitment',
     options: ['Under £100', '£100–£300', '£300–£600', '£600–£1,200', 'No limit'],
     multi: false,
   },
   {
     key: 'note',
-    label: 'Anything else you want the planner to know?',
+    label: 'Anything else the planner should know?',
+    hint: 'Dreams, ideas, things that matter to you',
     type: 'text',
+    optional: true,
   },
 ];
 
@@ -42,10 +139,87 @@ interface EventInfo {
   eventLocation: string | null;
 }
 
+// ─── Balloon scene ─────────────────────────────────────────────────────────────
+function BalloonScene() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      {BALLOON_DATA.map((b, i) => (
+        <div
+          key={i}
+          className="balloon"
+          style={{
+            left: b.left,
+            '--dur': b.dur,
+            '--delay': b.delay,
+            '--sway': b.sway,
+            '--r': b.r,
+            '--color': b.color,
+            '--size': b.size,
+          } as React.CSSProperties}
+        >
+          <div className="balloon-body" />
+          <div className="balloon-knot" />
+          <div className="balloon-string" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Intro screen ─────────────────────────────────────────────────────────────
+function IntroScreen({ eventInfo, onStart }: { eventInfo: EventInfo; onStart: () => void }) {
+  const occasion = eventInfo.eventType
+    ? eventInfo.eventType.charAt(0).toUpperCase() + eventInfo.eventType.slice(1)
+    : 'Celebration';
+
+  return (
+    <div className="relative min-h-[100dvh] flex flex-col items-center justify-center px-8 text-center overflow-hidden bg-background">
+      <BalloonScene />
+
+      <div className="relative z-10 flex flex-col items-center gap-4 max-w-xs">
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+          <Sparkles className="w-8 h-8 text-primary" />
+        </div>
+
+        <div className="hero-text">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-2">
+            You&apos;re being celebrated
+          </p>
+          <h1 className="font-serif text-3xl font-medium text-foreground leading-snug">
+            {eventInfo.eventTitle}
+          </h1>
+        </div>
+
+        <p className="hero-text-2 text-muted-foreground text-sm leading-relaxed">
+          Someone is planning a {occasion.toLowerCase()} just for you. Answer a few questions so they can make it perfect.
+        </p>
+
+        {eventInfo.eventDate && (
+          <p className="hero-text-3 text-xs text-muted-foreground/70 font-medium tracking-wide">
+            {eventInfo.eventDate}
+            {eventInfo.eventLocation ? ` · ${eventInfo.eventLocation}` : ''}
+          </p>
+        )}
+
+        <button
+          onClick={onStart}
+          className="hero-btn mt-4 w-full py-4 bg-primary text-primary-foreground rounded-full font-semibold text-base hover:bg-primary/90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
+        >
+          Let&apos;s go 🎉
+        </button>
+
+        <p className="hero-btn text-xs text-muted-foreground/50">Takes about 2 minutes</p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main component ────────────────────────────────────────────────────────────
 export function QuestionnairePage({ token }: { token: string }) {
   const [eventInfo, setEventInfo] = useState<EventInfo | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -88,12 +262,13 @@ export function QuestionnairePage({ token }: { token: string }) {
       });
       setSubmitted(true);
     } catch {
-      setSubmitted(true); // still show success — data may have saved
+      setSubmitted(true);
     } finally {
       setSubmitting(false);
     }
   };
 
+  // ── Error state ────────────────────────────────────────────────────────────
   if (loadError) return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center bg-background">
       <AlertCircle className="w-10 h-10 text-muted-foreground mb-4" />
@@ -102,96 +277,131 @@ export function QuestionnairePage({ token }: { token: string }) {
     </div>
   );
 
+  // ── Loading state ──────────────────────────────────────────────────────────
   if (!eventInfo) return (
     <div className="min-h-[100dvh] flex items-center justify-center bg-background">
       <Loader2 className="w-8 h-8 text-primary animate-spin" />
     </div>
   );
 
+  // ── Success state ──────────────────────────────────────────────────────────
   if (submitted) return (
-    <div className="min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center bg-background">
-      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-        <Check className="w-8 h-8 text-primary" />
+    <>
+      <style>{BALLOON_STYLES}</style>
+      <div className="relative min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center bg-background overflow-hidden">
+        <BalloonScene />
+        <div className="relative z-10 flex flex-col items-center gap-4 max-w-xs">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+            <Check className="w-8 h-8 text-primary" />
+          </div>
+          <h2 className="font-serif text-3xl">You&apos;re all set 🎊</h2>
+          <p className="text-muted-foreground leading-relaxed">
+            Your answers have been sent to the planner. Cele will use them to make this celebration feel like it was made for you.
+          </p>
+        </div>
       </div>
-      <h2 className="font-serif text-3xl mb-3">You're all set</h2>
-      <p className="text-muted-foreground max-w-sm leading-relaxed">
-        Your answers have been sent to the planner. Cele will use them to make this celebration feel like it was made for you.
-      </p>
-    </div>
+    </>
   );
 
+  // ── Intro screen ───────────────────────────────────────────────────────────
+  if (!started) return (
+    <>
+      <style>{BALLOON_STYLES}</style>
+      <IntroScreen eventInfo={eventInfo} onStart={() => setStarted(true)} />
+    </>
+  );
+
+  // ── Question step ──────────────────────────────────────────────────────────
   const chipAnswers = (answers[q.key] as string[]) ?? [];
   const textAnswer = (answers[q.key] as string) ?? '';
   const isLast = step === QUESTIONS.length - 1;
-  const canNext = q.type === 'text' ? true : chipAnswers.length > 0;
+  const hasAnswer = q.type === 'text' ? true : chipAnswers.length > 0;
+  const canNext = q.optional ? true : hasAnswer;
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-background">
-      {/* Header */}
-      <div className="px-6 pt-10 pb-6 border-b border-border/40">
-        <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-5 h-5 text-primary" />
-          <span className="font-serif text-xl font-medium">Cele</span>
-        </div>
-        <p className="text-sm text-muted-foreground mb-1">You're invited to share your preferences for</p>
-        <h1 className="font-serif text-2xl font-medium text-foreground">{eventInfo.eventTitle}</h1>
-        {eventInfo.eventDate && <p className="text-sm text-muted-foreground mt-1">{eventInfo.eventDate}</p>}
-      </div>
-
-      {/* Progress */}
-      <div className="px-6 pt-5">
-        <div className="flex gap-1 mb-6">
-          {QUESTIONS.map((_, i) => (
-            <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= step ? 'bg-primary' : 'bg-muted'}`} />
-          ))}
+    <>
+      <style>{BALLOON_STYLES}</style>
+      <div className="min-h-[100dvh] flex flex-col bg-background">
+        {/* Header */}
+        <div className="px-6 pt-8 pb-4 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span className="font-serif text-base font-medium text-foreground">Cele</span>
         </div>
 
-        <h2 className="text-lg font-medium text-foreground mb-4">{q.label}</h2>
-
-        {q.type === 'text' ? (
-          <textarea
-            value={textAnswer}
-            onChange={e => setAnswers(prev => ({ ...prev, [q.key]: e.target.value }))}
-            placeholder="Optional — anything specific you want them to know…"
-            rows={4}
-            className="w-full bg-card border border-border rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary resize-none leading-relaxed placeholder:text-muted-foreground/60"
-          />
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {q.options!.map(opt => {
-              const sel = chipAnswers.includes(opt);
-              return (
-                <button
-                  key={opt}
-                  onClick={() => toggleChip(q.key, opt, q.multi!)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                    sel ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-foreground hover:border-primary/40'
-                  }`}
-                >
-                  {opt}
-                </button>
-              );
-            })}
+        {/* Progress bar */}
+        <div className="px-6">
+          <div className="flex gap-1 mb-1">
+            {QUESTIONS.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= step ? 'bg-primary' : 'bg-muted'}`}
+              />
+            ))}
           </div>
-        )}
-      </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {step + 1} of {QUESTIONS.length}
+          </p>
+        </div>
 
-      {/* Footer */}
-      <div className="mt-auto px-6 py-8">
-        <button
-          onClick={next}
-          disabled={!canNext || submitting}
-          className="w-full py-3.5 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 disabled:opacity-40 transition-colors flex items-center justify-center gap-2"
-        >
-          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          {isLast ? 'Send my answers' : 'Next'}
-        </button>
-        {step > 0 && (
-          <button onClick={() => setStep(s => s - 1)} className="w-full mt-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Back
+        {/* Question */}
+        <div className="px-6 pt-6 flex-1">
+          <h2 className="font-serif text-2xl font-medium text-foreground mb-1 leading-snug">{q.label}</h2>
+          {q.hint && <p className="text-sm text-muted-foreground mb-5">{q.hint}</p>}
+
+          {q.type === 'text' ? (
+            <textarea
+              value={textAnswer}
+              onChange={e => setAnswers(prev => ({ ...prev, [q.key]: e.target.value }))}
+              placeholder="Optional — anything specific you want them to know…"
+              rows={5}
+              className="w-full bg-card border border-border rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary resize-none leading-relaxed placeholder:text-muted-foreground/60"
+            />
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {q.options!.map(opt => {
+                const sel = chipAnswers.includes(opt);
+                return (
+                  <button
+                    key={opt}
+                    onClick={() => toggleChip(q.key, opt, q.multi!)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium border transition-all active:scale-95 ${
+                      sel
+                        ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20'
+                        : 'bg-card border-border text-foreground hover:border-primary/50'
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {q.optional && !hasAnswer && (
+            <p className="text-xs text-muted-foreground mt-3 italic">Optional — skip if not applicable</p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-8 mt-auto">
+          <button
+            onClick={next}
+            disabled={!canNext || submitting}
+            className="w-full py-3.5 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 disabled:opacity-40 transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-primary/15"
+          >
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {isLast ? 'Send my answers 🎉' : 'Next →'}
           </button>
-        )}
+          {step > 0 && (
+            <button
+              onClick={() => setStep(s => s - 1)}
+              className="w-full mt-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← Back
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
