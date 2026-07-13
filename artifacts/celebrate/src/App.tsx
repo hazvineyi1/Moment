@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { ClerkProvider, SignIn, SignUp, Show, useClerk } from '@clerk/react';
+import { ClerkProvider, SignIn, SignUp, useClerk, useAuth } from '@clerk/react';
+import { Loader2 } from 'lucide-react';
 import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
@@ -113,32 +114,30 @@ function SignUpPage() {
   );
 }
 
+// ── Shared loading spinner ─────────────────────────────────────────────────
+function AuthLoading() {
+  return (
+    <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+      <Loader2 className="w-7 h-7 text-primary animate-spin" />
+    </div>
+  );
+}
+
 // ── Landing / home redirect ────────────────────────────────────────────────
 function HomeRoute() {
-  return (
-    <>
-      <Show when="signed-in">
-        <AppLayout><Home /></AppLayout>
-      </Show>
-      <Show when="signed-out">
-        <LandingPage />
-      </Show>
-    </>
-  );
+  const { isLoaded, isSignedIn } = useAuth();
+  if (!isLoaded) return <AuthLoading />;
+  return isSignedIn
+    ? <AppLayout><Home /></AppLayout>
+    : <LandingPage />;
 }
 
 // Protected route wrapper
 function Protected({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Show when="signed-in">
-        <AppLayout>{children}</AppLayout>
-      </Show>
-      <Show when="signed-out">
-        <Redirect to="/sign-in" />
-      </Show>
-    </>
-  );
+  const { isLoaded, isSignedIn } = useAuth();
+  if (!isLoaded) return <AuthLoading />;
+  if (!isSignedIn) return <Redirect to="/sign-in" />;
+  return <AppLayout>{children}</AppLayout>;
 }
 
 // Simple landing for unauthenticated visitors
