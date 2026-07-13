@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { useAuth } from '@clerk/react';
-import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent } from '@workspace/api-client-react';
+import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent, useDeleteEvent } from '@workspace/api-client-react';
 import {
   MessageSquare, Users, Sparkles, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
@@ -429,6 +429,40 @@ export function EventHub() {
     query: { enabled: !!id, queryKey: ['events', id, 'guests'] },
   });
 
+  const updateEvent = useUpdateEvent();
+  const deleteEvent = useDeleteEvent();
+
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [actionBusy, setActionBusy] = useState(false);
+
+  const handleResetPlan = () => {
+    if (actionBusy) return;
+    setActionBusy(true);
+    const desc = event?.description ?? '';
+    const planIdx = desc.indexOf(PLAN_MARKER);
+    const newDesc = planIdx !== -1 ? desc.slice(0, planIdx).trimEnd() : desc;
+    updateEvent.mutate(
+      { eventId: id, data: { description: newDesc } },
+      {
+        onSuccess: () => { setActionBusy(false); setConfirmReset(false); setLocation(`/events/${eventId}/options`); },
+        onError: () => { setActionBusy(false); },
+      }
+    );
+  };
+
+  const handleDeleteEvent = () => {
+    if (actionBusy) return;
+    setActionBusy(true);
+    deleteEvent.mutate(
+      { eventId: id },
+      {
+        onSuccess: () => { setActionBusy(false); setLocation('/'); },
+        onError: () => { setActionBusy(false); },
+      }
+    );
+  };
+
   if (eventLoading || summaryLoading) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[60vh]">
@@ -603,6 +637,86 @@ export function EventHub() {
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
             ))}
+          </div>
+
+          {/* Danger zone */}
+          <div className="border border-destructive/20 rounded-2xl overflow-hidden">
+            <div className="px-5 py-3 bg-destructive/5 border-b border-destructive/20">
+              <p className="text-xs font-medium text-destructive/70 uppercase tracking-wide">Danger zone</p>
+            </div>
+            <div className="divide-y divide-border/50">
+              {/* Reset plan */}
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium">Reset plan</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Remove the chosen plan and pick a new one from options.</p>
+                  </div>
+                  {!confirmReset ? (
+                    <button
+                      onClick={() => { setConfirmReset(true); setConfirmDelete(false); }}
+                      className="flex-shrink-0 px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:border-destructive/50 hover:text-destructive transition-colors"
+                    >
+                      Reset
+                    </button>
+                  ) : (
+                    <div className="flex gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => setConfirmReset(false)}
+                        disabled={actionBusy}
+                        className="px-3 py-1.5 text-xs border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-40"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleResetPlan}
+                        disabled={actionBusy}
+                        className="px-3 py-1.5 text-xs font-medium bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-40 flex items-center gap-1"
+                      >
+                        {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                        Confirm
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Delete event */}
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium">Delete event</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Permanently remove this event and all its data.</p>
+                  </div>
+                  {!confirmDelete ? (
+                    <button
+                      onClick={() => { setConfirmDelete(true); setConfirmReset(false); }}
+                      className="flex-shrink-0 px-3 py-1.5 text-xs font-medium border border-destructive/40 text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    <div className="flex gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => setConfirmDelete(false)}
+                        disabled={actionBusy}
+                        className="px-3 py-1.5 text-xs border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-40"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleDeleteEvent}
+                        disabled={actionBusy}
+                        className="px-3 py-1.5 text-xs font-medium bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-40 flex items-center gap-1"
+                      >
+                        {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                        Delete forever
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
