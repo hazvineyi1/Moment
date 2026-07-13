@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'wouter';
+import { useAuth } from '@clerk/react';
 import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent } from '@workspace/api-client-react';
 import {
   MessageSquare, Users, Sparkles, MapPin, Calendar as CalendarIcon,
@@ -250,14 +251,19 @@ function CostEstimateWidget({ eventId }: { eventId: number }) {
   const [data, setData] = useState<CostData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const { getToken } = useAuth();
 
   const fetch_ = async () => {
     setLoading(true);
     setError(false);
     try {
+      const token = await getToken();
       const res = await fetch(`/api/events/${eventId}/cost-estimate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
       if (!res.ok) throw new Error('Failed');
       setData(await res.json());
@@ -582,6 +588,7 @@ export function EventHub() {
           <div className="space-y-2">
             {[
               { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with Cele', color: 'bg-primary/10 text-primary', href: `plan` },
+              { icon: <Sparkles className="w-5 h-5" />, label: 'View / change plan options', color: 'bg-accent/20 text-foreground', href: `options` },
               { icon: <Users className="w-5 h-5" />, label: 'Manage Guests', color: 'bg-muted text-muted-foreground', href: `guests` },
             ].map((item) => (
               <button

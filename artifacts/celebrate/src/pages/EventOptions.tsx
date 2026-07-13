@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useGetEvent, useUpdateEvent } from '@workspace/api-client-react';
-import { ArrowRight, ChevronDown, ChevronUp, Sparkles, MapPin, Clock, Users } from 'lucide-react';
+import { useAuth } from '@clerk/react';
+import { ArrowRight, ChevronDown, ChevronUp, Sparkles, MapPin, Clock, Users, RefreshCw } from 'lucide-react';
 
 interface PlanOption {
   id: string;
@@ -180,6 +181,7 @@ export function EventOptions() {
   const id = parseInt(eventId, 10);
 
   const { data: event } = useGetEvent(id, { query: { enabled: !!id } });
+  const { getToken } = useAuth();
 
   const updateEvent = useUpdateEvent();
 
@@ -194,8 +196,12 @@ export function EventOptions() {
     setError('');
     setOptions(null);
     try {
+      const token = await getToken();
       const url = `/api/events/${id}/plan-options${force ? '?force=true' : ''}`;
-      const res = await fetch(url, { method: 'POST' });
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? `HTTP ${res.status}`);
@@ -286,12 +292,12 @@ export function EventOptions() {
               ))}
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="mt-8 flex justify-center">
               <button
                 onClick={handleRetry}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
+                className="flex items-center gap-2 px-6 py-3 border border-border rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
               >
-                None of these feel right — show me different options
+                <RefreshCw className="w-4 h-4" /> None of these — show me different options
               </button>
             </div>
           </>
