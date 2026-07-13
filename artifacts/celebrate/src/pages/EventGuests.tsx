@@ -3,8 +3,27 @@ import { useParams, Link } from 'wouter';
 import { useListGuests, useAddGuest, useDeleteGuest, useUpdateGuest } from '@workspace/api-client-react';
 import {
   Users, Plus, ChevronLeft, Loader2, Trash2, Check, X, Phone, Mail, AlertCircle,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, Copy, Link2,
 } from 'lucide-react';
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+/* ─── Guest personality archetypes ─────────────────────────────────── */
+const GUEST_ARCHETYPES = [
+  { id: 'energiser',       emoji: '🔥', label: 'Energiser'       },
+  { id: 'flow',            emoji: '🌊', label: 'The Flow'         },
+  { id: 'grounding',       emoji: '🌿', label: 'Steady'           },
+  { id: 'wild-card',       emoji: '⚡', label: 'Wild Card'        },
+  { id: 'life-of-party',   emoji: '🎤', label: 'Life of party'    },
+  { id: 'connector',       emoji: '🤝', label: 'Connector'        },
+  { id: 'deep-talker',     emoji: '💬', label: 'Deep talker'      },
+  { id: 'observer',        emoji: '👀', label: 'Observer'         },
+  { id: 'spontaneous',     emoji: '🎲', label: 'Spontaneous'      },
+  { id: 'planner',         emoji: '📋', label: 'The Planner'      },
+  { id: 'luxe-lover',      emoji: '💅', label: 'Luxe lover'       },
+  { id: 'adventure-first', emoji: '🥾', label: 'Adventurer'       },
+  { id: 'here-for-laughs', emoji: '😂', label: 'Here for laughs'  },
+];
 
 /* ─── RSVP status badge ─────────────────────────────────────────────── */
 function RsvpBadge({ status }: { status: string }) {
@@ -34,13 +53,37 @@ function GuestCard({
     rsvpStatus: string;
     dietaryNeeds?: string | null;
     notes?: string | null;
+    personality?: string | null;
+    questionnaireToken?: string | null;
   };
   eventId: number;
   onDelete: (id: number) => void;
   onRefetch: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const updateGuest = useUpdateGuest();
+
+  let parsedPersonality: {
+    archetypes?: string[];
+    selfProfile?: { archetypes?: string[]; mustHaves?: string[]; dealbreakers?: string[]; dietary?: string };
+  } | null = null;
+  try { if (guest.personality) parsedPersonality = JSON.parse(guest.personality); } catch {}
+
+  const hostTags = parsedPersonality?.archetypes ?? [];
+  const selfTags = parsedPersonality?.selfProfile?.archetypes ?? [];
+  const hasTags = hostTags.length > 0 || selfTags.length > 0;
+
+  const questionnaireUrl = guest.questionnaireToken
+    ? `${window.location.origin}${BASE}/gq/${guest.questionnaireToken}`
+    : null;
+
+  const handleCopyLink = () => {
+    if (!questionnaireUrl) return;
+    navigator.clipboard.writeText(questionnaireUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const initials = guest.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 
@@ -113,6 +156,66 @@ function GuestCard({
               <p className="text-sm text-muted-foreground italic">"{guest.notes}"</p>
             )}
 
+            {/* Personality tags */}
+            {hasTags && (
+              <div className="flex flex-wrap gap-1.5">
+                {hostTags.map(id => {
+                  const a = GUEST_ARCHETYPES.find(x => x.id === id);
+                  return a ? (
+                    <span key={id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                      {a.emoji} {a.label}
+                    </span>
+                  ) : null;
+                })}
+                {selfTags.map(id => {
+                  const a = GUEST_ARCHETYPES.find(x => x.id === id);
+                  return a ? (
+                    <span key={"self-" + id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-foreground/80 text-xs font-medium border border-border/50">
+                      {a.emoji} {a.label}
+                    </span>
+                  ) : null;
+                })}
+                {selfTags.length > 0 && (
+                  <span className="text-xs text-muted-foreground self-center">(self)</span>
+                )}
+              </div>
+            )}
+
+            {/* Self-assessment summary */}
+            {parsedPersonality?.selfProfile && (
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                {parsedPersonality.selfProfile.mustHaves && parsedPersonality.selfProfile.mustHaves.length > 0 && (
+                  <p>Needs: {parsedPersonality.selfProfile.mustHaves.join(", ")}</p>
+                )}
+                {parsedPersonality.selfProfile.dealbreakers && parsedPersonality.selfProfile.dealbreakers.length > 0 && (
+                  <p>Avoid: {parsedPersonality.selfProfile.dealbreakers.join(", ")}</p>
+                )}
+                {parsedPersonality.selfProfile.dietary && (
+                  <p>Dietary: {parsedPersonality.selfProfile.dietary}</p>
+                )}
+              </div>
+            )}
+
+            {/* Questionnaire link */}
+            {questionnaireUrl && (
+              <div className="pt-2 border-t border-border/40">
+                <p className="text-xs text-muted-foreground mb-1.5">
+                  {parsedPersonality?.selfProfile ? '✓ Guest has completed their profile' : 'Share this link with the guest'}
+                </p>
+                <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2">
+                  <Link2 className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-xs text-muted-foreground font-mono truncate flex-1">/gq/{guest.questionnaireToken?.slice(0, 8)}…</span>
+                  <button
+                    onClick={handleCopyLink}
+                    className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80 transition-colors flex-shrink-0"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex items-center gap-2 pt-1">
               <button
@@ -171,16 +274,24 @@ function AddGuestDrawer({
   const [email, setEmail] = useState('');
   const [dietary, setDietary] = useState('');
   const [notes, setNotes] = useState('');
+  const [selectedArchetypes, setSelectedArchetypes] = useState<string[]>([]);
   const addGuest = useAddGuest();
+
+  const toggleArchetype = (id: string) =>
+    setSelectedArchetypes(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
 
   const handleSubmit = () => {
     if (!name.trim()) return;
+    const personalityJson = selectedArchetypes.length > 0
+      ? JSON.stringify({ archetypes: selectedArchetypes })
+      : undefined;
     addGuest.mutate({
       eventId,
       data: {
         name: name.trim(),
         whatsapp: whatsapp || undefined,
         email: email || undefined,
+        personality: personalityJson,
         dietaryNeeds: dietary && dietary !== 'None' ? dietary : undefined,
         notes: notes || undefined,
       },
@@ -228,6 +339,33 @@ function AddGuestDrawer({
             onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-transparent border border-border rounded-xl px-4 py-3 focus:border-primary outline-none"
           />
+
+          <div>
+            <p className="text-sm font-medium mb-1.5">How would you describe them? <span className="text-muted-foreground font-normal">(optional)</span></p>
+            <p className="text-xs text-muted-foreground mb-2.5">Cele uses this for seating, pairings, and activity design.</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {GUEST_ARCHETYPES.map(a => (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => toggleArchetype(a.id)}
+                  className={"relative p-2.5 rounded-xl border text-left transition-all " + (
+                    selectedArchetypes.includes(a.id)
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border/60 hover:border-primary/40 bg-background'
+                  )}
+                >
+                  {selectedArchetypes.includes(a.id) && (
+                    <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                      <Check className="w-2 h-2" />
+                    </span>
+                  )}
+                  <div className="text-lg mb-0.5">{a.emoji}</div>
+                  <div className="font-medium text-xs leading-tight">{a.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div>
             <p className="text-sm font-medium mb-2">Dietary needs</p>

@@ -355,6 +355,7 @@ export const ListGuestsResponseItem = zod.object({
   "whatsapp": zod.string().nullish(),
   "rsvpStatus": zod.string().describe('pending, confirmed, declined'),
   "personality": zod.string().nullish().describe('JSON-encoded personality traits'),
+  "questionnaireToken": zod.string().nullish(),
   "dietaryNeeds": zod.string().nullish(),
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()
@@ -388,6 +389,7 @@ export const AddGuestResponse = zod.object({
   "whatsapp": zod.string().nullish(),
   "rsvpStatus": zod.string().describe('pending, confirmed, declined'),
   "personality": zod.string().nullish().describe('JSON-encoded personality traits'),
+  "questionnaireToken": zod.string().nullish(),
   "dietaryNeeds": zod.string().nullish(),
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()
@@ -411,6 +413,7 @@ export const GetGuestResponse = zod.object({
   "whatsapp": zod.string().nullish(),
   "rsvpStatus": zod.string().describe('pending, confirmed, declined'),
   "personality": zod.string().nullish().describe('JSON-encoded personality traits'),
+  "questionnaireToken": zod.string().nullish(),
   "dietaryNeeds": zod.string().nullish(),
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()
@@ -445,6 +448,7 @@ export const UpdateGuestResponse = zod.object({
   "whatsapp": zod.string().nullish(),
   "rsvpStatus": zod.string().describe('pending, confirmed, declined'),
   "personality": zod.string().nullish().describe('JSON-encoded personality traits'),
+  "questionnaireToken": zod.string().nullish(),
   "dietaryNeeds": zod.string().nullish(),
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
-import { db, eventsTable } from "@workspace/db";
+import { db, eventsTable, guestsTable } from "@workspace/db";
 import { openai, withTimeout } from "../lib/ai";
 import { requireAuth } from "../middlewares/requireAuth";
 
@@ -81,8 +81,36 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     ? event.description.split(OPTIONS_MARKER)[0].trim()
     : null;
 
+  // Extract age range from description
+  const ageMarker = "__AGE__:";
+  let ageContext: string | null = null;
+  if (event.description) {
+    const ageIdx = event.description.indexOf(ageMarker);
+    if (ageIdx !== -1) {
+      ageContext = event.description.slice(ageIdx + ageMarker.length).split("\n")[0].trim() || null;
+    }
+  }
+
+  // Fetch guest profiles
+  const guests = await db.select().from(guestsTable).where(eq(guestsTable.eventId, eventId));
+  let guestProfilesText: string | null = null;
+  if (guests.length > 0) {
+    const profiles = guests.map((g) => {
+      let p: any = null;
+      try { if (g.personality) p = JSON.parse(g.personality); } catch {}
+      const parts: string[] = [g.name];
+      if (p?.archetypes?.length) parts.push(p.archetypes.join(", "));
+      if (p?.selfProfile?.archetypes?.length) parts.push(`self: ${p.selfProfile.archetypes.join(", ")}`);
+      if (p?.selfProfile?.dealbreakers?.length) parts.push(`avoid: ${p.selfProfile.dealbreakers.join(", ")}`);
+      if (g.dietaryNeeds) parts.push(`dietary: ${g.dietaryNeeds}`);
+      return parts.join(" | ");
+    });
+    guestProfilesText = profiles.join("; ");
+  }
+
   const eventCtx = [
     `Occasion/type: ${event.type}`,
+    ageContext ? `Celebrant age range: ${ageContext}` : null,
     event.location ? `Preferred area: ${event.location}` : null,
     event.isInternational ? "Open to international destinations: yes" : "Prefers domestic/local",
     event.budget ? `Budget tier: ${event.budget}` : null,
@@ -90,9 +118,12 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     event.startDate ? `Target date: ${event.startDate}` : null,
     event.endDate ? `End date: ${event.endDate}` : null,
     descForAI ? `Additional context: ${descForAI}` : null,
+    guestProfilesText ? `Guest personalities: ${guestProfilesText}` : null,
   ].filter(Boolean).join("\n");
 
   const system = `You are Cele — a world-class celebration curator. Generate exactly 6 distinct, opinionated, specific plan proposals for a group celebration. Each option must feel meaningfully different from the others in destination, price tier, and character. Be specific: name real venues, real neighborhoods, real properties that actually exist.
+
+When guest personality profiles or a celebrant age are provided, use them to inform each plan's character, pacing, and activity mix. The whyThisWorks field must reference the group's specific personality mix or the celebrant's age/vibe — never be generic.
 
 Respond with a JSON object containing an "options" array of exactly 6 objects, each with this exact shape:
 {
@@ -109,7 +140,7 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
   "vibe": "<one or two words — e.g. Intimate luxury, Wild and remote, Urban sophistication>"
 }`;
 
-  const prompt = `EVENT CONTEXT:\n${eventCtx}\n\nGenerate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation, not a generic template.`;
+  const prompt = `EVENT CONTEXT:\n${eventCtx}\n\nGenerate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation tailored to this specific group's personality mix.`;
 
   const AI_TIMEOUT_MS = 45_000;
 

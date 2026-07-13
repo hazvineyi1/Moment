@@ -24,6 +24,8 @@ export interface Guest {
      */
   personality?: string | null;
   /** @nullable */
+  questionnaireToken?: string | null;
+  /** @nullable */
   dietaryNeeds?: string | null;
   /** @nullable */
   notes?: string | null;

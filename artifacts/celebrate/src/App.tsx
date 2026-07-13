@@ -17,6 +17,7 @@ import { EventOptions } from '@/pages/EventOptions';
 import { EventChat } from '@/pages/EventChat';
 import { EventGuests } from '@/pages/EventGuests';
 import { QuestionnairePage } from '@/pages/QuestionnairePage';
+import { GuestQuestionnairePage } from '@/pages/GuestQuestionnairePage';
 import { ShareQuestionnaire } from '@/pages/ShareQuestionnaire';
 
 // ── Clerk setup ────────────────────────────────────────────────────────────
@@ -213,8 +214,9 @@ function AppRouter() {
             <Route path="/" component={HomeRoute} />
             <Route path="/sign-in/*?" component={SignInPage} />
             <Route path="/sign-up/*?" component={SignUpPage} />
-            {/* Public questionnaire — no auth */}
+            {/* Public questionnaires — no auth */}
             <Route path="/q/:token">{(p) => <QuestionnairePage token={p.token} />}</Route>
+            <Route path="/gq/:token" component={GuestQuestionnairePage} />
             {/* Protected app routes */}
             <Route path="/events/new">{() => <Protected><NewEvent /></Protected>}</Route>
             <Route path="/events/:eventId/share">{(p) => <Protected><ShareQuestionnaire eventId={p.eventId} /></Protected>}</Route>

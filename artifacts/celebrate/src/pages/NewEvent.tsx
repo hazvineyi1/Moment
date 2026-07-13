@@ -70,6 +70,8 @@ const DEALBREAKERS = [
   { id: 'early-mornings',            label: 'Early mornings' },
 ];
 
+const AGE_RANGES = ['Under 21', '21–29', '30s', '40s', '50s', '60s', '70+'];
+
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -138,6 +140,8 @@ export function NewEvent() {
   const [celebrantName, setCelebrantName] = useState('');
   const [occasion, setOccasion] = useState('');
 
+  const [celebrantAge, setCelebrantAge] = useState('');
+
   // ── Step 1 state
   const [experiences, setExperiences] = useState<string[]>([]);
   const [vibes, setVibes] = useState<string[]>([]);
@@ -194,6 +198,11 @@ export function NewEvent() {
     } else if (dateType === 'flexible' && (flexMonth || flexDuration)) {
       lines.push('__DATE_TYPE__:flexible');
       lines.push(`__DATE_FLEXIBLE__:${JSON.stringify({ month: flexMonth, duration: flexDuration })}`);
+    }
+
+    // Age / age range
+    if (celebrantAge) {
+      lines.push(`__AGE__:${celebrantAge}`);
     }
 
     // Personality (myself path)
@@ -301,6 +310,25 @@ export function NewEvent() {
                   <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                     After creating the event you can send them a short questionnaire — their answers feed straight into Cele.
                   </p>
+                </div>
+              )}
+
+              {planningFor && (
+                <div className="mt-6 max-w-sm animate-in fade-in duration-300">
+                  <label className="text-sm font-medium text-muted-foreground block mb-3">
+                    {planningFor === 'myself' ? 'Your age range' : 'Their age range'}{' '}
+                    <span className="font-normal">(optional — shapes every recommendation)</span>
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {AGE_RANGES.map(r => (
+                      <Pill
+                        key={r}
+                        label={r}
+                        selected={celebrantAge === r}
+                        onClick={() => setCelebrantAge(celebrantAge === r ? '' : r)}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

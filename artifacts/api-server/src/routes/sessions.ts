@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and, count } from "drizzle-orm";
-import { db, eventsTable, planningSessionsTable, messagesTable } from "@workspace/db";
+import { db, eventsTable, planningSessionsTable, messagesTable, guestsTable } from "@workspace/db";
 import { requireAuth } from "../middlewares/requireAuth";
 import {
   ListSessionsParams,
@@ -52,14 +52,17 @@ function parseDescription(description: string | null): {
   baseNotes: string;
   hostContext: string | null;
   chosenPlan: Record<string, unknown> | null;
-  planningFor: string | null;      // "myself" | "someone" | "someone:Name"
-  dateType: string | null;         // "fixed" | "flexible"
+  planningFor: string | null;
+  dateType: string | null;
   dateFlexible: { month?: string; duration?: string } | null;
   personality: { travelStyle?: string; dealbreakers?: string[] } | null;
+  age: string | null;
+  celebrantAnswers: Record<string, string> | null;
 } {
   if (!description) return {
     baseNotes: "", hostContext: null, chosenPlan: null,
     planningFor: null, dateType: null, dateFlexible: null, personality: null,
+    age: null, celebrantAnswers: null,
   };
 
   const PLAN_MARKER = "__CHOSEN_PLAN__:";
@@ -103,23 +106,32 @@ function parseDescription(description: string | null): {
     try { personality = JSON.parse(persRaw); } catch {}
   }
 
+  const age = extractMarkerLine(description, "__AGE__:");
+
+  let celebrantAnswers: Record<string, string> | null = null;
+  const celebrantRaw = extractMarkerLine(description, "__CELEBRANT__:");
+  if (celebrantRaw) {
+    try { celebrantAnswers = JSON.parse(celebrantRaw); } catch {}
+  }
+
   // Strip all markers from baseNotes
-  const markerPrefixes = [PF_MARKER, DT_MARKER, DF_MARKER, PERS_MARKER, "__PLAN_OPTIONS__:", "__Q_TOKEN__:"];
+  const markerPrefixes = [PF_MARKER, DT_MARKER, DF_MARKER, PERS_MARKER, "__PLAN_OPTIONS__:", "__Q_TOKEN__:", "__AGE__:", "__CELEBRANT__:"];
   let baseNotes = remaining;
   for (const m of markerPrefixes) {
     const idx = baseNotes.indexOf(m);
     if (idx !== -1) baseNotes = baseNotes.slice(0, idx).trim();
   }
 
-  return { baseNotes, hostContext, chosenPlan, planningFor, dateType, dateFlexible, personality };
+  return { baseNotes, hostContext, chosenPlan, planningFor, dateType, dateFlexible, personality, age, celebrantAnswers };
 }
 
 function buildSystemPrompt(
   event: typeof eventsTable.$inferSelect,
-  messageCount: number
+  messageCount: number,
+  guests: Array<typeof guestsTable.$inferSelect> = []
 ): string {
 
-  const { baseNotes, hostContext, chosenPlan, planningFor, dateType, dateFlexible, personality } = parseDescription(event.description);
+  const { baseNotes, hostContext, chosenPlan, planningFor, dateType, dateFlexible, personality, age, celebrantAnswers } = parseDescription(event.description);
 
   // ── Date context
   let dateContext: string | null = null;
@@ -145,9 +157,37 @@ function buildSystemPrompt(
     planningForContext = `The planner is organising this for someone else named ${name}. ${name} may or may not know the full plan yet.`;
   }
 
+  // Celebrant questionnaire answers
+  let celebrantContext: string | null = null;
+  if (celebrantAnswers && Object.keys(celebrantAnswers).length > 0) {
+    const parts = Object.entries(celebrantAnswers)
+      .filter(([, v]) => v && String(v).trim())
+      .map(([k, v]) => `  ${k}: ${v}`);
+    if (parts.length) celebrantContext = parts.join("\n");
+  }
+
+  // Guest profiles from personality JSON
+  let guestProfilesText: string | null = null;
+  if (guests.length > 0) {
+    const profiles = guests.map((g) => {
+      let p: any = null;
+      try { if (g.personality) p = JSON.parse(g.personality); } catch {}
+      const parts: string[] = [g.name];
+      const hostTags: string[] = p?.archetypes ?? [];
+      if (hostTags.length) parts.push(`tagged: ${hostTags.join(", ")}`);
+      if (p?.selfProfile?.archetypes?.length) parts.push(`self: ${p.selfProfile.archetypes.join(", ")}`);
+      if (p?.selfProfile?.mustHaves?.length) parts.push(`needs: ${p.selfProfile.mustHaves.join(", ")}`);
+      if (p?.selfProfile?.dealbreakers?.length) parts.push(`avoid: ${p.selfProfile.dealbreakers.join(", ")}`);
+      if (g.dietaryNeeds) parts.push(`dietary: ${g.dietaryNeeds}`);
+      return `  ${parts.join(" | ")}`;
+    });
+    guestProfilesText = profiles.join("\n");
+  }
+
   const eventContext = [
     `Celebration type: ${event.type}`,
     `Title: "${event.title}"`,
+    age ? `Celebrant age range: ${age}` : null,
     event.location ? `Location: ${event.location}` : null,
     event.isInternational ? "Open to international options: yes" : null,
     dateContext,
@@ -174,7 +214,7 @@ Tagline: ${(chosenPlan as any).tagline ?? ""}`
 
   const isFirstMessage = messageCount === 0;
 
-  return `You are Cele — a world-class celebration curator, travel broker, personal psychologist, and project organizer rolled into one. Think of yourself as the Ritz-Carlton concierge who also happens to be the host's most well-traveled and emotionally intelligent friend, a quietly brilliant therapist, and a Wrike-level planner.
+  return `You are Cele — a world-class celebration curator, travel broker, personal psychologist, and group-dynamics expert rolled into one. Think of yourself as the Ritz-Carlton concierge who also happens to be the host's most well-traveled and emotionally intelligent friend, a quietly brilliant therapist, and a Wrike-level planner.
 
 Your personality:
 - Warm, specific, and a little witty. You banter naturally. You surprise people with how well you understand them before they say it.
@@ -205,6 +245,16 @@ ${planningForContext ? `\nPLANNING CONTEXT:\n${planningForContext}` : ""}${
           ? `\nDealbreakers: ${personality.dealbreakers!.join(", ")}`
           : ""
       }`
+    : ""
+}
+
+${
+  celebrantContext
+    ? `\nCELEBRANT'S OWN ANSWERS (from their questionnaire — weight these heavily):\n${celebrantContext}`
+    : ""
+}${
+  guestProfilesText
+    ? `\n\nGUEST PROFILES (use for seating, pairings, activity and accommodation recommendations):\n${guestProfilesText}`
     : ""
 }
 
@@ -256,13 +306,15 @@ router.post("/events/:eventId/sessions", requireAuth, async (req, res): Promise<
   const [event] = await db.select().from(eventsTable).where(eq(eventsTable.id, params.data.eventId));
   if (!event) { res.status(404).json({ error: "Event not found" }); return; }
 
+  const guests = await db.select().from(guestsTable).where(eq(guestsTable.eventId, params.data.eventId));
+
   const [session] = await db.insert(planningSessionsTable).values({
     eventId: params.data.eventId,
     title: parsed.data.title,
     focus: parsed.data.focus,
   }).returning();
 
-  const systemPrompt = buildSystemPrompt(event, 0);
+  const systemPrompt = buildSystemPrompt(event, 0, guests);
 
   const opening = await chatWithAI(
     [{ role: "user", content: `Start planning session. Focus: ${parsed.data.focus ?? "general"}` }],
@@ -331,6 +383,7 @@ router.post("/events/:eventId/sessions/:sessionId/messages", requireAuth, async 
   if (!session) { res.status(404).json({ error: "Session not found" }); return; }
 
   const [event] = await db.select().from(eventsTable).where(eq(eventsTable.id, params.data.eventId));
+  const guests = await db.select().from(guestsTable).where(eq(guestsTable.eventId, params.data.eventId));
 
   const [userMsg] = await db.insert(messagesTable).values({
     sessionId: params.data.sessionId,
@@ -344,7 +397,7 @@ router.post("/events/:eventId/sessions/:sessionId/messages", requireAuth, async 
     .where(eq(messagesTable.sessionId, params.data.sessionId))
     .orderBy(messagesTable.createdAt);
 
-  const systemPrompt = buildSystemPrompt(event!, history.length);
+  const systemPrompt = buildSystemPrompt(event!, history.length, guests);
 
   const aiMessages = history.map((m) => ({
     role: m.role as "user" | "assistant",

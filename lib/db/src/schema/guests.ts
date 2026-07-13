@@ -12,6 +12,7 @@ export const guestsTable = pgTable("guests", {
   whatsapp: text("whatsapp"),
   rsvpStatus: text("rsvp_status").notNull().default("pending"),
   personality: text("personality"),
+  questionnaireToken: text("questionnaire_token"),
   dietaryNeeds: text("dietary_needs"),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

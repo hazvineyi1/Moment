@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { db, guestsTable, eventsTable } from "@workspace/db";
 import { requireAuth } from "../middlewares/requireAuth";
 import {
@@ -31,6 +32,7 @@ function mapGuest(g: typeof guestsTable.$inferSelect) {
     whatsapp: g.whatsapp ?? null,
     rsvpStatus: g.rsvpStatus,
     personality: g.personality ?? null,
+    questionnaireToken: g.questionnaireToken ?? null,
     dietaryNeeds: g.dietaryNeeds ?? null,
     notes: g.notes ?? null,
     createdAt: g.createdAt.toISOString(),
@@ -62,6 +64,7 @@ router.post("/events/:eventId/guests", requireAuth, async (req, res): Promise<vo
     phone: data.phone,
     whatsapp: data.whatsapp,
     personality: data.personality,
+    questionnaireToken: randomUUID(),
     dietaryNeeds: data.dietaryNeeds,
     notes: data.notes,
   }).returning();
