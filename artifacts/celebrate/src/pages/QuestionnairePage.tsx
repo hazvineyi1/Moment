@@ -392,14 +392,22 @@ export function QuestionnairePage({ token }: { token: string }) {
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             {isLast ? 'Send my answers 🎉' : 'Next →'}
           </button>
-          {step > 0 && (
+          <div className="flex items-center justify-between mt-3">
+            {step > 0 ? (
+              <button
+                onClick={() => setStep(s => s - 1)}
+                className="py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                ← Back
+              </button>
+            ) : <span />}
             <button
-              onClick={() => setStep(s => s - 1)}
-              className="w-full mt-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => { setStep(0); setAnswers({}); setStarted(false); }}
+              className="py-2 text-sm text-muted-foreground/50 hover:text-muted-foreground transition-colors"
             >
-              ← Back
+              Reset
             </button>
-          )}
+          </div>
         </div>
       </div>
     </>
