@@ -7,6 +7,7 @@ import guestsRouter from "./guests";
 import suggestionsRouter from "./suggestions";
 import invitesRouter from "./invites";
 import costsRouter from "./costs";
+import optionsRouter from "./options";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(guestsRouter);
 router.use(suggestionsRouter);
 router.use(invitesRouter);
 router.use(costsRouter);
+router.use(optionsRouter);
 
 export default router;

@@ -9,6 +9,7 @@ import { AppLayout } from '@/components/Layout';
 import { Home } from '@/pages/Home';
 import { NewEvent } from '@/pages/NewEvent';
 import { EventHub } from '@/pages/EventHub';
+import { EventOptions } from '@/pages/EventOptions';
 import { EventChat } from '@/pages/EventChat';
 import { EventGuests } from '@/pages/EventGuests';
 import { EventDiscover } from '@/pages/EventDiscover';
@@ -32,6 +33,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/events/new" component={NewEvent} />
         <Route path="/events/:eventId" component={EventHub} />
+        <Route path="/events/:eventId/options" component={EventOptions} />
         <Route path="/events/:eventId/plan" component={EventChat} />
         <Route path="/events/:eventId/guests" component={EventGuests} />
         <Route path="/events/:eventId/discover" component={EventDiscover} />
