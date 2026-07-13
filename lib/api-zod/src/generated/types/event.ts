@@ -29,4 +29,6 @@ export interface Event {
   /** @nullable */
   coverImage?: string | null;
   createdAt: Date;
+  /** @nullable */
+  questionnaireToken?: string | null;
 }

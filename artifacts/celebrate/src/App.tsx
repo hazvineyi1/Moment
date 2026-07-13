@@ -18,6 +18,7 @@ import { EventGuests } from '@/pages/EventGuests';
 import { EventDiscover } from '@/pages/EventDiscover';
 import { EventInvites } from '@/pages/EventInvites';
 import { QuestionnairePage } from '@/pages/QuestionnairePage';
+import { ShareQuestionnaire } from '@/pages/ShareQuestionnaire';
 
 // ── Clerk setup ────────────────────────────────────────────────────────────
 // Copy verbatim — resolves correct key for dev and prod custom domains
@@ -217,6 +218,7 @@ function AppRouter() {
             <Route path="/q/:token">{(p) => <QuestionnairePage token={p.token} />}</Route>
             {/* Protected app routes */}
             <Route path="/events/new">{() => <Protected><NewEvent /></Protected>}</Route>
+            <Route path="/events/:eventId/share">{(p) => <Protected><ShareQuestionnaire eventId={p.eventId} /></Protected>}</Route>
             <Route path="/events/:eventId">{(p) => <Protected><EventHub /></Protected>}</Route>
             <Route path="/events/:eventId/options">{() => <Protected><EventOptions /></Protected>}</Route>
             <Route path="/events/:eventId/plan">{() => <Protected><EventChat /></Protected>}</Route>

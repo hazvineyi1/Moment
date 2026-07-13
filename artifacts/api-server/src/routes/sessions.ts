@@ -42,35 +42,76 @@ function mapMessage(m: typeof messagesTable.$inferSelect) {
   };
 }
 
+function extractMarkerLine(description: string, marker: string): string | null {
+  const idx = description.indexOf(marker);
+  if (idx === -1) return null;
+  return description.slice(idx + marker.length).split("\n")[0].trim() || null;
+}
+
 function parseDescription(description: string | null): {
   baseNotes: string;
   hostContext: string | null;
   chosenPlan: Record<string, unknown> | null;
+  planningFor: string | null;      // "myself" | "someone" | "someone:Name"
+  dateType: string | null;         // "fixed" | "flexible"
+  dateFlexible: { month?: string; duration?: string } | null;
+  personality: { travelStyle?: string; dealbreakers?: string[] } | null;
 } {
-  if (!description) return { baseNotes: "", hostContext: null, chosenPlan: null };
+  if (!description) return {
+    baseNotes: "", hostContext: null, chosenPlan: null,
+    planningFor: null, dateType: null, dateFlexible: null, personality: null,
+  };
 
   const PLAN_MARKER = "__CHOSEN_PLAN__:";
   const CTX_MARKER = "__HOST_CONTEXT__:";
+  const PF_MARKER = "__PLANNING_FOR__:";
+  const DT_MARKER = "__DATE_TYPE__:";
+  const DF_MARKER = "__DATE_FLEXIBLE__:";
+  const PERS_MARKER = "__PERSONALITY__:";
 
   let remaining = description;
   let chosenPlan: Record<string, unknown> | null = null;
   let hostContext: string | null = null;
 
-  // Extract chosen plan (must come last in the string)
+  // Extract chosen plan
   const planIdx = remaining.indexOf(PLAN_MARKER);
   if (planIdx !== -1) {
-    try { chosenPlan = JSON.parse(remaining.slice(planIdx + PLAN_MARKER.length).trim()); } catch {}
+    try { chosenPlan = JSON.parse(remaining.slice(planIdx + PLAN_MARKER.length).split("\n")[0].trim()); } catch {}
     remaining = remaining.slice(0, planIdx).trim();
   }
 
   // Extract host context
   const ctxIdx = remaining.indexOf(CTX_MARKER);
   if (ctxIdx !== -1) {
-    hostContext = remaining.slice(ctxIdx + CTX_MARKER.length).trim() || null;
+    hostContext = remaining.slice(ctxIdx + CTX_MARKER.length).split("\n")[0].trim() || null;
     remaining = remaining.slice(0, ctxIdx).trim();
   }
 
-  return { baseNotes: remaining, hostContext, chosenPlan };
+  // Extract semantic markers (non-destructive — from original description)
+  const planningFor = extractMarkerLine(description, PF_MARKER);
+  const dateType = extractMarkerLine(description, DT_MARKER);
+
+  let dateFlexible: { month?: string; duration?: string } | null = null;
+  const dfRaw = extractMarkerLine(description, DF_MARKER);
+  if (dfRaw) {
+    try { dateFlexible = JSON.parse(dfRaw); } catch {}
+  }
+
+  let personality: { travelStyle?: string; dealbreakers?: string[] } | null = null;
+  const persRaw = extractMarkerLine(description, PERS_MARKER);
+  if (persRaw) {
+    try { personality = JSON.parse(persRaw); } catch {}
+  }
+
+  // Strip all markers from baseNotes
+  const markerPrefixes = [PF_MARKER, DT_MARKER, DF_MARKER, PERS_MARKER, "__PLAN_OPTIONS__:", "__Q_TOKEN__:"];
+  let baseNotes = remaining;
+  for (const m of markerPrefixes) {
+    const idx = baseNotes.indexOf(m);
+    if (idx !== -1) baseNotes = baseNotes.slice(0, idx).trim();
+  }
+
+  return { baseNotes, hostContext, chosenPlan, planningFor, dateType, dateFlexible, personality };
 }
 
 function buildSystemPrompt(
@@ -78,15 +119,39 @@ function buildSystemPrompt(
   messageCount: number
 ): string {
 
-  const { baseNotes, hostContext, chosenPlan } = parseDescription(event.description);
+  const { baseNotes, hostContext, chosenPlan, planningFor, dateType, dateFlexible, personality } = parseDescription(event.description);
+
+  // ── Date context
+  let dateContext: string | null = null;
+  if (dateType === "fixed" && event.startDate) {
+    dateContext = `Fixed date: ${new Date(event.startDate).toDateString()}`;
+  } else if (dateType === "flexible" && dateFlexible) {
+    const parts = [];
+    if (dateFlexible.month) parts.push(`around ${dateFlexible.month}`);
+    if (dateFlexible.duration) {
+      const durMap: Record<string, string> = { day: "a day trip", weekend: "a long weekend", week: "about a week", twoweeks: "2 weeks+" };
+      parts.push(durMap[dateFlexible.duration] ?? dateFlexible.duration);
+    }
+    dateContext = parts.length > 0 ? `Flexible timing: ${parts.join(", ")}` : null;
+  } else if (event.startDate) {
+    dateContext = `Date: ${new Date(event.startDate).toDateString()}`;
+  }
+
+  // ── Planning-for context
+  let planningForContext: string | null = null;
+  if (planningFor?.startsWith("someone")) {
+    const nameRaw = planningFor.slice("someone".length).replace(/^:/, "").trim();
+    const name = nameRaw || "the celebrant";
+    planningForContext = `The planner is organising this for someone else named ${name}. ${name} may or may not know the full plan yet.`;
+  }
 
   const eventContext = [
     `Celebration type: ${event.type}`,
     `Title: "${event.title}"`,
     event.location ? `Location: ${event.location}` : null,
     event.isInternational ? "Open to international options: yes" : null,
-    event.startDate ? `Date: ${new Date(event.startDate).toDateString()}` : null,
-    event.endDate ? `End date: ${new Date(event.endDate).toDateString()}` : null,
+    dateContext,
+    event.endDate && dateType !== "flexible" ? `End date: ${new Date(event.endDate).toDateString()}` : null,
     event.budget ? `Budget tier: ${event.budget}` : null,
     event.guestCount ? `Estimated guests: ${event.guestCount}` : null,
     baseNotes ? `Notes: ${baseNotes}` : null,
@@ -133,6 +198,15 @@ For this opening message, introduce yourself briefly (one sentence, something sp
 
 CURRENT EVENT:
 ${eventContext}
+${planningForContext ? `\nPLANNING CONTEXT:\n${planningForContext}` : ""}${
+  personality && (personality.travelStyle || (personality.dealbreakers?.length ?? 0) > 0)
+    ? `\n\nPLANNER PERSONALITY:\n${personality.travelStyle ? `Travel style: ${personality.travelStyle}` : ""}${
+        (personality.dealbreakers?.length ?? 0) > 0
+          ? `\nDealbreakers: ${personality.dealbreakers!.join(", ")}`
+          : ""
+      }`
+    : ""
+}
 
 ${chosenPlanContext ? `${chosenPlanContext}\n\n` : ""}${
   hostContext

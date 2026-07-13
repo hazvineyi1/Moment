@@ -4,12 +4,29 @@ import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent } from '
 import {
   MessageSquare, Users, Sparkles, Send, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
-  Pencil, Check, X,
+  Pencil, Check, X, Link, Copy,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
 const CTX_MARKER = '__HOST_CONTEXT__:';
 const PLAN_MARKER = '__CHOSEN_PLAN__:';
+const PLANNING_FOR_MARKER = '__PLANNING_FOR__:';
+const CELEBRANT_MARKER = '__CELEBRANT__:';
+
+function parseQuestionnaireMeta(description: string | null | undefined): {
+  planningForSomeone: boolean;
+  celebrantName: string;
+  celebrantAnswered: boolean;
+} {
+  if (!description) return { planningForSomeone: false, celebrantName: '', celebrantAnswered: false };
+  const idx = description.indexOf(PLANNING_FOR_MARKER);
+  if (idx === -1) return { planningForSomeone: false, celebrantName: '', celebrantAnswered: false };
+  const value = description.slice(idx + PLANNING_FOR_MARKER.length).split('\n')[0].trim();
+  if (!value.startsWith('someone')) return { planningForSomeone: false, celebrantName: '', celebrantAnswered: false };
+  const namePart = value.slice('someone'.length).replace(/^:/, '').trim();
+  const celebrantAnswered = description.includes(CELEBRANT_MARKER);
+  return { planningForSomeone: true, celebrantName: namePart, celebrantAnswered };
+}
 
 function extractHostContext(description: string | null | undefined): string {
   if (!description) return '';
@@ -346,6 +363,52 @@ function CostEstimateWidget({ eventId }: { eventId: number }) {
   );
 }
 
+/* ─── Questionnaire share banner ────────────────────────────────────── */
+function QuestionnaireBanner({
+  celebrantName, questionnaireToken,
+}: { celebrantName: string; questionnaireToken: string | null | undefined }) {
+  const [copied, setCopied] = useState(false);
+  const url = questionnaireToken
+    ? `${window.location.origin}/q/${questionnaireToken}`
+    : '';
+
+  const handleCopy = async () => {
+    if (!url) return;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  return (
+    <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm flex items-center gap-2">
+          <Link className="w-4 h-4 text-primary" />
+          {celebrantName
+            ? `Share with ${celebrantName} — their answers feed into Cele`
+            : 'Send your celebrant the questionnaire — their answers feed into Cele'}
+        </p>
+        {url && (
+          <p className="text-xs text-muted-foreground mt-1 font-mono truncate">{url}</p>
+        )}
+      </div>
+      {url && (
+        <button
+          onClick={handleCopy}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all flex-shrink-0 ${
+            copied
+              ? 'bg-emerald-600 text-white'
+              : 'bg-primary text-primary-foreground hover:bg-primary/90'
+          }`}
+        >
+          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? 'Copied!' : 'Copy link'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main page ─────────────────────────────────────────────────────── */
 export function EventHub() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -412,6 +475,16 @@ export function EventHub() {
       </div>
 
       <EventTabs activeTab="overview" eventId={eventId} />
+
+      {/* Questionnaire share banner — shown when planning for someone and they haven't answered yet */}
+      {(() => {
+        const { planningForSomeone, celebrantName, celebrantAnswered } = parseQuestionnaireMeta(event.description);
+        const token = (event as any).questionnaireToken;
+        if (planningForSomeone && !celebrantAnswered) {
+          return <QuestionnaireBanner celebrantName={celebrantName} questionnaireToken={token} />;
+        }
+        return null;
+      })()}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: progress + next steps */}

@@ -19,7 +19,7 @@ import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
-function mapEvent(e: typeof eventsTable.$inferSelect) {
+function mapEvent(e: typeof eventsTable.$inferSelect, opts: { includeToken?: boolean } = {}) {
   return {
     id: e.id,
     title: e.title,
@@ -34,6 +34,7 @@ function mapEvent(e: typeof eventsTable.$inferSelect) {
     status: e.status,
     coverImage: e.coverImage ?? null,
     createdAt: e.createdAt.toISOString(),
+    questionnaireToken: opts.includeToken ? (e.questionnaireToken ?? null) : null,
   };
 }
 
@@ -87,7 +88,7 @@ router.post("/events", requireAuth, async (req, res): Promise<void> => {
     budget: data.budget,
     guestCount: data.guestCount,
   }).returning();
-  res.status(201).json(CreateEventResponse.parse(mapEvent(event)));
+  res.status(201).json(CreateEventResponse.parse(mapEvent(event, { includeToken: true })));
 });
 
 router.get("/events/:eventId", requireAuth, async (req, res): Promise<void> => {
@@ -99,7 +100,7 @@ router.get("/events/:eventId", requireAuth, async (req, res): Promise<void> => {
   const [event] = await db.select().from(eventsTable)
     .where(and(eq(eventsTable.id, params.data.eventId), eq(eventsTable.clerkUserId, userId)));
   if (!event) { res.status(404).json({ error: "Event not found" }); return; }
-  res.json(GetEventResponse.parse(mapEvent(event)));
+  res.json(GetEventResponse.parse(mapEvent(event, { includeToken: true })));
 });
 
 router.patch("/events/:eventId", requireAuth, async (req, res): Promise<void> => {

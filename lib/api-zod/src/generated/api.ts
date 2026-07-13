@@ -107,7 +107,8 @@ export const CreateEventResponse = zod.object({
   "guestCount": zod.number().nullish(),
   "status": zod.string().describe('planning, confirmed, completed, cancelled'),
   "coverImage": zod.string().nullish(),
-  "createdAt": zod.coerce.date()
+  "createdAt": zod.coerce.date(),
+  "questionnaireToken": zod.string().nullish()
 })
 
 
@@ -156,7 +157,8 @@ export const GetEventResponse = zod.object({
   "guestCount": zod.number().nullish(),
   "status": zod.string().describe('planning, confirmed, completed, cancelled'),
   "coverImage": zod.string().nullish(),
-  "createdAt": zod.coerce.date()
+  "createdAt": zod.coerce.date(),
+  "questionnaireToken": zod.string().nullish()
 })
 
 
