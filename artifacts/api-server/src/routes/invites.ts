@@ -11,6 +11,7 @@ import {
   GetInviteResponse,
 } from "@workspace/api-zod";
 import { generateJSON } from "../lib/ai";
+import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
@@ -28,7 +29,7 @@ function mapInvite(i: typeof invitesTable.$inferSelect) {
   };
 }
 
-router.get("/events/:eventId/invites", async (req, res): Promise<void> => {
+router.get("/events/:eventId/invites", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = ListInvitesParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -37,7 +38,7 @@ router.get("/events/:eventId/invites", async (req, res): Promise<void> => {
   res.json(ListInvitesResponse.parse(invites.map(mapInvite)));
 });
 
-router.post("/events/:eventId/invites/generate", async (req, res): Promise<void> => {
+router.post("/events/:eventId/invites/generate", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = GenerateInviteParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -99,7 +100,7 @@ ${context ? `Additional context: ${context}` : ""}`;
   res.status(201).json(GenerateInviteResponse.parse(mapInvite(invite)));
 });
 
-router.get("/events/:eventId/invites/:inviteId", async (req, res): Promise<void> => {
+router.get("/events/:eventId/invites/:inviteId", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawInviteId = Array.isArray(req.params.inviteId) ? req.params.inviteId[0] : req.params.inviteId;
   const params = GetInviteParams.safeParse({ eventId: parseInt(rawEventId, 10), inviteId: parseInt(rawInviteId, 10) });

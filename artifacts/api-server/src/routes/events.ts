@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, count } from "drizzle-orm";
+import { eq, and, count } from "drizzle-orm";
 import { db, eventsTable, guestsTable, planningSessionsTable, suggestionsTable, invitesTable } from "@workspace/db";
 import {
   ListEventsResponse,
@@ -15,6 +15,7 @@ import {
   GetEventSummaryParams,
   GetEventSummaryResponse,
 } from "@workspace/api-zod";
+import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
@@ -36,13 +37,19 @@ function mapEvent(e: typeof eventsTable.$inferSelect) {
   };
 }
 
-router.get("/events", async (req, res): Promise<void> => {
-  const events = await db.select().from(eventsTable).orderBy(eventsTable.createdAt);
+router.get("/events", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
+  const events = await db.select().from(eventsTable)
+    .where(eq(eventsTable.clerkUserId, userId))
+    .orderBy(eventsTable.createdAt);
   res.json(ListEventsResponse.parse(events.map(mapEvent)));
 });
 
-router.get("/events/dashboard", async (req, res): Promise<void> => {
-  const events = await db.select().from(eventsTable).orderBy(eventsTable.createdAt);
+router.get("/events/dashboard", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
+  const events = await db.select().from(eventsTable)
+    .where(eq(eventsTable.clerkUserId, userId))
+    .orderBy(eventsTable.createdAt);
   const now = new Date().toISOString().slice(0, 10);
   const upcoming = events.filter((e) => !e.startDate || e.startDate >= now);
 
@@ -57,14 +64,15 @@ router.get("/events/dashboard", async (req, res): Promise<void> => {
   }));
 });
 
-router.post("/events", async (req, res): Promise<void> => {
+router.post("/events", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
   const parsed = CreateEventBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
   const data = parsed.data;
+  const token = crypto.randomUUID();
   const [event] = await db.insert(eventsTable).values({
+    clerkUserId: userId,
+    questionnaireToken: token,
     title: data.title,
     type: data.type,
     description: data.description,
@@ -78,17 +86,20 @@ router.post("/events", async (req, res): Promise<void> => {
   res.status(201).json(CreateEventResponse.parse(mapEvent(event)));
 });
 
-router.get("/events/:eventId", async (req, res): Promise<void> => {
+router.get("/events/:eventId", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = GetEventParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
 
-  const [event] = await db.select().from(eventsTable).where(eq(eventsTable.id, params.data.eventId));
+  const [event] = await db.select().from(eventsTable)
+    .where(and(eq(eventsTable.id, params.data.eventId), eq(eventsTable.clerkUserId, userId)));
   if (!event) { res.status(404).json({ error: "Event not found" }); return; }
   res.json(GetEventResponse.parse(mapEvent(event)));
 });
 
-router.patch("/events/:eventId", async (req, res): Promise<void> => {
+router.patch("/events/:eventId", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = UpdateEventParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -112,39 +123,43 @@ router.patch("/events/:eventId", async (req, res): Promise<void> => {
       ...(data.status !== undefined && { status: data.status }),
       ...(data.coverImage !== undefined && { coverImage: data.coverImage }),
     })
-    .where(eq(eventsTable.id, params.data.eventId))
+    .where(and(eq(eventsTable.id, params.data.eventId), eq(eventsTable.clerkUserId, userId)))
     .returning();
 
   if (!updated) { res.status(404).json({ error: "Event not found" }); return; }
   res.json(UpdateEventResponse.parse(mapEvent(updated)));
 });
 
-router.delete("/events/:eventId", async (req, res): Promise<void> => {
+router.delete("/events/:eventId", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = DeleteEventParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
 
-  await db.delete(eventsTable).where(eq(eventsTable.id, params.data.eventId));
+  await db.delete(eventsTable)
+    .where(and(eq(eventsTable.id, params.data.eventId), eq(eventsTable.clerkUserId, userId)));
   res.status(204).send();
 });
 
-// Delete ALL events (cascade handles guests, sessions, messages, etc.)
-router.delete("/events", async (req, res): Promise<void> => {
-  await db.delete(eventsTable);
+// Delete ALL events for the current user
+router.delete("/events", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
+  await db.delete(eventsTable).where(eq(eventsTable.clerkUserId, userId));
   res.status(204).send();
 });
 
-router.get("/events/:eventId/summary", async (req, res): Promise<void> => {
+router.get("/events/:eventId/summary", requireAuth, async (req, res): Promise<void> => {
+  const userId = (req as any).userId as string;
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = GetEventSummaryParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
 
   const eventId = params.data.eventId;
-  const [event] = await db.select().from(eventsTable).where(eq(eventsTable.id, eventId));
+  const [event] = await db.select().from(eventsTable)
+    .where(and(eq(eventsTable.id, eventId), eq(eventsTable.clerkUserId, userId)));
   if (!event) { res.status(404).json({ error: "Event not found" }); return; }
 
-  const [guestRows, confirmedRows, savedRows, sessionRows, inviteRows] = await Promise.all([
-    db.select({ count: count() }).from(guestsTable).where(eq(guestsTable.eventId, eventId)),
+  const [guestRows, savedRows, sessionRows, inviteRows] = await Promise.all([
     db.select({ count: count() }).from(guestsTable).where(eq(guestsTable.eventId, eventId)),
     db.select({ count: count() }).from(suggestionsTable).where(eq(suggestionsTable.eventId, eventId)),
     db.select({ count: count() }).from(planningSessionsTable).where(eq(planningSessionsTable.eventId, eventId)),
@@ -152,21 +167,11 @@ router.get("/events/:eventId/summary", async (req, res): Promise<void> => {
   ]);
 
   const guestCount = Number(guestRows[0]?.count ?? 0);
-  const confirmedGuests = Number(confirmedRows[0]?.count ?? 0);
   const savedSuggestions = Number(savedRows[0]?.count ?? 0);
   const sessionCount = Number(sessionRows[0]?.count ?? 0);
   const inviteCount = Number(inviteRows[0]?.count ?? 0);
 
-  // Compute a rough completion %
-  const checks = [
-    !!event.title,
-    !!event.location,
-    !!event.startDate,
-    guestCount > 0,
-    savedSuggestions > 0,
-    sessionCount > 0,
-    inviteCount > 0,
-  ];
+  const checks = [!!event.title, !!event.location, !!event.startDate, guestCount > 0, savedSuggestions > 0, sessionCount > 0, inviteCount > 0];
   const completionPercent = Math.round((checks.filter(Boolean).length / checks.length) * 100);
 
   const nextSteps: string[] = [];
@@ -181,7 +186,7 @@ router.get("/events/:eventId/summary", async (req, res): Promise<void> => {
     eventId,
     title: event.title,
     guestCount,
-    confirmedGuests,
+    confirmedGuests: guestCount,
     savedSuggestions,
     sessionCount,
     inviteCount,

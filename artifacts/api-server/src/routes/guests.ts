@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, guestsTable, eventsTable } from "@workspace/db";
+import { requireAuth } from "../middlewares/requireAuth";
 import {
   ListGuestsParams,
   ListGuestsResponse,
@@ -36,7 +37,7 @@ function mapGuest(g: typeof guestsTable.$inferSelect) {
   };
 }
 
-router.get("/events/:eventId/guests", async (req, res): Promise<void> => {
+router.get("/events/:eventId/guests", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = ListGuestsParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -45,7 +46,7 @@ router.get("/events/:eventId/guests", async (req, res): Promise<void> => {
   res.json(ListGuestsResponse.parse(guests.map(mapGuest)));
 });
 
-router.post("/events/:eventId/guests", async (req, res): Promise<void> => {
+router.post("/events/:eventId/guests", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = AddGuestParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -68,7 +69,7 @@ router.post("/events/:eventId/guests", async (req, res): Promise<void> => {
   res.status(201).json(AddGuestResponse.parse(mapGuest(guest)));
 });
 
-router.get("/events/:eventId/guests/pairings", async (req, res): Promise<void> => {
+router.get("/events/:eventId/guests/pairings", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = GetGuestPairingsParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -148,7 +149,7 @@ Return a JSON object with this exact shape:
   }));
 });
 
-router.get("/events/:eventId/guests/:guestId", async (req, res): Promise<void> => {
+router.get("/events/:eventId/guests/:guestId", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawGuestId = Array.isArray(req.params.guestId) ? req.params.guestId[0] : req.params.guestId;
   const params = GetGuestParams.safeParse({ eventId: parseInt(rawEventId, 10), guestId: parseInt(rawGuestId, 10) });
@@ -161,7 +162,7 @@ router.get("/events/:eventId/guests/:guestId", async (req, res): Promise<void> =
   res.json(GetGuestResponse.parse(mapGuest(guest)));
 });
 
-router.patch("/events/:eventId/guests/:guestId", async (req, res): Promise<void> => {
+router.patch("/events/:eventId/guests/:guestId", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawGuestId = Array.isArray(req.params.guestId) ? req.params.guestId[0] : req.params.guestId;
   const params = UpdateGuestParams.safeParse({ eventId: parseInt(rawEventId, 10), guestId: parseInt(rawGuestId, 10) });
@@ -190,7 +191,7 @@ router.patch("/events/:eventId/guests/:guestId", async (req, res): Promise<void>
   res.json(UpdateGuestResponse.parse(mapGuest(updated)));
 });
 
-router.delete("/events/:eventId/guests/:guestId", async (req, res): Promise<void> => {
+router.delete("/events/:eventId/guests/:guestId", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawGuestId = Array.isArray(req.params.guestId) ? req.params.guestId[0] : req.params.guestId;
   const params = DeleteGuestParams.safeParse({ eventId: parseInt(rawEventId, 10), guestId: parseInt(rawGuestId, 10) });

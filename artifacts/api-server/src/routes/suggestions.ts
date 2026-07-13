@@ -13,6 +13,7 @@ import {
   DeleteSuggestionParams,
 } from "@workspace/api-zod";
 import { generateJSON } from "../lib/ai";
+import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
@@ -35,7 +36,7 @@ function mapSuggestion(s: typeof suggestionsTable.$inferSelect) {
   };
 }
 
-router.get("/events/:eventId/suggestions", async (req, res): Promise<void> => {
+router.get("/events/:eventId/suggestions", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = ListSuggestionsParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -49,7 +50,7 @@ router.get("/events/:eventId/suggestions", async (req, res): Promise<void> => {
   res.json(ListSuggestionsResponse.parse(suggestions.map(mapSuggestion)));
 });
 
-router.post("/events/:eventId/suggestions/generate", async (req, res): Promise<void> => {
+router.post("/events/:eventId/suggestions/generate", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = GenerateSuggestionsParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -125,7 +126,7 @@ Be specific. Use real place names. Make suggestions feel exciting and well-resea
   res.status(201).json(GenerateSuggestionsResponse.parse(inserted.map(mapSuggestion)));
 });
 
-router.patch("/events/:eventId/suggestions/:suggestionId", async (req, res): Promise<void> => {
+router.patch("/events/:eventId/suggestions/:suggestionId", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawSugId = Array.isArray(req.params.suggestionId) ? req.params.suggestionId[0] : req.params.suggestionId;
   const params = UpdateSuggestionParams.safeParse({ eventId: parseInt(rawEventId, 10), suggestionId: parseInt(rawSugId, 10) });
@@ -147,7 +148,7 @@ router.patch("/events/:eventId/suggestions/:suggestionId", async (req, res): Pro
   res.json(UpdateSuggestionResponse.parse(mapSuggestion(updated)));
 });
 
-router.delete("/events/:eventId/suggestions/:suggestionId", async (req, res): Promise<void> => {
+router.delete("/events/:eventId/suggestions/:suggestionId", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawSugId = Array.isArray(req.params.suggestionId) ? req.params.suggestionId[0] : req.params.suggestionId;
   const params = DeleteSuggestionParams.safeParse({ eventId: parseInt(rawEventId, 10), suggestionId: parseInt(rawSugId, 10) });

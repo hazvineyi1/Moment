@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'wouter';
-import { useGetDashboard, useGetProfile } from '@workspace/api-client-react';
-import { Plus, Calendar, Users, ArrowRight, Sparkles, MapPin, MessageCircle } from 'lucide-react';
+import { useGetDashboard } from '@workspace/api-client-react';
+import { useUser } from '@clerk/react';
+import { Plus, Calendar, Users, ArrowRight, Sparkles, MapPin } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
 export function Home() {
   const { data: dashboard, isLoading } = useGetDashboard();
-  const { data: profile } = useGetProfile();
+  const { user } = useUser();
 
   if (isLoading) {
     return (
@@ -24,8 +25,7 @@ export function Home() {
 
   const events = dashboard?.events ?? [];
   const hasEvents = events.length > 0;
-  const isNewUser = !profile?.personality && !profile?.preferences;
-  const firstName = profile?.name && profile.name !== 'Traveler' ? profile.name.split(' ')[0] : null;
+  const firstName = user?.firstName ?? null;
 
   const hour = new Date().getHours();
   const greeting =
@@ -49,8 +49,8 @@ export function Home() {
         )}
       </header>
 
-      {/* New User Onboarding — show if no personality set */}
-      {isNewUser && (
+      {/* First-time empty state nudge */}
+      {!hasEvents && (
         <div className="mb-8 p-6 md:p-8 rounded-3xl bg-primary/5 border border-primary/20 relative overflow-hidden">
           <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
@@ -58,18 +58,17 @@ export function Home() {
               <Sparkles className="w-7 h-7 text-primary" />
             </div>
             <div className="flex-1">
-              <h2 className="font-serif text-xl font-medium mb-1">Before we plan — let's meet.</h2>
+              <h2 className="font-serif text-xl font-medium mb-1">Ready when you are.</h2>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-lg">
-                Cele works best when she knows you. Your personality, how you like to travel, what bores you,
-                what excites you — a few lines is all it takes. Then every suggestion she makes is actually <em>for you</em>.
+                Tell Cele what you want to celebrate — she'll handle the rest. No forms, no agencies, no chasing quotes.
               </p>
             </div>
             <Link
-              href="/profile"
+              href="/events/new"
               className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium text-sm hover:bg-primary/90 transition-colors flex-shrink-0 whitespace-nowrap"
             >
-              <MessageCircle className="w-4 h-4" />
-              Tell Cele about you
+              <Sparkles className="w-4 h-4" />
+              Start planning
             </Link>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import { db, eventsTable, guestsTable } from "@workspace/db";
 import { generateJSON } from "../lib/ai";
+import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
@@ -25,7 +26,7 @@ interface CostEstimate {
   insiderTip: string;
 }
 
-router.post("/events/:eventId/cost-estimate", async (req, res): Promise<void> => {
+router.post("/events/:eventId/cost-estimate", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const eventId = parseInt(rawId, 10);
   if (isNaN(eventId)) { res.status(400).json({ error: "Invalid event ID" }); return; }

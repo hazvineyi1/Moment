@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { eq, and, count } from "drizzle-orm";
-import { db, eventsTable, planningSessionsTable, messagesTable, usersTable } from "@workspace/db";
+import { db, eventsTable, planningSessionsTable, messagesTable } from "@workspace/db";
+import { requireAuth } from "../middlewares/requireAuth";
 import {
   ListSessionsParams,
   ListSessionsResponse,
@@ -41,11 +42,6 @@ function mapMessage(m: typeof messagesTable.$inferSelect) {
   };
 }
 
-async function getUser() {
-  const [user] = await db.select().from(usersTable).limit(1);
-  return user ?? null;
-}
-
 function parseDescription(description: string | null): {
   baseNotes: string;
   hostContext: string | null;
@@ -79,20 +75,8 @@ function parseDescription(description: string | null): {
 
 function buildSystemPrompt(
   event: typeof eventsTable.$inferSelect,
-  user: typeof usersTable.$inferSelect | null,
   messageCount: number
 ): string {
-  const userContext = user
-    ? [
-        user.name && user.name !== "Traveler" ? `Host: ${user.name}` : null,
-        user.location ? `Based in: ${user.location}` : null,
-        user.personality ? `Personality: ${user.personality}` : null,
-        user.preferences ? `Preferences & tastes: ${user.preferences}` : null,
-        user.bio ? `Background: ${user.bio}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n")
-    : "";
 
   const { baseNotes, hostContext, chosenPlan } = parseDescription(event.description);
 
@@ -152,16 +136,9 @@ ${eventContext}
 
 ${chosenPlanContext ? `${chosenPlanContext}\n\n` : ""}${
   hostContext
-    ? `HOST CONTEXT FOR THIS EVENT (written by the planner — treat this as their specific brief for this plan, overriding general profile where they differ):
-${hostContext}
-
-`
-    : ""
-}${
-  userContext
-    ? `HOST PROFILE (global defaults — use when event-specific context above doesn't override):
-${userContext}`
-    : "No host profile yet — infer personality from how they write and remember it in conversation."
+    ? `HOST CONTEXT FOR THIS EVENT:
+${hostContext}`
+    : "No host context yet — infer personality and preferences from how they write and build forward."
 }
 
 Rules for this conversation:
@@ -173,7 +150,7 @@ Rules for this conversation:
 ${chosenPlan ? "- The plan is chosen. Do not re-propose alternatives. Drill into specifics: logistics, room counts, dietary needs, exact experiences, timings, add-on decisions." : ""}`;
 }
 
-router.get("/events/:eventId/sessions", async (req, res): Promise<void> => {
+router.get("/events/:eventId/sessions", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = ListSessionsParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -194,7 +171,7 @@ router.get("/events/:eventId/sessions", async (req, res): Promise<void> => {
   res.json(ListSessionsResponse.parse(withCounts));
 });
 
-router.post("/events/:eventId/sessions", async (req, res): Promise<void> => {
+router.post("/events/:eventId/sessions", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const params = CreateSessionParams.safeParse({ eventId: parseInt(rawId, 10) });
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
@@ -211,8 +188,7 @@ router.post("/events/:eventId/sessions", async (req, res): Promise<void> => {
     focus: parsed.data.focus,
   }).returning();
 
-  const user = await getUser();
-  const systemPrompt = buildSystemPrompt(event, user, 0);
+  const systemPrompt = buildSystemPrompt(event, 0);
 
   const opening = await chatWithAI(
     [{ role: "user", content: `Start planning session. Focus: ${parsed.data.focus ?? "general"}` }],
@@ -228,7 +204,7 @@ router.post("/events/:eventId/sessions", async (req, res): Promise<void> => {
   res.status(201).json(CreateSessionResponse.parse(mapSession(session, 1)));
 });
 
-router.get("/events/:eventId/sessions/:sessionId", async (req, res): Promise<void> => {
+router.get("/events/:eventId/sessions/:sessionId", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawSessionId = Array.isArray(req.params.sessionId) ? req.params.sessionId[0] : req.params.sessionId;
   const params = GetSessionParams.safeParse({ eventId: parseInt(rawEventId, 10), sessionId: parseInt(rawSessionId, 10) });
@@ -247,7 +223,7 @@ router.get("/events/:eventId/sessions/:sessionId", async (req, res): Promise<voi
   res.json(GetSessionResponse.parse(mapSession(session, Number(row?.count ?? 0))));
 });
 
-router.get("/events/:eventId/sessions/:sessionId/messages", async (req, res): Promise<void> => {
+router.get("/events/:eventId/sessions/:sessionId/messages", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawSessionId = Array.isArray(req.params.sessionId) ? req.params.sessionId[0] : req.params.sessionId;
   const params = ListMessagesParams.safeParse({ eventId: parseInt(rawEventId, 10), sessionId: parseInt(rawSessionId, 10) });
@@ -262,7 +238,7 @@ router.get("/events/:eventId/sessions/:sessionId/messages", async (req, res): Pr
   res.json(ListMessagesResponse.parse(messages.map(mapMessage)));
 });
 
-router.post("/events/:eventId/sessions/:sessionId/messages", async (req, res): Promise<void> => {
+router.post("/events/:eventId/sessions/:sessionId/messages", requireAuth, async (req, res): Promise<void> => {
   const rawEventId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const rawSessionId = Array.isArray(req.params.sessionId) ? req.params.sessionId[0] : req.params.sessionId;
   const params = SendMessageParams.safeParse({ eventId: parseInt(rawEventId, 10), sessionId: parseInt(rawSessionId, 10) });
@@ -294,8 +270,7 @@ router.post("/events/:eventId/sessions/:sessionId/messages", async (req, res): P
     .where(eq(messagesTable.sessionId, params.data.sessionId))
     .orderBy(messagesTable.createdAt);
 
-  const user = await getUser();
-  const systemPrompt = buildSystemPrompt(event!, user, history.length);
+  const systemPrompt = buildSystemPrompt(event!, history.length);
 
   const aiMessages = history.map((m) => ({
     role: m.role as "user" | "assistant",

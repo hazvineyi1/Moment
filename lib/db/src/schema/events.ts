@@ -4,6 +4,8 @@ import { z } from "zod/v4";
 
 export const eventsTable = pgTable("events", {
   id: serial("id").primaryKey(),
+  clerkUserId: text("clerk_user_id").notNull().default(""),
+  questionnaireToken: text("questionnaire_token"),
   title: text("title").notNull(),
   type: text("type").notNull().default("other"),
   description: text("description"),

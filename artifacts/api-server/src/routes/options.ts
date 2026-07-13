@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
-import { db, eventsTable, usersTable } from "@workspace/db";
+import { eq, and } from "drizzle-orm";
+import { db, eventsTable } from "@workspace/db";
 import { chatWithAI } from "../lib/ai";
+import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
@@ -19,24 +20,15 @@ interface PlanOption {
   vibe?: string;
 }
 
-router.post("/events/:eventId/plan-options", async (req, res): Promise<void> => {
+router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.eventId) ? req.params.eventId[0] : req.params.eventId;
   const eventId = parseInt(rawId, 10);
   if (isNaN(eventId)) { res.status(400).json({ error: "Invalid event ID" }); return; }
 
-  const [event] = await db.select().from(eventsTable).where(eq(eventsTable.id, eventId));
+  const userId = (req as any).userId as string;
+  const [event] = await db.select().from(eventsTable)
+    .where(and(eq(eventsTable.id, eventId), eq(eventsTable.clerkUserId, userId)));
   if (!event) { res.status(404).json({ error: "Event not found" }); return; }
-
-  const [user] = await db.select().from(usersTable).limit(1);
-
-  const userCtx = user
-    ? [
-        user.name && user.name !== "Traveler" ? `Host: ${user.name}` : null,
-        user.location ? `Based in: ${user.location}` : null,
-        user.personality ? `Personality: ${user.personality}` : null,
-        user.preferences ? `Tastes & preferences: ${user.preferences}` : null,
-      ].filter(Boolean).join("\n")
-    : "";
 
   const eventCtx = [
     `Occasion/type: ${event.type}`,
@@ -66,7 +58,7 @@ Return ONLY a valid JSON array — no markdown, no explanation, no prefix text. 
   "vibe": "<one or two words — e.g. Intimate luxury, Wild and remote, Urban sophistication>"
 }`;
 
-  const prompt = `EVENT CONTEXT:\n${eventCtx}\n\n${userCtx ? `HOST PROFILE:\n${userCtx}\n\n` : ""}Generate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation, not a generic template.`;
+  const prompt = `EVENT CONTEXT:\n${eventCtx}\n\nGenerate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation, not a generic template.`;
 
   try {
     const raw = await chatWithAI(

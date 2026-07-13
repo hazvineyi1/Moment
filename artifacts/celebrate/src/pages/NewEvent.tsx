@@ -137,23 +137,33 @@ function VibeChip({
   );
 }
 
+/* ─── Who is this for? ───────────────────────────────────────────────── */
+const PLANNING_FOR = [
+  { id: 'myself',   label: 'Myself',             icon: '🙋', desc: "I'm celebrating — or I'm part of the group" },
+  { id: 'someone',  label: 'Someone else',        icon: '🎁', desc: "I'm organising it for them — they may not know yet" },
+  { id: 'together', label: "We're planning together", icon: '🤝', desc: "Collaborating with the person being celebrated" },
+];
+
 /* ─── Main component ─────────────────────────────────────────────────── */
 export function NewEvent() {
   const [, setLocation] = useLocation();
   const createEvent = useCreateEvent();
 
   const [step, setStep] = useState(0);
-  // Step 0: occasion (single)
+  // Step 0: who is this for
+  const [planningFor, setPlanningFor] = useState('');
+  const [celebrantName, setCelebrantName] = useState('');
+  // Step 1: occasion (single)
   const [occasion, setOccasion] = useState('');
-  // Step 1: experiences (multi)
+  // Step 2: experiences (multi)
   const [experiences, setExperiences] = useState<string[]>([]);
-  // Step 2: vibe (multi, soft max 2)
+  // Step 3: vibe (multi, soft max 2)
   const [vibes, setVibes] = useState<string[]>([]);
-  // Step 3: group type (single)
+  // Step 4: group type (single)
   const [groupType, setGroupType] = useState('');
-  // Step 4: must-haves (multi)
+  // Step 5: must-haves (multi)
   const [mustHaves, setMustHaves] = useState<string[]>([]);
-  // Step 5: details
+  // Step 6: details
   const [formData, setFormData] = useState({
     title: '',
     location: '',
@@ -187,6 +197,10 @@ export function NewEvent() {
 
   const buildDescription = () => {
     const parts: string[] = [];
+    if (planningFor && planningFor !== 'myself') {
+      const pf = PLANNING_FOR.find((x) => x.id === planningFor);
+      if (pf) parts.push(`Planning role: ${pf.label}${celebrantName ? ` (for ${celebrantName})` : ''}`);
+    }
     if (occasion) {
       const o = OCCASIONS.find((x) => x.id === occasion);
       if (o) parts.push(`Occasion: ${o.label}`);
@@ -210,14 +224,17 @@ export function NewEvent() {
     return parts.join(' · ') || undefined;
   };
 
+  const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   const handleSubmit = () => {
     const occasionLabel = OCCASIONS.find((x) => x.id === occasion)?.label;
     const experienceLabel = EXPERIENCES.find((x) => x.id === experiences[0])?.label;
+    const celebrantPart = planningFor === 'someone' && celebrantName ? `${celebrantName}'s ` : '';
     const fallbackTitle = occasionLabel
-      ? `${occasionLabel} ${new Date().getFullYear()}`
+      ? `${celebrantPart}${occasionLabel} ${new Date().getFullYear()}`
       : experienceLabel
-      ? `${experienceLabel} ${new Date().getFullYear()}`
-      : `My celebration ${new Date().getFullYear()}`;
+      ? `${celebrantPart}${experienceLabel} ${new Date().getFullYear()}`
+      : `${celebrantPart}Celebration ${new Date().getFullYear()}`;
 
     createEvent.mutate(
       {
@@ -239,10 +256,11 @@ export function NewEvent() {
     );
   };
 
-  const totalSteps = 6;
+  const totalSteps = 7;
   const progress = ((step + 1) / totalSteps) * 100;
 
-  const canProceedStep1 = experiences.length > 0;
+  const canProceedStep0 = !!planningFor;
+  const canProceedStep2 = experiences.length > 0;
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
@@ -256,11 +274,74 @@ export function NewEvent() {
 
       <div className="flex-1 flex flex-col container mx-auto px-4 py-8 md:py-14 max-w-4xl">
 
-        {/* ── Step 0: Occasion ─────────────────────────────────────── */}
+        {/* ── Step 0: Who is this for? ─────────────────────────────── */}
+        {step === 1 && false && null}
         {step === 0 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
             <div className="mb-7">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 1 of 6</p>
+              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 1 of 7</p>
+              <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">Who are you planning this for?</h1>
+              <p className="text-base text-muted-foreground">Cele plans very differently depending on your role.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6 max-w-2xl">
+              {PLANNING_FOR.map((pf) => (
+                <button
+                  key={pf.id}
+                  onClick={() => setPlanningFor(planningFor === pf.id ? '' : pf.id)}
+                  className={`relative p-5 text-left rounded-2xl border-2 transition-all duration-150 hover:-translate-y-0.5 ${
+                    planningFor === pf.id
+                      ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
+                      : 'border-border/50 hover:border-primary/40 bg-card'
+                  }`}
+                >
+                  {planningFor === pf.id && (
+                    <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                      <Check className="w-3 h-3" />
+                    </span>
+                  )}
+                  <div className="text-3xl mb-3">{pf.icon}</div>
+                  <div className="font-semibold text-sm leading-snug">{pf.label}</div>
+                  <div className="text-xs text-muted-foreground mt-1 leading-snug">{pf.desc}</div>
+                </button>
+              ))}
+            </div>
+
+            {planningFor === 'someone' && (
+              <div className="max-w-sm mb-6 animate-in fade-in duration-300">
+                <label className="text-sm font-medium text-muted-foreground block mb-2">
+                  Their name <span className="font-normal">(optional — helps Cele personalise)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Sarah"
+                  value={celebrantName}
+                  onChange={(e) => setCelebrantName(e.target.value)}
+                  className="w-full text-lg bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 transition-colors placeholder:text-muted-foreground/50"
+                />
+                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                  After you create the event, you'll get a shareable link you can send them — a short questionnaire that feeds their preferences directly into Cele.
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end pt-2">
+              <button
+                onClick={() => setStep(1)}
+                disabled={!canProceedStep0}
+                className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-40"
+              >
+                Continue <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 1: Occasion ─────────────────────────────────────── */}
+        {step === 1 && (
+          <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
+            <div className="mb-7">
+              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 2 of 7</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">What's the occasion?</h1>
               <p className="text-base text-muted-foreground">Pick one — or skip if it's just a great excuse to celebrate.</p>
             </div>
@@ -290,13 +371,13 @@ export function NewEvent() {
 
             <div className="flex items-center justify-between pt-2">
               <button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Skip →
               </button>
               <button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 {occasion ? 'Continue' : 'Skip'} <ArrowRight className="w-4 h-4" />
@@ -306,13 +387,13 @@ export function NewEvent() {
         )}
 
         {/* ── Step 1: Experiences ──────────────────────────────────── */}
-        {step === 1 && (
+        {step === 2 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <button onClick={() => setStep(0)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
+            <button onClick={() => setStep(1)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <div className="mb-7">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 2 of 6</p>
+              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 3 of 7</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">What kind of experience?</h1>
               <p className="text-base text-muted-foreground">
                 Pick as many as you like — Cele can mix and match.
@@ -351,30 +432,30 @@ export function NewEvent() {
 
             <div className="flex items-center justify-between pt-2">
               <button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(3)}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Skip →
               </button>
               <button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(3)}
                 disabled={false}
                 className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-40"
               >
-                {canProceedStep1 ? 'Continue' : 'Skip'} <ArrowRight className="w-4 h-4" />
+                {canProceedStep2 ? 'Continue' : 'Skip'} <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
 
         {/* ── Step 2: Vibe ─────────────────────────────────────────── */}
-        {step === 2 && (
+        {step === 3 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <button onClick={() => setStep(1)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
+            <button onClick={() => setStep(2)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <div className="mb-7">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 3 of 6</p>
+              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 4 of 7</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">What's the energy?</h1>
               <p className="text-base text-muted-foreground">
                 Pick one or two. These aren't mutually exclusive.
@@ -394,13 +475,13 @@ export function NewEvent() {
 
             <div className="flex items-center justify-between pt-2">
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(4)}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Skip →
               </button>
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(4)}
                 className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 {vibes.length > 0 ? 'Continue' : 'Skip'} <ArrowRight className="w-4 h-4" />
@@ -410,13 +491,13 @@ export function NewEvent() {
         )}
 
         {/* ── Step 3: Group makeup ─────────────────────────────────── */}
-        {step === 3 && (
+        {step === 4 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <button onClick={() => setStep(2)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
+            <button onClick={() => setStep(3)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <div className="mb-7">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 4 of 6</p>
+              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 5 of 7</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">Who's coming?</h1>
               <p className="text-base text-muted-foreground">Cele plans very differently for couples vs. large groups vs. families.</p>
             </div>
@@ -445,9 +526,9 @@ export function NewEvent() {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <button onClick={() => setStep(4)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Skip →</button>
+              <button onClick={() => setStep(5)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Skip →</button>
               <button
-                onClick={() => setStep(4)}
+                onClick={() => setStep(5)}
                 className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 {groupType ? 'Continue' : 'Skip'} <ArrowRight className="w-4 h-4" />
@@ -457,13 +538,13 @@ export function NewEvent() {
         )}
 
         {/* ── Step 4: Must-haves ────────────────────────────────────── */}
-        {step === 4 && (
+        {step === 5 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <button onClick={() => setStep(3)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
+            <button onClick={() => setStep(4)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <div className="mb-7">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 5 of 6</p>
+              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 6 of 7</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">Any dealbreakers?</h1>
               <p className="text-base text-muted-foreground">Non-negotiables Cele needs to know before suggesting anything. Pick as many as apply.</p>
             </div>
@@ -506,9 +587,9 @@ export function NewEvent() {
             )}
 
             <div className="flex items-center justify-between pt-2">
-              <button onClick={() => setStep(5)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Skip →</button>
+              <button onClick={() => setStep(6)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Skip →</button>
               <button
-                onClick={() => setStep(5)}
+                onClick={() => setStep(6)}
                 className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 {mustHaves.length > 0 ? 'Continue' : 'Skip'} <ArrowRight className="w-4 h-4" />
@@ -518,13 +599,13 @@ export function NewEvent() {
         )}
 
         {/* ── Step 5: Details ──────────────────────────────────────── */}
-        {step === 5 && (
+        {step === 6 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <button onClick={() => setStep(4)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
+            <button onClick={() => setStep(5)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <div className="mb-8">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 6 of 6</p>
+              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 7 of 7</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">Last few things.</h1>
               <p className="text-base text-muted-foreground">
                 Rough is fine — Cele will fill in the rest.
