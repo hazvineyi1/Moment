@@ -5,6 +5,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Chat/JSON model. Works with OpenAI ("gpt-4o-mini") or, via Anthropic's
+// OpenAI-compatible endpoint, a Claude model ("claude-sonnet-4-6").
+export const CHAT_MODEL = process.env.CHAT_MODEL || "gpt-4o-mini";
+
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
 const AI_TIMEOUT_MS = 45_000;
@@ -30,7 +34,7 @@ export async function chatWithAI(messages: ChatMessage[], systemPrompt?: string)
   try {
     const response = await withTimeout(
       openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: CHAT_MODEL,
         messages: msgs,
         max_tokens: 1800,
         temperature: 0.9,
@@ -49,7 +53,7 @@ export async function generateJSON<T>(prompt: string, systemPrompt: string): Pro
   try {
     const response = await withTimeout(
       openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: CHAT_MODEL,
         messages: [
           { role: "system", content: systemPrompt + "\n\nRespond with valid JSON only. No markdown, no explanation." },
           { role: "user", content: prompt },

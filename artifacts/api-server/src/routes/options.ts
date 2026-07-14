@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, eventsTable, guestsTable } from "@workspace/db";
-import { openai, withTimeout } from "../lib/ai";
+import { openai, withTimeout, CHAT_MODEL } from "../lib/ai";
 import { requireAuth } from "../middlewares/requireAuth";
 import { readMarker, writeMarker, readMarkerString } from "../lib/markers";
 import { fetchOwnedEvent } from "../lib/eventHelpers";
@@ -175,7 +175,7 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
   try {
     const response = await withTimeout(
       openai.chat.completions.create({
-        model: "gpt-5.4-mini",
+        model: CHAT_MODEL,
         messages: [
           { role: "system", content: system },
           { role: "user", content: promptParts.join("\n\n") },

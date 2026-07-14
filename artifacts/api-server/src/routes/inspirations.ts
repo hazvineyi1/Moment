@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { db, eventsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
-import { openai } from "../lib/ai";
+import { openai, CHAT_MODEL } from "../lib/ai";
 import { readMarker, writeMarker } from "../lib/markers";
 import { fetchOwnedEvent } from "../lib/eventHelpers";
 
@@ -57,7 +57,7 @@ async function fetchUrlMeta(url: string): Promise<{ title: string; description: 
 async function aiInferFromUrl(url: string): Promise<{ title: string; description: string; vibes: string[] }> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-5.4-mini",
+      model: CHAT_MODEL,
       max_completion_tokens: 256,
       messages: [
         { role: "system", content: "You are a luxury event experience curator. Given a URL, infer the type of experience or venue it showcases. Respond with JSON only." },
@@ -74,7 +74,7 @@ async function aiInferFromUrl(url: string): Promise<{ title: string; description
 async function aiExtractVibes(title: string, description: string): Promise<string[]> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-5.4-mini",
+      model: CHAT_MODEL,
       max_completion_tokens: 80,
       messages: [{ role: "user", content: `Given this title and description, return 3-5 short vibe/mood tags as a JSON array.\nTitle: ${title}\nDescription: ${description}\nRespond with JSON array only.` }],
     });
