@@ -5,7 +5,7 @@ import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent, useDele
 import {
   MessageSquare, Users, Sparkles, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
-  Pencil, Check, X, Link, Copy,
+  Pencil, Check, X, Link, Copy, Wand2, ScrollText, AlertCircle, ClipboardCopy,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
@@ -429,6 +429,7 @@ export function EventHub() {
     query: { enabled: !!id, queryKey: ['events', id, 'guests'] },
   });
 
+  const { getToken } = useAuth();
   const updateEvent = useUpdateEvent();
   const deleteEvent = useDeleteEvent();
 
@@ -436,6 +437,56 @@ export function EventHub() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+
+  // ── Reveal script ────────────────────────────────────────────────────
+  type RevealScript = {
+    timing: { suggestion: string; why: string };
+    setting: { suggestion: string; why: string };
+    script: { opening: string; buildup: string; theReveal: string; afterword: string };
+    doNots: string[];
+    contingency: string;
+  };
+  const [revealScript, setRevealScript] = useState<RevealScript | null>(null);
+  const [revealLoading, setRevealLoading] = useState(false);
+  const [revealError, setRevealError] = useState('');
+  const [revealCopied, setRevealCopied] = useState(false);
+
+  const generateRevealScript = async () => {
+    setRevealLoading(true);
+    setRevealError('');
+    try {
+      const token = await getToken();
+      const res = await fetch(`/api/events/${id}/reveal-script`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setRevealScript(await res.json());
+    } catch {
+      setRevealError('Could not generate the script. Try again.');
+    } finally {
+      setRevealLoading(false);
+    }
+  };
+
+  const copyRevealScript = () => {
+    if (!revealScript) return;
+    const s = revealScript.script;
+    const text = [
+      `⏰ TIMING\n${revealScript.timing.suggestion}`,
+      `📍 SETTING\n${revealScript.setting.suggestion}`,
+      `🎬 THE SCRIPT`,
+      `Opening: ${s.opening}`,
+      `Build-up: ${s.buildup}`,
+      `The reveal: ${s.theReveal}`,
+      `After: ${s.afterword}`,
+      `🚫 AVOID\n${revealScript.doNots.map((d, i) => `${i + 1}. ${d}`).join('\n')}`,
+      `🆘 IF THEY REACT UNEXPECTEDLY\n${revealScript.contingency}`,
+    ].join('\n\n');
+    navigator.clipboard.writeText(text);
+    setRevealCopied(true);
+    setTimeout(() => setRevealCopied(false), 2500);
+  };
 
   const toggleStep = (i: number) =>
     setCompletedSteps(prev => {
@@ -602,6 +653,124 @@ export function EventHub() {
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </section>
+
+          {/* ── Reveal script — only for surprise events ── */}
+          {(() => {
+            const { planningForSomeone, celebrantName } = parseQuestionnaireMeta(event.description);
+            if (!planningForSomeone) return null;
+            const name = celebrantName || 'them';
+            return (
+              <section>
+                <h2 className="text-xl font-serif mb-4 flex items-center gap-2">
+                  <Wand2 className="w-5 h-5 text-primary" /> Reveal script
+                </h2>
+
+                {!revealScript && !revealLoading && (
+                  <div className="bg-card rounded-2xl border border-border/50 p-6 flex flex-col sm:flex-row sm:items-center gap-5">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <ScrollText className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium mb-1">How will you tell {name}?</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Get a personalised script — timing, setting, exactly what to say, what to avoid, and how to handle any reaction.
+                      </p>
+                      {revealError && (
+                        <p className="text-sm text-destructive mt-2 flex items-center gap-1.5">
+                          <AlertCircle className="w-3.5 h-3.5" /> {revealError}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={generateRevealScript}
+                      className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-medium text-sm hover:bg-primary/90 transition-colors flex-shrink-0"
+                    >
+                      <Wand2 className="w-4 h-4" /> Generate
+                    </button>
+                  </div>
+                )}
+
+                {revealLoading && (
+                  <div className="bg-card rounded-2xl border border-border/50 p-8 flex flex-col items-center gap-3 text-muted-foreground">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    <p className="text-sm">Writing {name}&apos;s reveal script…</p>
+                  </div>
+                )}
+
+                {revealScript && !revealLoading && (
+                  <div className="space-y-4">
+                    {/* Timing + Setting row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[
+                        { label: '⏰ When', ...revealScript.timing },
+                        { label: '📍 Where', ...revealScript.setting },
+                      ].map(({ label, suggestion, why }) => (
+                        <div key={label} className="bg-card rounded-xl border border-border/50 p-4">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{label}</p>
+                          <p className="text-sm font-medium text-foreground mb-1">{suggestion}</p>
+                          <p className="text-xs text-muted-foreground italic">{why}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* The script */}
+                    <div className="bg-card rounded-xl border border-border/50 p-5 space-y-4">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🎬 The script</p>
+                      {[
+                        { phase: 'Opening', text: revealScript.script.opening },
+                        { phase: 'Build-up', text: revealScript.script.buildup },
+                        { phase: 'The reveal', text: revealScript.script.theReveal },
+                        { phase: 'After', text: revealScript.script.afterword },
+                      ].map(({ phase, text }) => (
+                        <div key={phase} className="flex gap-4">
+                          <div className="w-20 flex-shrink-0">
+                            <span className="text-xs font-medium text-primary bg-primary/8 px-2 py-0.5 rounded-full whitespace-nowrap">{phase}</span>
+                          </div>
+                          <p className="text-sm text-foreground leading-relaxed flex-1">&ldquo;{text}&rdquo;</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Don'ts */}
+                    <div className="bg-card rounded-xl border border-border/50 p-4">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">🚫 Avoid these</p>
+                      <ul className="space-y-1.5">
+                        {revealScript.doNots.map((d, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                            <span className="text-destructive/60 mt-0.5 flex-shrink-0">✕</span>
+                            {d}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Contingency */}
+                    <div className="bg-muted/50 rounded-xl border border-border/40 p-4">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">🆘 If they react unexpectedly</p>
+                      <p className="text-sm text-foreground leading-relaxed">{revealScript.contingency}</p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3">
+                      <button
+                        onClick={copyRevealScript}
+                        className="flex items-center gap-2 border border-border rounded-full px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                      >
+                        {revealCopied ? <Check className="w-4 h-4 text-primary" /> : <ClipboardCopy className="w-4 h-4" />}
+                        {revealCopied ? 'Copied!' : 'Copy script'}
+                      </button>
+                      <button
+                        onClick={generateRevealScript}
+                        className="flex items-center gap-2 border border-border rounded-full px-4 py-2 text-sm font-medium hover:bg-muted transition-colors text-muted-foreground"
+                      >
+                        <RefreshCw className="w-4 h-4" /> Regenerate
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </section>
+            );
+          })()}
         </div>
 
         {/* Right: stats, predictions, cost, quick actions */}

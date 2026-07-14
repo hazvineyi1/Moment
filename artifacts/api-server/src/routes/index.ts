@@ -9,6 +9,7 @@ import costsRouter from "./costs";
 import optionsRouter from "./options";
 import questionnaireRouter from "./questionnaire";
 import guestQuestionnaireRouter from "./guestQuestionnaire";
+import revealScriptRouter from "./revealScript";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(costsRouter);
 router.use(optionsRouter);
 router.use(questionnaireRouter);
 router.use(guestQuestionnaireRouter);
+router.use(revealScriptRouter);
 
 export default router;
