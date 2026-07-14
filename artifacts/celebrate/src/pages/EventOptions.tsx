@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useGetEvent, useUpdateEvent } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
-import { ArrowRight, ChevronDown, ChevronUp, Sparkles, MapPin, Clock, Users, RefreshCw } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, Sparkles, MapPin, Clock, Users, RefreshCw, Plane, Bus } from 'lucide-react';
 
 interface PlanOption {
   id: string;
@@ -12,6 +12,8 @@ interface PlanOption {
   venue: string;
   duration: string;
   priceRange: { perPersonMin: number; perPersonMax: number };
+  flightEstimate?: { perPersonMin: number; perPersonMax: number; carriers: string[] };
+  localTransport?: string[];
   highlights: string[];
   addOns: string[];
   whyThisWorks: string;
@@ -77,14 +79,37 @@ function PlanCard({
         </span>
       </div>
 
-      {/* Price */}
-      <div className="px-6 pb-4">
-        <div className="inline-flex items-baseline gap-1 bg-primary/8 rounded-2xl px-4 py-2">
-          <span className="text-2xl font-semibold text-primary">
+      {/* Pricing block */}
+      <div className="px-6 pb-4 space-y-2">
+        {/* Accommodation + experiences */}
+        <div className="flex items-center justify-between bg-primary/8 rounded-2xl px-4 py-2.5">
+          <span className="text-xs text-muted-foreground font-medium">Stay + experiences</span>
+          <span className="text-xl font-semibold text-primary">
             {formatPrice(option.priceRange.perPersonMin)}–{formatPrice(option.priceRange.perPersonMax)}
+            <span className="text-sm font-normal text-muted-foreground ml-1">pp</span>
           </span>
-          <span className="text-sm text-muted-foreground">per person</span>
         </div>
+
+        {/* Flights */}
+        {option.flightEstimate && (
+          <div className="flex items-center justify-between bg-muted/60 rounded-2xl px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <Plane className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+              <div>
+                <span className="text-xs text-muted-foreground font-medium">Flights (round-trip)</span>
+                {option.flightEstimate.carriers?.length > 0 && (
+                  <p className="text-xs text-muted-foreground/60 leading-tight">
+                    {option.flightEstimate.carriers.join(' · ')}
+                  </p>
+                )}
+              </div>
+            </div>
+            <span className="text-base font-semibold text-foreground">
+              {formatPrice(option.flightEstimate.perPersonMin)}–{formatPrice(option.flightEstimate.perPersonMax)}
+              <span className="text-xs font-normal text-muted-foreground ml-1">pp</span>
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="px-6 pb-4">
@@ -103,6 +128,21 @@ function PlanCard({
           ))}
         </ul>
       </div>
+
+      {/* Local transport */}
+      {option.localTransport && option.localTransport.length > 0 && (
+        <div className="px-6 pb-4">
+          <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase mb-3">Getting around</p>
+          <ul className="space-y-1.5">
+            {option.localTransport.map((t, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                <Bus className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Add-ons toggle */}
       {option.addOns?.length > 0 && (

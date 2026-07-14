@@ -16,6 +16,8 @@ interface PlanOption {
   venue: string;
   duration: string;
   priceRange: { perPersonMin: number; perPersonMax: number };
+  flightEstimate: { perPersonMin: number; perPersonMax: number; carriers: string[] };
+  localTransport: string[];
   highlights: string[];
   addOns: string[];
   whyThisWorks: string;
@@ -125,6 +127,8 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
 
 When guest personality profiles or a celebrant age are provided, use them to inform each plan's character, pacing, and activity mix. The whyThisWorks field must reference the group's specific personality mix or the celebrant's age/vibe — never be generic.
 
+Prices must be realistic and well-researched. priceRange covers accommodation + experiences per person (excluding flights). flightEstimate is a realistic round-trip economy/business estimate per person from a major hub near the event's home base, with 2–3 real carriers that fly that route. localTransport lists the practical ways to get around at the destination with indicative prices (e.g. "Private airport transfers ~$80 each way", "Metro day pass €10", "Rental car from €45/day").
+
 Respond with a JSON object containing an "options" array of exactly 6 objects, each with this exact shape:
 {
   "id": "option-1",
@@ -132,8 +136,10 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
   "tagline": "<one vivid sentence that makes someone immediately want this>",
   "destination": "<City/Region, Country>",
   "venue": "<specific named property or venue>",
-  "duration": "<e.g. 3 nights / 5 days>",
+  "duration": "<always a range, e.g. '3–5 nights' or '4–6 days'>",
   "priceRange": { "perPersonMin": <integer>, "perPersonMax": <integer> },
+  "flightEstimate": { "perPersonMin": <integer>, "perPersonMax": <integer>, "carriers": ["<Airline 1>", "<Airline 2>"] },
+  "localTransport": ["<option with price>", "<option with price>", "<option with price>"],
   "highlights": ["<specific highlight 1>", "<specific highlight 2>", "<specific highlight 3>"],
   "addOns": ["<optional upgrade 1>", "<optional upgrade 2>"],
   "whyThisWorks": "<one sentence: why this fits this specific group and occasion — be personal and specific>",
