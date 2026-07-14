@@ -1464,6 +1464,11 @@ export function EventHub() {
             <div className="divide-y" style={{ borderColor: 'rgba(201,169,110,0.08)' }}>
               {[
                 {
+                  label: 'Inspiration board',
+                  sub: 'Drop URLs — Instagram, TikTok, blogs — to shape the plan',
+                  href: `/events/${eventId}/inspirations`,
+                },
+                {
                   label: 'Share the plan',
                   sub: 'Show someone what you\'ve curated',
                   href: `/events/${eventId}/share-experiences`,

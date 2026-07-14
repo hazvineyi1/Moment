@@ -3,6 +3,7 @@ import { eq, and } from "drizzle-orm";
 import { db, eventsTable, guestsTable } from "@workspace/db";
 import { openai, withTimeout } from "../lib/ai";
 import { requireAuth } from "../middlewares/requireAuth";
+import { readInspirations } from "./inspirations";
 
 const router: IRouter = Router();
 
@@ -157,6 +158,14 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     personalityContext = parts.join(". ");
   }
 
+  // Read saved inspiration URLs and their AI-extracted context
+  const inspirations = readInspirations(event.description);
+  const inspirationContext = inspirations.length > 0
+    ? inspirations
+        .map(i => [i.title, i.description, i.vibes?.length ? `Vibes: ${i.vibes.join(", ")}` : ""].filter(Boolean).join(" — "))
+        .join("\n")
+    : null;
+
   const eventCtx = [
     `Occasion/type: ${event.type}`,
     ageContext ? `Celebrant age range: ${ageContext}` : null,
@@ -207,6 +216,10 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
     promptParts.push(`${dateContext}. Since timing is flexible, you may suggest the optimal season or specific month within that window that makes this destination shine — and say why.`);
   }
 
+  if (inspirationContext) {
+    promptParts.push(`STYLE INSPIRATION: The planner has pinned these experience references as mood/style guides:\n${inspirationContext}\n\nChannel the atmosphere, aesthetic, and character of these inspirations — at least 2–3 of the 6 options should feel spiritually aligned with this vibe. Do not copy destinations literally; translate the energy into real curated proposals.`);
+  }
+
   promptParts.push(`Generate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation tailored to this specific group's personality mix.`);
 
   const prompt = promptParts.join("\n\n");
@@ -216,13 +229,12 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
   try {
     const response = await withTimeout(
       openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [
           { role: "system", content: system },
           { role: "user", content: prompt },
         ],
-        max_tokens: 4000,
-        temperature: 0.9,
+        max_completion_tokens: 4000,
         response_format: { type: "json_object" },
       }),
       AI_TIMEOUT_MS,

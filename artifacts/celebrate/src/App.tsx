@@ -22,6 +22,7 @@ import { GuestQuestionnairePage } from '@/pages/GuestQuestionnairePage';
 import { ShareQuestionnaire } from '@/pages/ShareQuestionnaire';
 import { ShareExperiences } from '@/pages/ShareExperiences';
 import { ShareCollab } from '@/pages/ShareCollab';
+import { EventInspirations } from '@/pages/EventInspirations';
 import { EventInvitePage } from '@/pages/EventInvitePage';
 import { EventMemories } from '@/pages/EventMemories';
 
@@ -408,6 +409,7 @@ function AppRouter() {
             <Route path="/events/:eventId/share">{(p) => <Protected><ShareQuestionnaire eventId={p.eventId} /></Protected>}</Route>
             <Route path="/events/:eventId/share-experiences">{(p) => <Protected><ShareExperiences eventId={p.eventId} /></Protected>}</Route>
             <Route path="/events/:eventId/share-collab">{(p) => <Protected><ShareCollab eventId={p.eventId} /></Protected>}</Route>
+            <Route path="/events/:eventId/inspirations">{(p) => <Protected><EventInspirations eventId={p.eventId} /></Protected>}</Route>
             <Route path="/events/:eventId/memories">{(p) => <Protected><EventMemories eventId={p.eventId} /></Protected>}</Route>
             <Route path="/events/:eventId">{(p) => <Protected><EventHub /></Protected>}</Route>
             <Route path="/events/:eventId/options">{() => <Protected><EventOptions /></Protected>}</Route>
