@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { useGetDashboard } from '@workspace/api-client-react';
 import { useUser } from '@clerk/react';
@@ -75,9 +75,28 @@ function eventCoverImage(event: any): string {
   return pool[event.id % pool.length];
 }
 
+// Subtle permanent tilts — like photos tossed onto a table
+const CARD_TILTS = [-1.8, 1.2, -0.9, 2.1, -1.4, 0.8, -2.2, 1.6];
+
 /* ─── Event card ──────────────────────────────────────────────────────── */
 function EventCard({ event, index }: { event: any; index: number }) {
-  const hour = new Date().getHours();
+  const [placed, setPlaced] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setPlaced(true); obs.disconnect(); } },
+      { threshold: 0.15 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const tilt = CARD_TILTS[index % CARD_TILTS.length];
+  const delay = index * 90; // ms
+
   const label = event.guestCount
     ? `${event.guestCount} guests`
     : event.status === 'planning'
@@ -85,51 +104,79 @@ function EventCard({ event, index }: { event: any; index: number }) {
     : 'Draft';
 
   return (
-    <Link
-      href={`/events/${event.id}`}
-      className="group block relative overflow-hidden transition-all duration-500 hover:-translate-y-1"
-      style={{
-        backgroundColor: '#141414',
-        animationDelay: `${index * 80}ms`,
-      }}
-    >
-      {/* Image — 70% of card */}
-      <div className="relative overflow-hidden" style={{ height: '70%', minHeight: '220px' }}>
-        <img
-          src={eventCoverImage(event)}
-          alt={event.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-        {/* Subtle scrim at bottom of image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/80 via-transparent to-transparent" />
-      </div>
-
-      {/* Info panel — 30% */}
-      <div className="px-5 py-4 flex items-end justify-between" style={{ backgroundColor: '#141414' }}>
-        <div className="min-w-0 mr-3">
-          <h3
-            className="font-serif text-xl mb-1 truncate transition-colors"
-            style={{ color: '#f5f0e8' }}
-          >
-            {event.title}
-          </h3>
-          {(event.location || event.startDate) && (
-            <p
-              className="uppercase text-[9px] tracking-[0.18em] truncate"
-              style={{ color: '#8a7a65' }}
-            >
-              {[
-                event.location,
-                event.startDate ? format(parseISO(event.startDate), 'MMM yyyy') : null,
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </p>
-          )}
+    <div ref={ref} style={{ perspective: '800px' }}>
+      <Link
+        href={`/events/${event.id}`}
+        className="group block relative overflow-hidden"
+        style={{
+          backgroundColor: '#141414',
+          transform: placed
+            ? `rotate(${tilt}deg) translateY(0) scale(1)`
+            : `rotate(${tilt * 2.5}deg) translateY(-40px) scale(0.93)`,
+          opacity: placed ? 1 : 0,
+          transition: `transform ${600 + delay}ms cubic-bezier(0.34,1.56,0.64,1) ${delay}ms, opacity 500ms ease ${delay}ms`,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.55)',
+          willChange: 'transform',
+        }}
+      >
+        {/* Image — 70% of card */}
+        <div className="relative overflow-hidden" style={{ height: '70%', minHeight: '220px' }}>
+          <img
+            src={eventCoverImage(event)}
+            alt={event.title}
+            style={{
+              width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+              transform: placed ? 'scale(1)' : 'scale(1.08)',
+              transition: `transform 800ms ease ${delay + 200}ms`,
+            }}
+          />
+          {/* Scrim */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/80 via-transparent to-transparent" />
+          {/* Photo-developing shimmer overlay — fades out as image loads */}
+          <div
+            style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(135deg, rgba(20,14,8,0.9) 0%, rgba(20,14,8,0.4) 50%, transparent 100%)',
+              opacity: placed ? 0 : 1,
+              transition: `opacity 1s ease ${delay + 300}ms`,
+              pointerEvents: 'none',
+            }}
+          />
         </div>
-        <StatusPill label={label} />
-      </div>
-    </Link>
+
+        {/* Info panel */}
+        <div className="px-5 py-4 flex items-end justify-between" style={{ backgroundColor: '#141414' }}>
+          <div className="min-w-0 mr-3">
+            <h3
+              className="font-serif italic text-xl mb-1 truncate"
+              style={{ color: '#f5f0e8' }}
+            >
+              {event.title}
+            </h3>
+            {(event.location || event.startDate) && (
+              <p
+                className="uppercase text-[9px] tracking-[0.18em] truncate"
+                style={{ color: '#8a7a65' }}
+              >
+                {[
+                  event.location,
+                  event.startDate ? format(parseISO(event.startDate), 'MMM yyyy') : null,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+            )}
+          </div>
+          <StatusPill label={label} />
+        </div>
+
+        {/* Hover lift — separate from the tilt transform */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ boxShadow: 'inset 0 0 0 1px rgba(201,169,110,0.12)' }}
+        />
+      </Link>
+    </div>
   );
 }
 

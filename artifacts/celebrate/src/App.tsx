@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ClerkProvider, SignIn, SignUp, useClerk, useAuth } from '@clerk/react';
 import { setAuthTokenGetter } from '@workspace/api-client-react';
 import { Loader2 } from 'lucide-react';
@@ -142,58 +142,151 @@ function Protected({ children }: { children: React.ReactNode }) {
   return <AppLayout>{children}</AppLayout>;
 }
 
+// ── Landing background photos ──────────────────────────────────────────────
+const LANDING_PHOTOS = [
+  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=70', top: '2%',  left: '-9%',  w: 300, h: 390, tilt: -11, delay: 0.1 },
+  { src: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=70', top: '55%', left: '-7%',  w: 250, h: 310, tilt:   7, delay: 0.3 },
+  { src: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=70', top: '3%',  left: '76%',  w: 280, h: 370, tilt:   9, delay: 0.2 },
+  { src: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=70', top: '57%', left: '79%',  w: 230, h: 290, tilt:  -6, delay: 0.4 },
+];
+
 // Simple landing for unauthenticated visitors
 function LandingPage() {
   const [, setLocation] = useLocation();
-  return (
-    <div
-      className="min-h-[100dvh] flex flex-col items-center justify-center px-8 text-center relative overflow-hidden"
-      style={{ background: '#0a0a0a' }}
-    >
-      {/* Subtle gold radial glow */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%)' }}
-      />
+  const [alive, setAlive] = useState(false);
 
-      <div className="relative mb-16 max-w-xl">
-        <p
-          className="uppercase text-[10px] tracking-[0.28em] mb-10"
-          style={{ color: '#8a7a65' }}
+  useEffect(() => {
+    // Double-RAF so the CSS transition fires after first paint
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => setAlive(true)));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const t = (delay: number) => ({
+    opacity:    alive ? 1 : 0,
+    transform:  alive ? 'translateY(0)' : 'translateY(18px)',
+    transition: `opacity 1s ease ${delay}s, transform 1s ease ${delay}s`,
+  });
+
+  return (
+    <div style={{ background: '#060606', minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}>
+      <style>{`
+        @keyframes ripple-out {
+          0%   { transform: scale(0.2); opacity: 0.8; }
+          100% { transform: scale(4);   opacity: 0;   }
+        }
+        @keyframes photo-breathe {
+          0%, 100% { transform: translateY(0px);    }
+          50%       { transform: translateY(-10px);  }
+        }
+      `}</style>
+
+      {/* ── Drifting background photos ──── */}
+      {LANDING_PHOTOS.map((p, i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute', top: p.top, left: p.left,
+            width: p.w, height: p.h,
+            transform: `rotate(${p.tilt}deg)`,
+            opacity: alive ? 0.3 : 0,
+            transition: `opacity 2s ease ${p.delay + 0.5}s`,
+            boxShadow: '0 28px 90px rgba(0,0,0,0.75)',
+            pointerEvents: 'none',
+          }}
         >
-          Celebration planning, reimagined
+          {/* inner element carries the float animation so rotate isn't overwritten */}
+          <div style={{ width: '100%', height: '100%', animation: `photo-breathe ${5.5 + i * 0.8}s ease-in-out ${i * 0.9}s infinite` }}>
+            <img src={p.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          </div>
+        </div>
+      ))}
+
+      {/* ── Raindrop ripple rings ──── */}
+      {[0, 1, 2, 3].map(i => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute', top: '50%', left: '50%',
+            width: 120, height: 120,
+            marginTop: -60, marginLeft: -60,
+            borderRadius: '50%',
+            border: '1px solid rgba(201,169,110,0.3)',
+            animation: `ripple-out 5.5s ease-out ${i * 1.35}s infinite`,
+            pointerEvents: 'none',
+          }}
+        />
+      ))}
+
+      {/* ── Dark vignette over photos ──── */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse 55% 65% at 50% 50%, rgba(6,6,6,0.25) 0%, rgba(6,6,6,0.82) 60%, rgba(6,6,6,0.97) 100%)',
+      }} />
+
+      {/* ── Hero content ──── */}
+      <div style={{
+        position: 'relative', zIndex: 10,
+        minHeight: '100dvh',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        textAlign: 'center', padding: '32px',
+      }}>
+        <p style={{
+          fontFamily: "'Outfit', sans-serif",
+          fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase',
+          color: '#8a7a65', marginBottom: '36px',
+          ...t(0.25),
+        }}>
+          Every celebration deserves a memory
         </p>
-        <h1
-          className="font-serif italic leading-[1.0] mb-6"
-          style={{ fontSize: 'clamp(56px, 8vw, 96px)', color: '#f5f0e8' }}
-        >
+
+        <h1 style={{
+          fontFamily: "'Playfair Display', serif",
+          fontStyle: 'italic',
+          fontSize: 'clamp(64px, 10vw, 118px)',
+          lineHeight: 0.92, color: '#f5f0e8',
+          marginBottom: '28px',
+          ...t(0.5),
+        }}>
           A-Moment
         </h1>
-        <p className="text-sm font-light leading-relaxed max-w-sm mx-auto" style={{ color: '#8a7a65' }}>
-          From intimate winery weekends to month-long sailing expeditions. Whatever you are celebrating, A-Moment plans it.
-        </p>
-      </div>
 
-      <div className="relative flex flex-col items-center gap-5">
-        <button
-          onClick={() => setLocation('/sign-up')}
-          className="group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-colors"
-          style={{ color: '#c9a96e' }}
-        >
-          <span>Get started</span>
-          <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">
-            ———›
-          </span>
-        </button>
-        <button
-          onClick={() => setLocation('/sign-in')}
-          className="text-[10px] tracking-[0.15em] uppercase transition-colors"
-          style={{ color: '#8a7a65' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
-        >
-          Already have an account? Sign in
-        </button>
+        <p style={{
+          fontFamily: "'Outfit', sans-serif",
+          fontWeight: 300, fontSize: '14px', lineHeight: 1.75,
+          color: '#8a7a65', maxWidth: '340px', marginBottom: '60px',
+          ...t(0.75),
+        }}>
+          From intimate winery weekends to month-long sailing expeditions.
+          Whatever you are celebrating, we plan it — beautifully.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', ...t(1.0) }}>
+          <button
+            onClick={() => setLocation('/sign-up')}
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              display: 'flex', alignItems: 'center', gap: '16px',
+              fontSize: '11px', letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: '#c9a96e', background: 'none', border: 'none', cursor: 'pointer',
+            }}
+          >
+            <span>Begin your story</span>
+            <span style={{ fontSize: '17px', letterSpacing: '-0.08em' }}>———›</span>
+          </button>
+          <button
+            onClick={() => setLocation('/sign-in')}
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
+              color: '#8a7a65', background: 'none', border: 'none', cursor: 'pointer',
+              transition: 'color 0.3s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+          >
+            Already have an account? Sign in
+          </button>
+        </div>
       </div>
     </div>
   );
