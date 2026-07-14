@@ -45,6 +45,21 @@ router.get("/events/:eventId/guests", requireAuth, async (req, res): Promise<voi
   if (!params.success) { res.status(400).json({ error: "Invalid event ID" }); return; }
 
   const guests = await db.select().from(guestsTable).where(eq(guestsTable.eventId, params.data.eventId));
+
+  // Backfill tokens for guests that were created before the questionnaire feature existed.
+  const missing = guests.filter(g => !g.questionnaireToken);
+  if (missing.length > 0) {
+    await Promise.all(
+      missing.map(g =>
+        db.update(guestsTable)
+          .set({ questionnaireToken: randomUUID() })
+          .where(eq(guestsTable.id, g.id))
+          .returning()
+          .then(([updated]) => { g.questionnaireToken = updated.questionnaireToken; })
+      )
+    );
+  }
+
   res.json(ListGuestsResponse.parse(guests.map(mapGuest)));
 });
 
