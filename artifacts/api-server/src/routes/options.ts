@@ -120,11 +120,22 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     guestProfilesText ? `Guest personalities: ${guestProfilesText}` : null,
   ].filter(Boolean).join("\n");
 
-  const system = `You are A-Moment — a world-class celebration curator. Generate exactly 6 distinct, opinionated, specific plan proposals for a group celebration. Each option must feel meaningfully different from the others in destination, price tier, and character. Be specific: name real venues, real neighborhoods, real properties that actually exist.
+  const system = `You are A-Moment — a world-class celebration curator. Generate exactly 6 distinct, opinionated, specific plan proposals for a group celebration.
+
+MANDATORY GEOGRAPHIC SPREAD — assign each of the 6 slots to exactly one of the following tiers, in this order. Do not deviate, do not cluster multiple options in the same country or region:
+
+  option-1: LOCAL — within the home country, preferably the same city or region as the group's home base. A day trip, local venue, or nearby resort.
+  option-2: NATIONAL — a different region of the same country, requiring a domestic flight or long train ride.
+  option-3: ONE CONTINENT — a destination on a continent that is NOT the home continent and NOT the continent used in option-4 or option-5. Pick a compelling city or region on this continent.
+  option-4: ANOTHER CONTINENT — a destination on a second continent different from all others. Must be a genuinely different part of the world (e.g. if option-3 was Europe, option-4 could be Asia, Africa, South America, or Oceania — never the same continent twice).
+  option-5: YET ANOTHER CONTINENT — a third distinct continent, or a dramatically different region of one already used only if no untouched continent remains. Push for geographic distance and cultural contrast.
+  option-6: CRUISE OR WATER EXCURSION — a cruise, river cruise, sailing charter, liveaboard dive trip, private yacht charter, or any experience where the vessel is the primary venue. Can be anywhere in the world. Name the cruise line or charter operator, the route, and the ship or vessel type.
+
+Within these tiers, vary price points and character. Across all 6 options no two destinations may be in the same country. Be specific: name real venues, real neighborhoods, real properties, real ships or charter companies that actually exist.
 
 When guest personality profiles or a celebrant age are provided, use them to inform each plan's character, pacing, and activity mix. The whyThisWorks field must reference the group's specific personality mix or the celebrant's age/vibe — never be generic.
 
-Prices must be realistic and well-researched. priceRange covers accommodation + experiences per person (excluding flights). flightEstimate is a realistic round-trip economy/business estimate per person from a major hub near the event's home base, with 2–3 real carriers that fly that route. localTransport lists the practical ways to get around at the destination with indicative prices (e.g. "Private airport transfers ~$80 each way", "Metro day pass €10", "Rental car from €45/day").
+Prices must be realistic and well-researched. priceRange covers accommodation + experiences per person (excluding flights). flightEstimate is a realistic round-trip economy/business estimate per person from a major hub near the event's home base, with 2–3 real carriers that fly that route. For option-6 (cruise/water), flightEstimate should cover getting to the departure port. localTransport lists the practical ways to get around at the destination with indicative prices (e.g. "Private airport transfers ~$80 each way", "Metro day pass €10", "Rental car from €45/day"). For option-6 list embarkation logistics instead.
 
 Respond with a JSON object containing an "options" array of exactly 6 objects, each with this exact shape:
 {
@@ -159,7 +170,7 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
     promptParts.push(`STYLE INSPIRATION: The planner has pinned these experience references as mood/style guides:\n${inspirationContext}\n\nChannel the atmosphere, aesthetic, and character of these inspirations — at least 2–3 of the 6 options should feel spiritually aligned with this vibe. Do not copy destinations literally; translate the energy into real curated proposals.`);
   }
 
-  promptParts.push(`Generate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation tailored to this specific group's personality mix.`);
+  promptParts.push(`Generate exactly 6 plan options following the mandatory geographic spread defined in your instructions: option-1 LOCAL, option-2 NATIONAL, option-3/4/5 each on a distinct continent, option-6 a CRUISE or WATER EXCURSION. No two options may share a country. Vary price points across the six slots. Each option must feel like a genuine editorial recommendation tailored to this specific group — not a generic tourist suggestion.`);
 
   try {
     const response = await withTimeout(
