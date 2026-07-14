@@ -6,13 +6,17 @@ import {
   MessageSquare, Users, Sparkles, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
   Pencil, Check, X, Link, Copy, Wand2, ScrollText, AlertCircle, ClipboardCopy,
+  ClipboardList, ChevronDown,
 } from 'lucide-react';
+import { QUESTIONS } from '../lib/questionnaire-questions';
 import { format, parseISO } from 'date-fns';
 
 const CTX_MARKER = '__HOST_CONTEXT__:';
 const PLAN_MARKER = '__CHOSEN_PLAN__:';
 const PLANNING_FOR_MARKER = '__PLANNING_FOR__:';
 const CELEBRANT_MARKER = '__CELEBRANT__:';
+const Q_DISABLED_MARKER = '__Q_DISABLED__:';
+const Q_CUSTOM_MARKER = '__Q_CUSTOM__:';
 
 function parseQuestionnaireMeta(description: string | null | undefined): {
   planningForSomeone: boolean;
@@ -58,6 +62,200 @@ function buildDescriptionWithContext(existingDesc: string | null | undefined, ho
   if (hostContext.trim()) parts.push(`${CTX_MARKER}${hostContext.trim()}`);
   if (planPart) parts.push(planPart);
   return parts.filter(Boolean).join('\n');
+}
+
+/* ─── Questionnaire question editor ────────────────────────────────── */
+function parseQuestionConfig(description: string | null | undefined): {
+  disabledKeys: Set<string>;
+  customQuestions: string[];
+} {
+  const desc = description ?? '';
+  let disabledKeys = new Set<string>();
+  let customQuestions: string[] = [];
+  for (const line of desc.split('\n')) {
+    if (line.startsWith(Q_DISABLED_MARKER)) {
+      try { disabledKeys = new Set(JSON.parse(line.slice(Q_DISABLED_MARKER.length))); } catch {}
+    }
+    if (line.startsWith(Q_CUSTOM_MARKER)) {
+      try { customQuestions = JSON.parse(line.slice(Q_CUSTOM_MARKER.length)); } catch {}
+    }
+  }
+  return { disabledKeys, customQuestions };
+}
+
+function buildDescriptionWithQuestionConfig(
+  existingDesc: string | null | undefined,
+  disabledKeys: string[],
+  customQuestions: string[],
+): string {
+  const lines = (existingDesc ?? '').split('\n').filter(
+    line => !line.startsWith(Q_DISABLED_MARKER) && !line.startsWith(Q_CUSTOM_MARKER),
+  );
+  if (disabledKeys.length > 0) lines.push(`${Q_DISABLED_MARKER}${JSON.stringify(disabledKeys)}`);
+  if (customQuestions.length > 0) lines.push(`${Q_CUSTOM_MARKER}${JSON.stringify(customQuestions)}`);
+  return lines.join('\n').trim();
+}
+
+function QuestionnaireEditor({
+  eventId, description, celebrantName,
+}: { eventId: number; description: string | null | undefined; celebrantName: string }) {
+  const { disabledKeys: initDisabled, customQuestions: initCustom } = parseQuestionConfig(description);
+  const [open, setOpen] = useState(false);
+  const [disabledKeys, setDisabledKeys] = useState<Set<string>>(initDisabled);
+  const [customQuestions, setCustomQuestions] = useState<string[]>(initCustom);
+  const [newQ, setNewQ] = useState('');
+  const [saved, setSaved] = useState(false);
+  const updateEvent = useUpdateEvent();
+
+  useEffect(() => {
+    const { disabledKeys: d, customQuestions: c } = parseQuestionConfig(description);
+    setDisabledKeys(d);
+    setCustomQuestions(c);
+  }, [description]);
+
+  const toggleKey = (key: string) =>
+    setDisabledKeys(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+
+  const addCustom = () => {
+    const text = newQ.trim();
+    if (!text) return;
+    setCustomQuestions(prev => [...prev, text]);
+    setNewQ('');
+  };
+
+  const removeCustom = (i: number) =>
+    setCustomQuestions(prev => prev.filter((_, j) => j !== i));
+
+  const save = () => {
+    const newDesc = buildDescriptionWithQuestionConfig(description, [...disabledKeys], customQuestions);
+    updateEvent.mutate(
+      { eventId, data: { description: newDesc } },
+      {
+        onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2000); },
+      },
+    );
+  };
+
+  const activeCount = QUESTIONS.length - disabledKeys.size + customQuestions.length;
+
+  return (
+    <div className="bg-card rounded-2xl border border-border/50 mb-6">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left"
+      >
+        <div className="flex items-center gap-2">
+          <ClipboardList className="w-4 h-4 text-primary flex-shrink-0" />
+          <span className="font-medium text-sm">Questionnaire questions</span>
+          <span className="text-xs text-muted-foreground px-2 py-0.5 bg-muted rounded-full">{activeCount} active</span>
+        </div>
+        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="border-t border-border/40 px-5 pb-5 pt-4 space-y-3">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            These are the questions {celebrantName || 'your celebrant'} will see when they open the link. Toggle any off, or add your own below.
+          </p>
+
+          {/* Built-in questions */}
+          {QUESTIONS.map(q => {
+            const enabled = !disabledKeys.has(q.key);
+            return (
+              <div key={q.key} className="flex items-start gap-3">
+                <button
+                  type="button"
+                  onClick={() => toggleKey(q.key)}
+                  className={`relative flex-shrink-0 mt-0.5 w-9 h-5 rounded-full transition-colors duration-200 ${
+                    enabled ? 'bg-primary' : 'bg-muted-foreground/25'
+                  }`}
+                  aria-label={enabled ? 'Disable question' : 'Enable question'}
+                >
+                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
+                    enabled ? 'translate-x-4' : 'translate-x-0.5'
+                  }`} />
+                </button>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm leading-snug transition-colors ${
+                    enabled ? 'text-foreground' : 'text-muted-foreground/50 line-through'
+                  }`}>
+                    {q.label}
+                  </p>
+                  {q.options && enabled && (
+                    <p className="text-xs text-muted-foreground/60 mt-0.5 truncate">
+                      {q.options.slice(0, 3).join(' · ')}{q.options.length > 3 ? ` +${q.options.length - 3}` : ''}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Custom questions */}
+          {customQuestions.map((text, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <div className="relative flex-shrink-0 mt-0.5 w-9 h-5 rounded-full bg-primary">
+                <span className="absolute top-0.5 translate-x-4 w-4 h-4 bg-white rounded-full shadow" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm leading-snug text-foreground">{text}</p>
+                <p className="text-xs text-muted-foreground/60 mt-0.5">Custom · freetext</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => removeCustom(i)}
+                className="flex-shrink-0 mt-0.5 text-muted-foreground/50 hover:text-destructive transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+
+          {/* Add custom question */}
+          <div className="flex gap-2 pt-2 border-t border-border/30">
+            <input
+              type="text"
+              value={newQ}
+              onChange={e => setNewQ(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } }}
+              placeholder="Add a question…"
+              className="flex-1 text-sm bg-background border border-border rounded-full px-4 py-1.5 outline-none focus:border-primary placeholder:text-muted-foreground/50 transition-colors"
+            />
+            <button
+              type="button"
+              onClick={addCustom}
+              disabled={!newQ.trim()}
+              className="px-4 py-1.5 bg-muted text-foreground rounded-full text-xs font-medium hover:bg-muted/70 disabled:opacity-40 transition-colors"
+            >
+              Add
+            </button>
+          </div>
+
+          {/* Save */}
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={save}
+              disabled={updateEvent.isPending}
+              className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            >
+              {updateEvent.isPending
+                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                : saved
+                ? <Check className="w-3.5 h-3.5" />
+                : null}
+              {saved ? 'Saved' : 'Save'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 /* ─── Per-event context panel ───────────────────────────────────────── */
@@ -578,7 +776,12 @@ export function EventHub() {
         const { planningForSomeone, celebrantName, celebrantAnswered } = parseQuestionnaireMeta(event.description);
         const token = (event as any).questionnaireToken;
         if (planningForSomeone && !celebrantAnswered) {
-          return <QuestionnaireBanner celebrantName={celebrantName} questionnaireToken={token} />;
+          return (
+            <>
+              <QuestionnaireBanner celebrantName={celebrantName} questionnaireToken={token} />
+              <QuestionnaireEditor eventId={id} description={event.description} celebrantName={celebrantName} />
+            </>
+          );
         }
         return null;
       })()}

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, Check, AlertCircle, Sparkles } from 'lucide-react';
+import { QUESTIONS } from '../lib/questionnaire-questions';
+import type { Question } from '../lib/questionnaire-questions';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -64,79 +66,13 @@ const BALLOON_DATA = [
   { color: '#FF6B6B', size: '50px', left: '47%', dur: '7.8s',delay: '0.7s',  sway: '22px', r: '-4deg' },
 ];
 
-// ─── Questions ────────────────────────────────────────────────────────────────
-const QUESTIONS = [
-  {
-    key: 'vibe',
-    label: "What's your ideal vibe?",
-    hint: 'Pick everything that feels right',
-    options: ['Intimate & low-key', 'Fun & energetic', 'Luxurious & indulgent', 'Wild & unpredictable', 'Adventurous & outdoorsy', 'Cultural & meaningful'],
-    multi: true,
-  },
-  {
-    key: 'crowd',
-    label: "Who's going to be there?",
-    hint: 'Helps us plan the right atmosphere',
-    options: ['Close friends only', 'Mix of friends & family', 'Mostly family', 'Partner + a few friends', 'Large group (20+)', 'Just the two of us'],
-    multi: true,
-  },
-  {
-    key: 'musthaves',
-    label: "Non-negotiable must-haves?",
-    hint: 'Pick everything that applies',
-    options: ['Great food', 'Good music', 'Dancing', 'Adventure / activity', 'Beautiful setting', 'Good wine / cocktails', 'Privacy', 'Surprises'],
-    multi: true,
-  },
-  {
-    key: 'surprises',
-    label: 'How do you feel about surprises?',
-    hint: 'Be honest — we want to get this right',
-    options: ['I love them — the more the better', 'A few small surprises are nice', 'I prefer to know the plan', 'Please no surprises at all'],
-    multi: false,
-  },
-  {
-    key: 'duration',
-    label: 'Ideal celebration length?',
-    hint: 'Think about what would feel just right',
-    options: ['A few hours (dinner, drinks)', 'A full day out', 'A whole weekend away', 'Multiple days / a trip'],
-    multi: false,
-  },
-  {
-    key: 'dealbreakers',
-    label: 'What should we avoid?',
-    hint: 'Pick all that apply',
-    options: ['Too many people', 'Anything too planned/rigid', 'Anything cheesy or generic', 'Being the centre of attention', 'Spending too much', 'Outdoors in bad weather', 'Loud venues / clubs'],
-    multi: true,
-  },
-  {
-    key: 'dietary',
-    label: 'Any dietary or access needs?',
-    hint: 'So we can plan venues and food properly',
-    options: ['Vegetarian', 'Vegan', 'Gluten-free', 'Halal', 'Kosher', 'No alcohol', 'Wheelchair access needed', 'None'],
-    multi: true,
-    optional: true,
-  },
-  {
-    key: 'budget',
-    label: 'Your budget comfort zone per person?',
-    hint: 'Rough guide — no commitment',
-    options: ['Under £100', '£100–£300', '£300–£600', '£600–£1,200', 'No limit'],
-    multi: false,
-  },
-  {
-    key: 'note',
-    label: 'Anything else the planner should know?',
-    hint: 'Dreams, ideas, things that matter to you',
-    type: 'text',
-    optional: true,
-  },
-];
-
 interface EventInfo {
   eventTitle: string;
   eventType: string;
   eventDate: string | null;
   eventLocation: string | null;
+  disabledKeys: string[];
+  customQuestions: string[];
 }
 
 // ─── Balloon scene ─────────────────────────────────────────────────────────────
@@ -231,7 +167,19 @@ export function QuestionnairePage({ token }: { token: string }) {
       .catch(() => setLoadError(true));
   }, [token]);
 
-  const q = QUESTIONS[step];
+  // Build the active question list from server config
+  const activeQuestions = [
+    ...QUESTIONS.filter(q => !(eventInfo?.disabledKeys ?? []).includes(q.key)),
+    ...(eventInfo?.customQuestions ?? []).map((text, i) => ({
+      key: `custom_${i}`,
+      label: text,
+      hint: 'Your answer',
+      type: 'text' as const,
+      optional: true,
+    })),
+  ];
+
+  const q = activeQuestions[step] ?? activeQuestions[0];
 
   const toggleChip = (key: string, val: string, multi: boolean) => {
     setAnswers(prev => {
@@ -244,7 +192,7 @@ export function QuestionnairePage({ token }: { token: string }) {
   };
 
   const next = () => {
-    if (step < QUESTIONS.length - 1) setStep(s => s + 1);
+    if (step < activeQuestions.length - 1) setStep(s => s + 1);
     else handleSubmit();
   };
 
@@ -314,7 +262,7 @@ export function QuestionnairePage({ token }: { token: string }) {
   // ── Question step ──────────────────────────────────────────────────────────
   const chipAnswers = (answers[q.key] as string[]) ?? [];
   const textAnswer = (answers[q.key] as string) ?? '';
-  const isLast = step === QUESTIONS.length - 1;
+  const isLast = step === activeQuestions.length - 1;
   const hasAnswer = q.type === 'text' ? true : chipAnswers.length > 0;
   const canNext = q.optional ? true : hasAnswer;
 
@@ -331,7 +279,7 @@ export function QuestionnairePage({ token }: { token: string }) {
         {/* Progress bar */}
         <div className="px-6">
           <div className="flex gap-1 mb-1">
-            {QUESTIONS.map((_, i) => (
+            {activeQuestions.map((_, i) => (
               <div
                 key={i}
                 className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= step ? 'bg-primary' : 'bg-muted'}`}
@@ -339,7 +287,7 @@ export function QuestionnairePage({ token }: { token: string }) {
             ))}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            {step + 1} of {QUESTIONS.length}
+            {step + 1} of {activeQuestions.length}
           </p>
         </div>
 
