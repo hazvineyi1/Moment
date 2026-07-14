@@ -6,7 +6,7 @@ import {
   MessageSquare, Users, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
   Pencil, Check, X, Link, Copy, Wand2, ScrollText, AlertCircle, ClipboardCopy,
-  ClipboardList, ChevronDown,
+  ClipboardList, ChevronDown, Share2,
 } from 'lucide-react';
 import { QUESTIONS } from '../lib/questionnaire-questions';
 import { format, parseISO } from 'date-fns';
@@ -1283,6 +1283,64 @@ export function EventHub() {
                     </button>
                   );
                 })}
+              </div>
+            );
+          })()}
+
+          {/* Invite co-planner */}
+          {(() => {
+            const [copiedInvite, setCopiedInvite] = React.useState(false);
+            const inviteUrl = `${window.location.origin}/i/${eventId}`;
+            const inviteMsg = `Hey! I'm planning ${event.title ? `"${event.title}"` : 'something special'} on A-Moment and would love your input. Take a look: ${inviteUrl}`;
+
+            const copyInvite = () => {
+              navigator.clipboard.writeText(inviteMsg);
+              setCopiedInvite(true);
+              setTimeout(() => setCopiedInvite(false), 2500);
+            };
+            const whatsappInvite = () => window.open(`https://wa.me/?text=${encodeURIComponent(inviteMsg)}`, '_blank');
+            const smsInvite = () => { window.location.href = `sms:?body=${encodeURIComponent(inviteMsg)}`; };
+
+            return (
+              <div style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}>
+                <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(201,169,110,0.1)' }}>
+                  <p className="uppercase text-[10px] tracking-[0.22em]" style={{ color: '#8a7a65' }}>Invite to plan</p>
+                </div>
+                <div className="px-5 py-4">
+                  <p className="text-xs font-light mb-4" style={{ color: '#8a7a65', lineHeight: 1.6 }}>
+                    Bring in a friend or partner to help choose and plan together.
+                  </p>
+                  <div className="space-y-2">
+                    <button
+                      onClick={copyInvite}
+                      className="w-full flex items-center gap-3 py-2.5 px-4 text-left text-sm font-light rounded transition-colors"
+                      style={{ border: '1px solid rgba(201,169,110,0.2)', color: copiedInvite ? '#c9a96e' : '#f5f0e8', background: copiedInvite ? 'rgba(201,169,110,0.05)' : 'transparent' }}
+                    >
+                      {copiedInvite ? <Check className="w-4 h-4 flex-shrink-0" /> : <Copy className="w-4 h-4 flex-shrink-0" />}
+                      {copiedInvite ? 'Copied!' : 'Copy invite link'}
+                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={whatsappInvite}
+                        className="flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-light rounded transition-colors"
+                        style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#8a7a65' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
+                        onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+                      >
+                        <Share2 className="w-3.5 h-3.5" /> WhatsApp
+                      </button>
+                      <button
+                        onClick={smsInvite}
+                        className="flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-light rounded transition-colors"
+                        style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#8a7a65' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
+                        onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+                      >
+                        <Share2 className="w-3.5 h-3.5" /> SMS
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })()}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useGetEvent, useUpdateEvent } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
-import { ArrowRight, ChevronDown, ChevronUp, Loader2, MapPin, Clock, Users, RefreshCw, Plane, Bus } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, Loader2, MapPin, Clock, Users, RefreshCw, Plane, Bus, Copy, Check, MessageSquare } from 'lucide-react';
 
 interface PlanOption {
   id: string;
@@ -229,6 +229,91 @@ function LoadingState() {
       >
         {LOADING_LINES[lineIdx]}
       </p>
+    </div>
+  );
+}
+
+function formatOptionsMessage(eventTitle: string, options: PlanOption[]): string {
+  const lines: string[] = [
+    `🎉 6 ideas for ${eventTitle}:`,
+    '',
+  ];
+  const fmt = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `${n}`;
+  options.forEach((opt, i) => {
+    lines.push(`${i + 1}. ${opt.name}`);
+    lines.push(`   ${opt.tagline}`);
+    lines.push(`   📍 ${opt.destination} · ${opt.duration} · ${fmt(opt.priceRange.perPersonMin)}–${fmt(opt.priceRange.perPersonMax)} pp`);
+    if (i < options.length - 1) lines.push('');
+  });
+  lines.push('');
+  lines.push('Which catches your eye?');
+  return lines.join('\n');
+}
+
+function ShareOptionsBar({ options, eventTitle }: { options: PlanOption[]; eventTitle: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const message = formatOptionsMessage(eventTitle, options);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  const handleSMS = () => {
+    window.location.href = `sms:?body=${encodeURIComponent(message)}`;
+  };
+
+  return (
+    <div
+      className="mt-12 p-6"
+      style={{ border: '1px solid rgba(201,169,110,0.18)', background: 'rgba(201,169,110,0.03)' }}
+    >
+      <p className="uppercase text-[10px] tracking-[0.22em] mb-4" style={{ color: '#8a7a65', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
+        Share these options
+      </p>
+      <p className="text-sm font-light mb-5" style={{ color: '#8a7a65' }}>
+        Send all 6 plans to a friend or partner so they can weigh in before you decide.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all"
+          style={{
+            border: '1px solid rgba(201,169,110,0.35)',
+            color: copied ? '#c9a96e' : '#f5f0e8',
+            background: copied ? 'rgba(201,169,110,0.08)' : 'transparent',
+          }}
+        >
+          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          {copied ? 'Copied!' : 'Copy to clipboard'}
+        </button>
+        <button
+          onClick={handleWhatsApp}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all"
+          style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+        >
+          <MessageSquare className="w-4 h-4" />
+          WhatsApp
+        </button>
+        <button
+          onClick={handleSMS}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all"
+          style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+        >
+          <MessageSquare className="w-4 h-4" />
+          iMessage / SMS
+        </button>
+      </div>
     </div>
   );
 }
