@@ -120,7 +120,7 @@ export function ShareCollab({ eventId }: { eventId: string }) {
         onChange={e => setRecipientName(e.target.value)}
         placeholder="e.g. Jamie"
         className="w-full px-4 py-3 rounded-xl text-sm outline-none mb-6 transition-all"
-        style={{ background: '#141414', border: '1px solid rgba(201,169,110,0.15)', color: '#f5f0e8' }}
+        style={{ background: '#242424', border: '1px solid rgba(201,169,110,0.15)', color: '#f5f0e8' }}
         onFocus={e => (e.currentTarget.style.borderColor = 'rgba(201,169,110,0.4)')}
         onBlur={e => (e.currentTarget.style.borderColor = 'rgba(201,169,110,0.15)')}
       />

@@ -50,7 +50,7 @@ function AddMemoryModal({ onAdd, onClose }: { onAdd: (url: string, caption: stri
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
-        background: '#141414', width: '100%', maxWidth: 480,
+        background: '#242424', width: '100%', maxWidth: 480,
         border: '1px solid rgba(201,169,110,0.15)',
         padding: 40, position: 'relative',
         animation: 'modal-up 0.3s ease both',
@@ -139,7 +139,7 @@ function MemoryCard({ memory, onDelete, index }: { memory: Memory; onDelete: () 
       style={{
         position: 'relative',
         overflow: 'hidden',
-        background: '#141414',
+        background: '#242424',
         animation: `card-appear 0.5s ease ${index * 60}ms both`,
       }}
       onMouseEnter={() => setHovered(true)}

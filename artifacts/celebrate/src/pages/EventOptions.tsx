@@ -257,7 +257,7 @@ function VisualizeModal({
                   >
                     <Camera className="w-7 h-7" style={{ color: 'rgba(201,169,110,0.4)' }} />
                     <div className="text-center">
-                      <p className="text-sm font-light" style={{ color: '#a89880' }}>
+                      <p className="text-sm font-normal" style={{ color: '#a89880' }}>
                         Drop a photo here, or tap to browse
                       </p>
                       <p className="text-xs mt-1" style={{ color: 'rgba(138,122,101,0.5)' }}>
@@ -289,7 +289,7 @@ function VisualizeModal({
                   </div>
                   <p
                     key={lineIdx}
-                    className="text-sm font-light text-center animate-in fade-in slide-in-from-bottom-2 duration-500"
+                    className="text-sm font-normal text-center animate-in fade-in slide-in-from-bottom-2 duration-500"
                     style={{ color: '#a89880' }}
                   >
                     {VIZ_LOADING_LINES[lineIdx]}
@@ -351,7 +351,7 @@ function PlanCard({
   return (
     <div
       className="group relative overflow-hidden transition-all duration-300"
-      style={{ border: '1px solid rgba(201,169,110,0.12)', background: '#141414' }}
+      style={{ border: '1px solid rgba(201,169,110,0.12)', background: '#242424' }}
       onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,169,110,0.3)')}
       onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(201,169,110,0.12)')}
     >
@@ -371,7 +371,7 @@ function PlanCard({
           )}
         </div>
         <h2 className="font-serif text-2xl md:text-3xl leading-tight mb-2" style={{ color: '#f5f0e8' }}>{option.name}</h2>
-        <p className="text-sm font-light leading-relaxed" style={{ color: '#a89880' }}>{option.tagline}</p>
+        <p className="text-sm font-normal leading-relaxed" style={{ color: '#a89880' }}>{option.tagline}</p>
 
         {option.travelStyleMatch && (
           <div className="mt-3 flex items-center gap-1.5">
@@ -415,7 +415,7 @@ function PlanCard({
           <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>Stay + experiences</span>
           <span className="font-serif text-xl" style={{ color: '#c9a96e' }}>
             {formatPrice(option.priceRange.perPersonMin)}–{formatPrice(option.priceRange.perPersonMax)}
-            <span className="text-xs font-light ml-1" style={{ color: '#a89880' }}>pp</span>
+            <span className="text-xs font-normal ml-1" style={{ color: '#a89880' }}>pp</span>
           </span>
         </div>
 
@@ -435,7 +435,7 @@ function PlanCard({
                 )}
               </div>
             </div>
-            <span className="text-base font-light" style={{ color: '#f5f0e8' }}>
+            <span className="text-base font-normal" style={{ color: '#f5f0e8' }}>
               {formatPrice(option.flightEstimate.perPersonMin)}–{formatPrice(option.flightEstimate.perPersonMax)}
               <span className="text-xs ml-1" style={{ color: '#a89880' }}>pp</span>
             </span>
@@ -535,7 +535,7 @@ function PlanCard({
           }}
         >
           <span>{isChoosing ? 'Locking in your plan…' : 'Choose this plan'}</span>
-          <span className="font-light tracking-[-0.08em] text-base">→</span>
+          <span className="font-normal tracking-[-0.08em] text-base">→</span>
         </button>
       </div>
     </div>
@@ -604,7 +604,7 @@ function ShareOptionsBar({ options, eventTitle }: { options: PlanOption[]; event
       <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
         Share these options
       </p>
-      <p className="text-sm font-light mb-5" style={{ color: '#a89880' }}>
+      <p className="text-sm font-normal mb-5" style={{ color: '#a89880' }}>
         Send all 6 plans to a friend or partner so they can weigh in before you decide.
       </p>
       <div className="flex flex-wrap gap-3">
@@ -749,7 +749,7 @@ export function EventOptions() {
                 Six directions.{' '}
                 <span className="italic" style={{ color: '#a89880' }}>Pick one.</span>
               </h1>
-              <p className="text-sm font-light max-w-lg leading-relaxed" style={{ color: '#a89880' }}>
+              <p className="text-sm font-normal max-w-lg leading-relaxed" style={{ color: '#a89880' }}>
                 Each is a real, specific plan. Once you choose, A-Moment will help you lock in every detail.
               </p>
             </div>

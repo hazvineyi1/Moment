@@ -125,7 +125,7 @@ export function EventInspirations({ eventId }: Props) {
                 placeholder="https://www.instagram.com/reel/..."
                 className="w-full pl-10 pr-4 py-3 rounded-xl text-sm outline-none transition-all"
                 style={{
-                  background: '#141414',
+                  background: '#242424',
                   border: '1px solid rgba(201,169,110,0.15)',
                   color: '#f5f0e8',
                 }}
@@ -164,7 +164,7 @@ export function EventInspirations({ eventId }: Props) {
             style={{ border: '1px dashed rgba(201,169,110,0.18)' }}
           >
             <Sparkles className="w-8 h-8 mb-3" style={{ color: 'rgba(201,169,110,0.3)' }} />
-            <p className="text-sm font-light" style={{ color: '#a89880' }}>
+            <p className="text-sm font-normal" style={{ color: '#a89880' }}>
               No inspirations yet. Paste your first URL above.
             </p>
           </div>
@@ -220,7 +220,7 @@ export function EventInspirations({ eventId }: Props) {
                   </div>
 
                   {insp.description && (
-                    <p className="text-[11px] font-light leading-relaxed line-clamp-2 mb-2" style={{ color: '#a89880' }}>
+                    <p className="text-[11px] font-normal leading-relaxed line-clamp-2 mb-2" style={{ color: '#a89880' }}>
                       {insp.description}
                     </p>
                   )}
@@ -251,7 +251,7 @@ export function EventInspirations({ eventId }: Props) {
             style={{ background: 'rgba(201,169,110,0.03)', border: '1px solid rgba(201,169,110,0.1)' }}
           >
             <p className="text-[11px] tracking-[0.15em] uppercase mb-1.5" style={{ color: '#a89880' }}>How A-Moment uses this</p>
-            <p className="text-xs font-light leading-relaxed" style={{ color: '#a89880' }}>
+            <p className="text-xs font-normal leading-relaxed" style={{ color: '#a89880' }}>
               When you generate or regenerate plan options, A-Moment reads the vibe, atmosphere, and style
               from your {inspirations.length} inspiration{inspirations.length !== 1 ? 's' : ''} and uses
               them to shape the character of each proposal — venues, activities, and overall feel.

@@ -658,7 +658,7 @@ function CelebrantAnsweredCard({
               <p className="text-[11px] tracking-[0.18em] uppercase mb-1" style={{ color: '#a89880' }}>
                 {questionMap[key] ?? key}
               </p>
-              <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
+              <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
                 {value}
               </p>
             </div>
@@ -692,7 +692,7 @@ function CelebrantPreferencesCard({
             <p className="text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: '#a89880' }}>
               {questionMap[key] ?? key}
             </p>
-            <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
+            <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
               {value}
             </p>
           </div>
@@ -869,11 +869,11 @@ function PlanningJourney({
                     />
                   )}
                   <div
-                    className="w-[11px] h-[11px] rounded-full relative z-10"
+                    className="w-[16px] h-[16px] rounded-full relative z-10"
                     style={{
                       background: step.done || isCurrent ? '#c9a96e' : 'transparent',
-                      border: isFuture ? '1px solid rgba(201,169,110,0.2)' : '1px solid #c9a96e',
-                      boxShadow: isCurrent ? '0 0 8px rgba(201,169,110,0.4)' : 'none',
+                      border: isFuture ? '2px solid rgba(201,169,110,0.25)' : '2px solid #c9a96e',
+                      boxShadow: isCurrent ? '0 0 12px rgba(201,169,110,0.55)' : step.done ? '0 0 0 3px rgba(201,169,110,0.12)' : 'none',
                     }}
                   />
                 </div>
@@ -1140,7 +1140,7 @@ export function EventHub() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-light" style={{ color: '#a89880' }}>
+                  <p className="text-sm font-normal" style={{ color: '#a89880' }}>
                     {summary.confirmedGuests} / {summary.guestCount} confirmed
                   </p>
                 </div>
@@ -1171,14 +1171,15 @@ export function EventHub() {
                       style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}
                     >
                       <div
-                        className="w-[10px] h-[10px] rounded-full flex-shrink-0 mt-1 transition-colors"
+                        className="w-[15px] h-[15px] rounded-full flex-shrink-0 mt-0.5 flex-shrink-0 transition-all"
                         style={{
                           background: done ? '#c9a96e' : 'transparent',
-                          border: done ? '1px solid #c9a96e' : '1px solid rgba(201,169,110,0.3)',
+                          border: done ? '2px solid #c9a96e' : '2px solid rgba(201,169,110,0.45)',
+                          boxShadow: done ? '0 0 0 3px rgba(201,169,110,0.12)' : 'none',
                         }}
                       />
                       <p
-                        className="text-sm font-light leading-relaxed transition-colors"
+                        className="text-sm font-normal leading-relaxed transition-colors"
                         style={{ color: done ? '#a89880' : '#f5f0e8', textDecoration: done ? 'line-through' : 'none' }}
                       >
                         {step}
@@ -1187,7 +1188,7 @@ export function EventHub() {
                   );
                 })
               ) : (
-                <p className="text-sm font-light py-4" style={{ color: '#a89880' }}>
+                <p className="text-sm font-normal py-4" style={{ color: '#a89880' }}>
                   All caught up. Chat with A-Moment to figure out what&apos;s next.
                 </p>
               )}
@@ -1199,7 +1200,7 @@ export function EventHub() {
             >
               <span>Chat with A-Moment</span>
               <span
-                className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
+                className="font-normal tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
               >
                 →
               </span>
@@ -1432,7 +1433,7 @@ export function EventHub() {
                       style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-xs font-light truncate" style={{ color: isRec ? '#c9a96e' : '#f5f0e8' }}>
+                        <span className="text-xs font-normal truncate" style={{ color: isRec ? '#c9a96e' : '#f5f0e8' }}>
                           {item.label}
                         </span>
                         {isRec && (
@@ -1441,7 +1442,7 @@ export function EventHub() {
                           </span>
                         )}
                       </div>
-                      <span className="text-xs font-light ml-3 transition-transform group-hover:translate-x-0.5 duration-150 flex-shrink-0" style={{ color: '#a89880' }}>→</span>
+                      <span className="text-xs font-normal ml-3 transition-transform group-hover:translate-x-0.5 duration-150 flex-shrink-0" style={{ color: '#a89880' }}>→</span>
                     </button>
                   );
                 })}
@@ -1455,7 +1456,7 @@ export function EventHub() {
                     style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}
                   >
                     <div className="min-w-0">
-                      <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>{item.label}</p>
+                      <p className="text-xs font-normal" style={{ color: '#f5f0e8' }}>{item.label}</p>
                       <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>{item.sub}</p>
                     </div>
                     <ChevronRight className="w-3 h-3 flex-shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" style={{ color: '#a89880' }} />
@@ -1474,7 +1475,7 @@ export function EventHub() {
                     <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}>
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>Reset plan</p>
+                          <p className="text-xs font-normal" style={{ color: '#f5f0e8' }}>Reset plan</p>
                           <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>Remove chosen plan · pick again</p>
                         </div>
                         {!confirmReset ? (
@@ -1499,7 +1500,7 @@ export function EventHub() {
                     <div className="px-4 py-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-xs font-light" style={{ color: '#ef4444' }}>Delete event</p>
+                          <p className="text-xs font-normal" style={{ color: '#ef4444' }}>Delete event</p>
                           <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>Permanent · cannot be undone</p>
                         </div>
                         {!confirmDelete ? (

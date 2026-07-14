@@ -59,19 +59,19 @@
   --elevate-1: rgba(201, 169, 110, 0.03);
   --elevate-2: rgba(201, 169, 110, 0.06);
 
-  /* near-black background */
-  --background: 0 0% 4%;
-  /* warm cream foreground */
-  --foreground: 38 30% 93%;
+  /* dark charcoal background — less oppressive than pure black */
+  --background: 0 0% 10%;
+  /* bright warm cream foreground */
+  --foreground: 38 25% 97%;
   /* warm dark gold border */
-  --border: 38 20% 22%;
-  --input: 0 0% 8%;
+  --border: 38 20% 28%;
+  --input: 0 0% 14%;
   --ring: 38 50% 61%;
 
   /* card: slightly lighter than bg */
-  --card: 0 0% 8%;
-  --card-foreground: 38 30% 93%;
-  --card-border: 38 18% 18%;
+  --card: 0 0% 14%;
+  --card-foreground: 38 25% 97%;
+  --card-border: 38 18% 25%;
 
   --sidebar: 0 0% 6%;
   --sidebar-foreground: 38 30% 93%;
@@ -120,25 +120,25 @@
 
 /* No separate dark mode — Obsidian is always dark */
 .dark {
-  --background: 0 0% 4%;
-  --foreground: 38 30% 93%;
-  --border: 38 20% 22%;
-  --input: 0 0% 8%;
+  --background: 0 0% 10%;
+  --foreground: 38 25% 97%;
+  --border: 38 20% 28%;
+  --input: 0 0% 14%;
   --ring: 38 50% 61%;
-  --card: 0 0% 8%;
-  --card-foreground: 38 30% 93%;
-  --card-border: 38 18% 18%;
-  --popover: 0 0% 8%;
-  --popover-foreground: 38 30% 93%;
-  --popover-border: 38 18% 18%;
+  --card: 0 0% 14%;
+  --card-foreground: 38 25% 97%;
+  --card-border: 38 18% 25%;
+  --popover: 0 0% 14%;
+  --popover-foreground: 38 25% 97%;
+  --popover-border: 38 18% 25%;
   --primary: 38 50% 61%;
-  --primary-foreground: 0 0% 4%;
-  --secondary: 0 0% 10%;
-  --secondary-foreground: 38 25% 85%;
-  --muted: 0 0% 10%;
+  --primary-foreground: 0 0% 10%;
+  --secondary: 0 0% 17%;
+  --secondary-foreground: 38 25% 97%;
+  --muted: 0 0% 17%;
   --muted-foreground: 34 18% 62%;
   --accent: 34 14% 42%;
-  --accent-foreground: 38 30% 93%;
+  --accent-foreground: 38 25% 97%;
   --destructive: 0 62% 50%;
   --destructive-foreground: 0 0% 100%;
 }
@@ -148,11 +148,11 @@
     @apply border-border;
   }
   html {
-    background-color: #0a0a0a;
+    background-color: #1a1a1a;
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    font-weight: 300;
+    font-weight: 400;
     selection-color: #0a0a0a;
   }
   ::selection {

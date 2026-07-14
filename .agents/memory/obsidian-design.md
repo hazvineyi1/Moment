@@ -4,9 +4,9 @@ description: Dark luxury visual language applied to A-Moment app; palette, type,
 ---
 
 ## Palette (all CSS variables in index.css)
-- `--background: 0 0% 4%` → `#0a0a0a` near-black
-- `--foreground: 38 30% 93%` → `#f5f0e8` warm cream
-- `--card: 0 0% 8%` → `#141414`
+- `--background: 0 0% 10%` → `#1a1a1a` dark charcoal (not pure black)
+- `--foreground: 38 25% 97%` → near-white warm cream
+- `--card: 0 0% 14%` → `#242424`
 - `--primary: 38 50% 61%` → `#c9a96e` champagne gold
 - `--muted-foreground: 34 18% 62%` → `#a89880` warm grey (was `#8a7a65` — too low contrast on near-black)
 - `--border: 38 20% 22%` → warm dark gold border
@@ -16,6 +16,7 @@ description: Dark luxury visual language applied to A-Moment app; palette, type,
 - Headlines: Playfair Display **italic** (not bold), via `font-serif italic`
 - Body: Outfit weight 300 (`font-light`)
 - Labels: `uppercase text-[11px] tracking-[0.2em]` in Outfit — minimum 11px; never use text-[9px] or text-[10px]
+- Body weight: 400 (normal) — never use `font-light` (forces 300, makes text thin and hard to read)
 
 ## Key utility conventions
 - Gold hairline border: `style={{ border: '1px solid rgba(201,169,110,0.15)' }}`
@@ -43,4 +44,4 @@ description: Dark luxury visual language applied to A-Moment app; palette, type,
 
 **Why:** User selected Obsidian from three canvas mockup directions. The system deliberately has no light mode — the app is always dark.
 
-**How to apply:** Any new page should use inline `style={{ color: '#f5f0e8' }}` for headings, `'#a89880'` for muted text (not `#8a7a65` — fails contrast), `'#c9a96e'` for gold accents, and the hairline border pattern above. Avoid `rounded-2xl`, `rounded-3xl`, `rounded-full` on non-circular elements. Never use text below 11px.
+**How to apply:** Any new page should use inline `style={{ color: '#f5f0e8' }}` for headings, `'#a89880'` for muted text (not `#8a7a65` — fails contrast), `'#c9a96e'` for gold accents, and the hairline border pattern above. Avoid `rounded-2xl`, `rounded-3xl`, `rounded-full` on non-circular elements. Never use text below 11px. Never use `font-light` — body defaults to weight 400. Selection dots: min 15–16px diameter, 2px border.

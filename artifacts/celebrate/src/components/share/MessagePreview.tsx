@@ -14,7 +14,7 @@ export function MessagePreview({ message, className = 'mb-6' }: Props) {
       <p className="text-[11px] tracking-[0.15em] uppercase mb-2" style={{ color: '#a89880' }}>
         Preview
       </p>
-      <p className="text-xs font-light leading-relaxed whitespace-pre-wrap" style={{ color: '#f5f0e8' }}>
+      <p className="text-xs font-normal leading-relaxed whitespace-pre-wrap" style={{ color: '#f5f0e8' }}>
         {message}
       </p>
     </div>

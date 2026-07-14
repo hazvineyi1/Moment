@@ -100,7 +100,7 @@ function OptionsCards({
             >
               <div className="flex items-start gap-3">
                 <span
-                  className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full text-xs font-light flex items-center justify-center transition-colors"
+                  className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full text-xs font-normal flex items-center justify-center transition-colors"
                   style={{
                     border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`,
                     color: isChosen ? '#c9a96e' : '#a89880',
@@ -115,7 +115,7 @@ function OptionsCards({
                   >
                     {opt.title}
                   </p>
-                  <p className="text-xs font-light leading-relaxed" style={{ color: '#a89880' }}>{opt.body}</p>
+                  <p className="text-xs font-normal leading-relaxed" style={{ color: '#a89880' }}>{opt.body}</p>
                 </div>
               </div>
             </button>
@@ -207,7 +207,7 @@ function SuggestionsNudge({ eventId }: { eventId: string }) {
           <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#a89880' }}>
             Good moment to step back
           </p>
-          <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
+          <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
             You have 6 curated plan options waiting. See what A-Moment has built for you.
           </p>
         </div>
@@ -472,7 +472,7 @@ export function EventChat() {
                           className="max-w-[78%] px-4 py-3"
                           style={isUser
                             ? { background: 'rgba(245,240,232,0.95)', color: '#0a0a0a' }
-                            : { background: '#141414', border: '1px solid rgba(201,169,110,0.1)', color: '#f5f0e8' }}
+                            : { background: '#242424', border: '1px solid rgba(201,169,110,0.1)', color: '#f5f0e8' }}
                         >
                           {msg.isPending ? (
                             <div className="flex items-center gap-1.5 h-5">
@@ -541,9 +541,9 @@ export function EventChat() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Talk to A-Moment…"
-              className="w-full pl-5 pr-14 py-3.5 outline-none transition-all text-sm md:text-base font-light"
+              className="w-full pl-5 pr-14 py-3.5 outline-none transition-all text-sm md:text-base font-normal"
               style={{
-                background: '#141414',
+                background: '#242424',
                 border: '1px solid rgba(201,169,110,0.15)',
                 color: '#f5f0e8',
               }}

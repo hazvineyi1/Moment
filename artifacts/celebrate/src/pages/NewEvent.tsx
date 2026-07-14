@@ -108,8 +108,8 @@ function SelectCard({
         </span>
       )}
       {icon && <div className="text-2xl mb-2">{icon}</div>}
-      <div className="text-sm leading-snug font-light" style={{ color: selected ? '#c9a96e' : '#f5f0e8' }}>{label}</div>
-      {desc && <div className="text-xs mt-0.5 leading-snug font-light" style={{ color: '#a89880' }}>{desc}</div>}
+      <div className="text-sm leading-snug font-normal" style={{ color: selected ? '#c9a96e' : '#f5f0e8' }}>{label}</div>
+      {desc && <div className="text-xs mt-0.5 leading-snug font-normal" style={{ color: '#a89880' }}>{desc}</div>}
     </button>
   );
 }
@@ -121,7 +121,7 @@ function Pill({
     <button
       type="button"
       onClick={onClick}
-      className="px-4 py-2 text-sm font-light transition-all"
+      className="px-4 py-2 text-sm font-normal transition-all"
       style={{
         border: selected ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.15)',
         color: selected ? '#c9a96e' : '#a89880',
@@ -281,7 +281,7 @@ export function NewEvent() {
             <div className="mb-10">
               <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880' }}>Step 1 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>Who & what?</h1>
-              <p className="text-sm font-light" style={{ color: '#a89880' }}>Who is this for, and what are you celebrating?</p>
+              <p className="text-sm font-normal" style={{ color: '#a89880' }}>Who is this for, and what are you celebrating?</p>
             </div>
 
             {/* Who is this for */}
@@ -397,7 +397,7 @@ export function NewEvent() {
             <div className="mb-10">
               <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880' }}>Step 2 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>What kind of experience?</h1>
-              <p className="text-sm font-light" style={{ color: '#a89880' }}>Pick what resonates. A-Moment will mix and match.</p>
+              <p className="text-sm font-normal" style={{ color: '#a89880' }}>Pick what resonates. A-Moment will mix and match.</p>
             </div>
 
             {/* Experience types */}
@@ -429,8 +429,8 @@ export function NewEvent() {
                       )}
                       <span className="text-2xl flex-shrink-0 mt-0.5">{e.icon}</span>
                       <div className="min-w-0">
-                        <div className="text-sm font-light" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{e.label}</div>
-                        <div className="text-xs leading-snug mt-0.5 font-light" style={{ color: '#a89880' }}>{e.examples}</div>
+                        <div className="text-sm font-normal" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{e.label}</div>
+                        <div className="text-xs leading-snug mt-0.5 font-normal" style={{ color: '#a89880' }}>{e.examples}</div>
                       </div>
                     </button>
                   );
@@ -466,8 +466,8 @@ export function NewEvent() {
                         </span>
                       )}
                       <div className="text-2xl mb-2">{v.icon}</div>
-                      <div className="text-sm font-light" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{v.label}</div>
-                      <div className="text-xs font-light mt-0.5 leading-relaxed" style={{ color: '#a89880' }}>{v.desc}</div>
+                      <div className="text-sm font-normal" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{v.label}</div>
+                      <div className="text-xs font-normal mt-0.5 leading-relaxed" style={{ color: '#a89880' }}>{v.desc}</div>
                     </button>
                   );
                 })}
@@ -507,7 +507,7 @@ export function NewEvent() {
             <div className="mb-10">
               <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880' }}>Step 3 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>The details.</h1>
-              <p className="text-sm font-light" style={{ color: '#a89880' }}>Rough is fine. A-Moment fills in the rest.</p>
+              <p className="text-sm font-normal" style={{ color: '#a89880' }}>Rough is fine. A-Moment fills in the rest.</p>
             </div>
 
             <div className="max-w-xl space-y-8">
@@ -542,7 +542,7 @@ export function NewEvent() {
                       type="date"
                       value={fixedDate}
                       onChange={(e) => setFixedDate(e.target.value)}
-                      className="text-base outline-none py-2 px-0 transition-colors font-light bg-transparent"
+                      className="text-base outline-none py-2 px-0 transition-colors font-normal bg-transparent"
                       style={{ borderBottom: '1px solid rgba(201,169,110,0.3)', color: '#f5f0e8' }}
                     />
                   </div>
@@ -595,7 +595,7 @@ export function NewEvent() {
                         key={b.id}
                         type="button"
                         onClick={() => setBudget(budget === b.id ? '' : b.id)}
-                        className="px-4 py-2 text-sm font-light transition-all"
+                        className="px-4 py-2 text-sm font-normal transition-all"
                         style={{
                           border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.15)',
                           color: sel ? '#c9a96e' : '#a89880',
@@ -614,8 +614,8 @@ export function NewEvent() {
               {planningFor === 'myself' && (
                 <div className="pt-7 space-y-6 animate-in fade-in duration-300" style={{ borderTop: '1px solid rgba(201,169,110,0.1)' }}>
                   <div>
-                    <p className="text-sm font-light mb-0.5" style={{ color: '#f5f0e8' }}>A couple of things about you</p>
-                    <p className="text-xs font-light" style={{ color: '#a89880' }}>Optional. Helps A-Moment curate for you specifically, not just the event.</p>
+                    <p className="text-sm font-normal mb-0.5" style={{ color: '#f5f0e8' }}>A couple of things about you</p>
+                    <p className="text-xs font-normal" style={{ color: '#a89880' }}>Optional. Helps A-Moment curate for you specifically, not just the event.</p>
                   </div>
 
                   <div>
@@ -643,8 +643,8 @@ export function NewEvent() {
                               </span>
                             )}
                             <span className="text-lg">{ts.icon}</span>
-                            <div className="text-sm font-light mt-1" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{ts.label}</div>
-                            <div className="text-xs font-light" style={{ color: '#a89880' }}>{ts.desc}</div>
+                            <div className="text-sm font-normal mt-1" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{ts.label}</div>
+                            <div className="text-xs font-normal" style={{ color: '#a89880' }}>{ts.desc}</div>
                           </button>
                         );
                       })}
@@ -692,7 +692,7 @@ export function NewEvent() {
               {createEvent.isError && (
                 <p className="text-xs" style={{ color: 'hsl(var(--destructive))' }}>Something went wrong. Please try again.</p>
               )}
-              <p className="text-xs font-light text-right max-w-xs" style={{ color: '#a89880' }}>
+              <p className="text-xs font-normal text-right max-w-xs" style={{ color: '#a89880' }}>
                 {planningFor === 'someone'
                   ? "You'll get a link to share with them. Their answers feed straight into A-Moment."
                   : 'A-Moment will propose 6 plans. Pick one, then refine it in conversation.'}

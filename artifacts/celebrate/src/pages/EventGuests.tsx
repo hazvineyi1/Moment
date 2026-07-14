@@ -631,12 +631,12 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
         <div>
           <p style={eyebrow}>Psychology &amp; pairings</p>
           {!data && (
-            <p className="text-xs mt-1 font-light" style={{ color: '#a89880' }}>
+            <p className="text-xs mt-1 font-normal" style={{ color: '#a89880' }}>
               AI-matched roommates, travel buddies &amp; seating groups based on personality.
             </p>
           )}
           {data?.reasoning && (
-            <p className="text-xs mt-1 italic font-light" style={{ color: '#a89880' }}>{data.reasoning}</p>
+            <p className="text-xs mt-1 italic font-normal" style={{ color: '#a89880' }}>{data.reasoning}</p>
           )}
         </div>
         <button

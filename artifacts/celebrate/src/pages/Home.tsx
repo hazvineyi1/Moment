@@ -281,7 +281,7 @@ export function Home() {
         </h1>
         {hasEvents && (
           <p
-            className="text-sm font-light tracking-wide"
+            className="text-sm font-normal tracking-wide"
             style={{ color: '#a89880' }}
           >
             {dashboard?.upcomingEvents ?? 0}{' '}
@@ -339,7 +339,7 @@ export function Home() {
             >
               <span>Begin planning something extraordinary</span>
               <span
-                className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
+                className="font-normal tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
                 style={{ color: '#c9a96e' }}
               >
                 →
@@ -366,7 +366,7 @@ export function Home() {
               A-Moment plans 24 types of celebrations, from intimate winery weekends to
               month-long sailing expeditions.
             </p>
-            <p className="text-sm font-light leading-relaxed mb-10" style={{ color: '#a89880' }}>
+            <p className="text-sm font-normal leading-relaxed mb-10" style={{ color: '#a89880' }}>
               Tell it what you have in mind. No forms, no agencies, no chasing quotes.
             </p>
 
@@ -377,7 +377,7 @@ export function Home() {
             >
               <span>Start planning</span>
               <span
-                className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
+                className="font-normal tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
               >
                 →
               </span>
