@@ -161,19 +161,19 @@ function VisualizeModal({
           style={{ borderBottom: '1px solid rgba(201,169,110,0.1)' }}
         >
           <div>
-            <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: '#8a7a65' }}>
+            <p className="text-[11px] tracking-[0.2em] uppercase mb-1" style={{ color: '#a89880' }}>
               Visualize your group here
             </p>
             <h2 className="font-serif text-lg leading-snug" style={{ color: '#f5f0e8' }}>
               {option.name}
             </h2>
-            <p className="text-xs mt-0.5" style={{ color: '#8a7a65' }}>{option.destination}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#a89880' }}>{option.destination}</p>
           </div>
           <button
             onClick={onClose}
             className="flex-shrink-0 p-1.5 transition-opacity hover:opacity-60"
           >
-            <X className="w-4 h-4" style={{ color: '#8a7a65' }} />
+            <X className="w-4 h-4" style={{ color: '#a89880' }} />
           </button>
         </div>
 
@@ -199,13 +199,13 @@ function VisualizeModal({
                 <button
                   onClick={() => setResultImage(null)}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs tracking-[0.12em] uppercase transition-all"
-                  style={{ border: '1px solid rgba(201,169,110,0.1)', color: '#8a7a65' }}
+                  style={{ border: '1px solid rgba(201,169,110,0.1)', color: '#a89880' }}
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Try again
                 </button>
               </div>
-              <p className="text-[9px] text-center leading-relaxed" style={{ color: 'rgba(138,122,101,0.5)' }}>
+              <p className="text-[11px] text-center leading-relaxed" style={{ color: 'rgba(138,122,101,0.5)' }}>
                 AI-generated scene. The people shown represent your group based on the photo.
               </p>
             </div>
@@ -215,7 +215,7 @@ function VisualizeModal({
           {!resultImage && (
             <>
               <div>
-                <p className="text-[9px] tracking-[0.15em] uppercase mb-2.5" style={{ color: '#8a7a65' }}>
+                <p className="text-[11px] tracking-[0.15em] uppercase mb-2.5" style={{ color: '#a89880' }}>
                   {uploadedPhoto ? 'Your photo' : 'Upload a photo of your group'}
                 </p>
 
@@ -236,7 +236,7 @@ function VisualizeModal({
                     </button>
                     <button
                       onClick={() => inputRef.current?.click()}
-                      className="absolute bottom-2 right-2 flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-wide rounded"
+                      className="absolute bottom-2 right-2 flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wide rounded"
                       style={{ background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(201,169,110,0.25)', color: '#c9a96e' }}
                     >
                       <Upload className="w-3 h-3" /> Change
@@ -257,10 +257,10 @@ function VisualizeModal({
                   >
                     <Camera className="w-7 h-7" style={{ color: 'rgba(201,169,110,0.4)' }} />
                     <div className="text-center">
-                      <p className="text-sm font-light" style={{ color: '#8a7a65' }}>
+                      <p className="text-sm font-light" style={{ color: '#a89880' }}>
                         Drop a photo here, or tap to browse
                       </p>
-                      <p className="text-[10px] mt-1" style={{ color: 'rgba(138,122,101,0.5)' }}>
+                      <p className="text-xs mt-1" style={{ color: 'rgba(138,122,101,0.5)' }}>
                         Works best with group photos · JPG, PNG, HEIC · up to 10 MB
                       </p>
                     </div>
@@ -290,11 +290,11 @@ function VisualizeModal({
                   <p
                     key={lineIdx}
                     className="text-sm font-light text-center animate-in fade-in slide-in-from-bottom-2 duration-500"
-                    style={{ color: '#8a7a65' }}
+                    style={{ color: '#a89880' }}
                   >
                     {VIZ_LOADING_LINES[lineIdx]}
                   </p>
-                  <p className="text-[10px]" style={{ color: 'rgba(138,122,101,0.4)' }}>
+                  <p className="text-xs" style={{ color: 'rgba(138,122,101,0.4)' }}>
                     This takes about 20–40 seconds
                   </p>
                 </div>
@@ -314,7 +314,7 @@ function VisualizeModal({
                 </button>
               )}
 
-              <p className="text-[9px] text-center leading-relaxed" style={{ color: 'rgba(138,122,101,0.45)' }}>
+              <p className="text-[11px] text-center leading-relaxed" style={{ color: 'rgba(138,122,101,0.45)' }}>
                 A-Moment reads your photo to understand the look and feel of your group, then generates
                 an original scene — your photo is never stored.
               </p>
@@ -358,12 +358,12 @@ function PlanCard({
       {/* Header band */}
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <span className="text-[9px] tracking-[0.22em] uppercase" style={{ color: '#8a7a65' }}>
+          <span className="text-[11px] tracking-[0.22em] uppercase" style={{ color: '#a89880' }}>
             Option {index + 1}
           </span>
           {option.vibe && (
             <span
-              className="text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 flex-shrink-0"
+              className="text-[11px] tracking-[0.15em] uppercase px-2.5 py-1 flex-shrink-0"
               style={{ border: '1px solid rgba(201,169,110,0.25)', color: '#c9a96e' }}
             >
               {option.vibe}
@@ -371,12 +371,12 @@ function PlanCard({
           )}
         </div>
         <h2 className="font-serif text-2xl md:text-3xl leading-tight mb-2" style={{ color: '#f5f0e8' }}>{option.name}</h2>
-        <p className="text-sm font-light leading-relaxed" style={{ color: '#8a7a65' }}>{option.tagline}</p>
+        <p className="text-sm font-light leading-relaxed" style={{ color: '#a89880' }}>{option.tagline}</p>
 
         {option.travelStyleMatch && (
           <div className="mt-3 flex items-center gap-1.5">
             <Sparkles className="w-3 h-3 flex-shrink-0" style={{ color: '#c9a96e' }} />
-            <span className="text-[10px] tracking-[0.12em] uppercase" style={{ color: '#c9a96e' }}>
+            <span className="text-xs tracking-[0.12em] uppercase" style={{ color: '#c9a96e' }}>
               Matched to your style —{' '}
               <span className="font-medium">{option.travelStyleMatch}</span>
             </span>
@@ -412,10 +412,10 @@ function PlanCard({
           className="flex items-center justify-between px-4 py-3"
           style={{ background: 'rgba(201,169,110,0.05)', border: '1px solid rgba(201,169,110,0.12)' }}
         >
-          <span className="text-[10px] tracking-[0.15em] uppercase" style={{ color: '#8a7a65' }}>Stay + experiences</span>
+          <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>Stay + experiences</span>
           <span className="font-serif text-xl" style={{ color: '#c9a96e' }}>
             {formatPrice(option.priceRange.perPersonMin)}–{formatPrice(option.priceRange.perPersonMax)}
-            <span className="text-xs font-light ml-1" style={{ color: '#8a7a65' }}>pp</span>
+            <span className="text-xs font-light ml-1" style={{ color: '#a89880' }}>pp</span>
           </span>
         </div>
 
@@ -425,11 +425,11 @@ function PlanCard({
             style={{ background: 'rgba(10,10,10,0.5)', border: '1px solid rgba(201,169,110,0.08)' }}
           >
             <div className="flex items-center gap-2">
-              <Plane className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#8a7a65' }} />
+              <Plane className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#a89880' }} />
               <div>
-                <span className="text-[10px] tracking-[0.12em] uppercase" style={{ color: '#8a7a65' }}>Flights (round-trip)</span>
+                <span className="text-xs tracking-[0.12em] uppercase" style={{ color: '#a89880' }}>Flights (round-trip)</span>
                 {option.flightEstimate.carriers?.length > 0 && (
-                  <p className="text-[9px] leading-tight mt-0.5" style={{ color: 'rgba(138,122,101,0.6)' }}>
+                  <p className="text-[11px] leading-tight mt-0.5" style={{ color: 'rgba(138,122,101,0.6)' }}>
                     {option.flightEstimate.carriers.join(' · ')}
                   </p>
                 )}
@@ -437,7 +437,7 @@ function PlanCard({
             </div>
             <span className="text-base font-light" style={{ color: '#f5f0e8' }}>
               {formatPrice(option.flightEstimate.perPersonMin)}–{formatPrice(option.flightEstimate.perPersonMax)}
-              <span className="text-xs ml-1" style={{ color: '#8a7a65' }}>pp</span>
+              <span className="text-xs ml-1" style={{ color: '#a89880' }}>pp</span>
             </span>
           </div>
         )}
@@ -513,11 +513,11 @@ function PlanCard({
           className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-xs tracking-[0.18em] uppercase transition-all"
           style={{
             border: '1px solid rgba(201,169,110,0.18)',
-            color: hasVisualization ? '#c9a96e' : '#8a7a65',
+            color: hasVisualization ? '#c9a96e' : '#a89880',
             background: hasVisualization ? 'rgba(201,169,110,0.05)' : 'transparent',
           }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.35)'; e.currentTarget.style.color = '#c9a96e'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.18)'; e.currentTarget.style.color = hasVisualization ? '#c9a96e' : '#8a7a65'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.18)'; e.currentTarget.style.color = hasVisualization ? '#c9a96e' : '#a89880'; }}
         >
           <Camera className="w-3.5 h-3.5" />
           {hasVisualization ? 'View visualization ✦' : 'See your group here ✦'}
@@ -601,10 +601,10 @@ function ShareOptionsBar({ options, eventTitle }: { options: PlanOption[]; event
       className="mt-12 p-6"
       style={{ border: '1px solid rgba(201,169,110,0.18)', background: 'rgba(201,169,110,0.03)' }}
     >
-      <p className="uppercase text-[10px] tracking-[0.22em] mb-4" style={{ color: '#8a7a65', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
+      <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
         Share these options
       </p>
-      <p className="text-sm font-light mb-5" style={{ color: '#8a7a65' }}>
+      <p className="text-sm font-light mb-5" style={{ color: '#a89880' }}>
         Send all 6 plans to a friend or partner so they can weigh in before you decide.
       </p>
       <div className="flex flex-wrap gap-3">
@@ -619,9 +619,9 @@ function ShareOptionsBar({ options, eventTitle }: { options: PlanOption[]; event
         <button
           onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')}
           className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all"
-          style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+          style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
         >
           <MessageSquare className="w-4 h-4" />
           WhatsApp
@@ -629,9 +629,9 @@ function ShareOptionsBar({ options, eventTitle }: { options: PlanOption[]; event
         <button
           onClick={() => { window.location.href = `sms:?body=${encodeURIComponent(message)}`; }}
           className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all"
-          style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+          style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
         >
           <MessageSquare className="w-4 h-4" />
           iMessage / SMS
@@ -742,14 +742,14 @@ export function EventOptions() {
         {options && !loading && (
           <>
             <div className="mb-12">
-              <p className="uppercase text-[10px] tracking-[0.22em] mb-5" style={{ color: '#8a7a65' }}>
+              <p className="uppercase text-xs tracking-[0.22em] mb-5" style={{ color: '#a89880' }}>
                 Your options
               </p>
               <h1 className="font-serif text-4xl md:text-6xl mb-4" style={{ color: '#f5f0e8' }}>
                 Six directions.{' '}
-                <span className="italic" style={{ color: '#8a7a65' }}>Pick one.</span>
+                <span className="italic" style={{ color: '#a89880' }}>Pick one.</span>
               </h1>
-              <p className="text-sm font-light max-w-lg leading-relaxed" style={{ color: '#8a7a65' }}>
+              <p className="text-sm font-light max-w-lg leading-relaxed" style={{ color: '#a89880' }}>
                 Each is a real, specific plan. Once you choose, A-Moment will help you lock in every detail.
               </p>
             </div>
@@ -772,9 +772,9 @@ export function EventOptions() {
               <button
                 onClick={() => loadOptions(true)}
                 className="group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-colors"
-                style={{ color: '#8a7a65' }}
+                style={{ color: '#a89880' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#c9a96e')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>None of these. Show me different options</span>

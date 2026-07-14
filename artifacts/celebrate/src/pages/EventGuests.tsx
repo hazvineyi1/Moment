@@ -586,11 +586,11 @@ function PairRow({ pair }: { pair: Pair }) {
     <div className="py-3.5" style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}>
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-sm" style={{ color: '#f5f0e8' }}>
-          {pair.guest1.name} <span style={{ color: '#8a7a65' }}>+</span> {pair.guest2.name}
+          {pair.guest1.name} <span style={{ color: '#a89880' }}>+</span> {pair.guest2.name}
         </span>
         <ScoreDots score={pair.compatibilityScore} />
       </div>
-      <p className="text-xs leading-relaxed" style={{ color: '#8a7a65' }}>{pair.reason}</p>
+      <p className="text-xs leading-relaxed" style={{ color: '#a89880' }}>{pair.reason}</p>
     </div>
   );
 }
@@ -621,7 +621,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
 
   const eyebrow: React.CSSProperties = {
     fontFamily: "'Outfit', sans-serif",
-    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#8a7a65',
+    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#a89880',
   };
 
   return (
@@ -631,12 +631,12 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
         <div>
           <p style={eyebrow}>Psychology &amp; pairings</p>
           {!data && (
-            <p className="text-xs mt-1 font-light" style={{ color: '#8a7a65' }}>
+            <p className="text-xs mt-1 font-light" style={{ color: '#a89880' }}>
               AI-matched roommates, travel buddies &amp; seating groups based on personality.
             </p>
           )}
           {data?.reasoning && (
-            <p className="text-xs mt-1 italic font-light" style={{ color: '#8a7a65' }}>{data.reasoning}</p>
+            <p className="text-xs mt-1 italic font-light" style={{ color: '#a89880' }}>{data.reasoning}</p>
           )}
         </div>
         <button
@@ -645,7 +645,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
           className="flex items-center gap-2 px-4 py-2 text-xs font-medium rounded transition-colors flex-shrink-0"
           style={{
             border: '1px solid rgba(201,169,110,0.3)',
-            color: loading ? '#8a7a65' : '#c9a96e',
+            color: loading ? '#a89880' : '#c9a96e',
             background: 'transparent',
           }}
         >
@@ -660,7 +660,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
 
       {!hasPersonality && !data && (
         <div className="px-5 py-4">
-          <p className="text-xs italic" style={{ color: '#8a7a65' }}>
+          <p className="text-xs italic" style={{ color: '#a89880' }}>
             Add personality tags to guests first. Pairings are more accurate with at least a few archetypes set.
           </p>
         </div>
@@ -699,9 +699,9 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
                   <div key={i} className="p-4" style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.03)' }}>
                     <div className="flex items-start justify-between mb-2">
                       <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>{g.tableName}</p>
-                      <span className="text-xs italic" style={{ color: '#8a7a65' }}>{g.vibe}</span>
+                      <span className="text-xs italic" style={{ color: '#a89880' }}>{g.vibe}</span>
                     </div>
-                    <p className="text-xs" style={{ color: '#8a7a65' }}>
+                    <p className="text-xs" style={{ color: '#a89880' }}>
                       {g.guests.map(gs => gs.name).join(' · ')}
                     </p>
                   </div>
@@ -712,7 +712,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
 
           {data.roommates.length === 0 && data.travelBuddies.length === 0 && data.seatingGroups.length === 0 && (
             <div className="px-5 py-4">
-              <p className="text-xs italic" style={{ color: '#8a7a65' }}>
+              <p className="text-xs italic" style={{ color: '#a89880' }}>
                 {guests.length < 2 ? 'Add at least 2 guests to generate pairings.' : 'No pairings generated. Try adding personality tags to your guests.'}
               </p>
             </div>

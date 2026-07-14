@@ -73,7 +73,7 @@ export function EventInvitePage({ eventId }: { eventId: string }) {
   if (error || !event) {
     return (
       <div style={{ minHeight: '100dvh', background: '#060606', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, fontFamily: "'Outfit', sans-serif" }}>
-        <p style={{ color: '#8a7a65', fontSize: 14, letterSpacing: '0.1em' }}>This celebration could not be found.</p>
+        <p style={{ color: '#a89880', fontSize: 14, letterSpacing: '0.1em' }}>This celebration could not be found.</p>
         <button onClick={() => setLocation('/')} style={{ color: '#c9a96e', background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
           Return to A-Moment →
         </button>
@@ -152,17 +152,17 @@ export function EventInvitePage({ eventId }: { eventId: string }) {
         {/* Meta details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 40 }}>
           {dateRange && (
-            <p style={{ fontSize: 13, color: '#8a7a65', letterSpacing: '0.08em' }}>
+            <p style={{ fontSize: 13, color: '#a89880', letterSpacing: '0.08em' }}>
               {dateRange}
             </p>
           )}
           {event.location && (
-            <p style={{ fontSize: 13, color: '#8a7a65', letterSpacing: '0.08em' }}>
+            <p style={{ fontSize: 13, color: '#a89880', letterSpacing: '0.08em' }}>
               {event.location}
             </p>
           )}
           {event.guestCount && (
-            <p style={{ fontSize: 13, color: '#8a7a65', letterSpacing: '0.08em' }}>
+            <p style={{ fontSize: 13, color: '#a89880', letterSpacing: '0.08em' }}>
               {event.guestCount} guests
             </p>
           )}
@@ -195,11 +195,11 @@ export function EventInvitePage({ eventId }: { eventId: string }) {
             style={{
               fontFamily: "'Outfit', sans-serif",
               fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase',
-              color: '#8a7a65', background: 'none', border: 'none', cursor: 'pointer',
+              color: '#a89880', background: 'none', border: 'none', cursor: 'pointer',
               transition: 'color 0.3s',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
           >
             Sign in to A-Moment
           </button>

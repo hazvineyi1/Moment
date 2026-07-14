@@ -17,7 +17,7 @@ const GoldRule = () => (
 function StatusPill({ label }: { label: string }) {
   return (
     <span
-      className="uppercase text-[9px] tracking-[0.2em] px-2.5 py-1 flex-shrink-0"
+      className="uppercase text-[11px] tracking-[0.2em] px-2.5 py-1 flex-shrink-0"
       style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
     >
       {label}
@@ -218,8 +218,8 @@ function EventCard({ event, index }: { event: any; index: number }) {
             </h3>
             {(event.location || event.startDate) && (
               <p
-                className="uppercase text-[9px] tracking-[0.18em] truncate"
-                style={{ color: '#8a7a65' }}
+                className="uppercase text-[11px] tracking-[0.18em] truncate"
+                style={{ color: '#a89880' }}
               >
                 {[
                   event.location,
@@ -282,7 +282,7 @@ export function Home() {
         {hasEvents && (
           <p
             className="text-sm font-light tracking-wide"
-            style={{ color: '#8a7a65' }}
+            style={{ color: '#a89880' }}
           >
             {dashboard?.upcomingEvents ?? 0}{' '}
             {(dashboard?.upcomingEvents ?? 0) === 1 ? 'celebration' : 'celebrations'} in motion
@@ -296,8 +296,8 @@ export function Home() {
       {hasEvents ? (
         <section>
           <p
-            className="uppercase text-[10px] tracking-[0.22em] mb-8"
-            style={{ color: '#8a7a65' }}
+            className="uppercase text-xs tracking-[0.22em] mb-8"
+            style={{ color: '#a89880' }}
           >
             Upcoming Celebrations
           </p>
@@ -354,8 +354,8 @@ export function Home() {
 
           <div className="max-w-2xl">
             <p
-              className="uppercase text-[10px] tracking-[0.22em] mb-6"
-              style={{ color: '#8a7a65' }}
+              className="uppercase text-xs tracking-[0.22em] mb-6"
+              style={{ color: '#a89880' }}
             >
               Where to begin
             </p>
@@ -366,7 +366,7 @@ export function Home() {
               A-Moment plans 24 types of celebrations, from intimate winery weekends to
               month-long sailing expeditions.
             </p>
-            <p className="text-sm font-light leading-relaxed mb-10" style={{ color: '#8a7a65' }}>
+            <p className="text-sm font-light leading-relaxed mb-10" style={{ color: '#a89880' }}>
               Tell it what you have in mind. No forms, no agencies, no chasing quotes.
             </p>
 
@@ -395,7 +395,7 @@ export function Home() {
               <div
                 key={t}
                 className="px-4 py-5 text-xs tracking-[0.12em] uppercase"
-                style={{ color: '#8a7a65', borderRight: '1px solid rgba(201,169,110,0.08)', borderBottom: '1px solid rgba(201,169,110,0.08)' }}
+                style={{ color: '#a89880', borderRight: '1px solid rgba(201,169,110,0.08)', borderBottom: '1px solid rgba(201,169,110,0.08)' }}
               >
                 {t}
               </div>

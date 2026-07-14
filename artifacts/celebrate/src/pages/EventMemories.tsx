@@ -57,18 +57,18 @@ function AddMemoryModal({ onAdd, onClose }: { onAdd: (url: string, caption: stri
       }}>
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', cursor: 'pointer', color: '#8a7a65' }}
+          style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', cursor: 'pointer', color: '#a89880' }}
         >
           <X size={18} />
         </button>
 
-        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#8a7a65', marginBottom: 24 }}>
+        <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#a89880', marginBottom: 24 }}>
           Add a memory
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div>
-            <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, letterSpacing: '0.12em', color: '#8a7a65', display: 'block', marginBottom: 8 }}>
+            <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, letterSpacing: '0.12em', color: '#a89880', display: 'block', marginBottom: 8 }}>
               Photo URL
             </label>
             <input
@@ -87,7 +87,7 @@ function AddMemoryModal({ onAdd, onClose }: { onAdd: (url: string, caption: stri
           </div>
 
           <div>
-            <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, letterSpacing: '0.12em', color: '#8a7a65', display: 'block', marginBottom: 8 }}>
+            <label style={{ fontFamily: "'Outfit', sans-serif", fontSize: 11, letterSpacing: '0.12em', color: '#a89880', display: 'block', marginBottom: 8 }}>
               Caption <span style={{ opacity: 0.5 }}>(optional)</span>
             </label>
             <input
@@ -115,7 +115,7 @@ function AddMemoryModal({ onAdd, onClose }: { onAdd: (url: string, caption: stri
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               fontFamily: "'Outfit', sans-serif",
               fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase',
-              color: saving ? '#8a7a65' : '#c9a96e', background: 'none',
+              color: saving ? '#a89880' : '#c9a96e', background: 'none',
               border: '1px solid rgba(201,169,110,0.3)', padding: '14px 24px',
               cursor: saving ? 'not-allowed' : 'pointer', marginTop: 4,
             }}
@@ -257,11 +257,11 @@ export function EventMemories({ eventId }: { eventId: string }) {
           <button style={{
             display: 'flex', alignItems: 'center', gap: 10,
             fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase',
-            color: '#8a7a65', background: 'none', border: 'none', cursor: 'pointer',
+            color: '#a89880', background: 'none', border: 'none', cursor: 'pointer',
             transition: 'color 0.2s',
           }}
           onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
           >
             <ArrowLeft size={14} />
             Back to event
@@ -284,7 +284,7 @@ export function EventMemories({ eventId }: { eventId: string }) {
 
       {/* Page title */}
       <div style={{ padding: '48px 32px 32px' }}>
-        <p style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#8a7a65', marginBottom: 12 }}>
+        <p style={{ fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#a89880', marginBottom: 12 }}>
           Memory Album
         </p>
         <h1 style={{
@@ -310,7 +310,7 @@ export function EventMemories({ eventId }: { eventId: string }) {
         ) : memories.length === 0 ? (
           /* Empty state */
           <div style={{ maxWidth: 400, paddingTop: 40 }}>
-            <p style={{ fontSize: 14, fontWeight: 300, color: '#8a7a65', lineHeight: 1.7, marginBottom: 32 }}>
+            <p style={{ fontSize: 14, fontWeight: 300, color: '#a89880', lineHeight: 1.7, marginBottom: 32 }}>
               After the celebration, add your photos here. A private album for the moments that made it memorable.
             </p>
             <button
@@ -352,7 +352,7 @@ export function EventMemories({ eventId }: { eventId: string }) {
               }}
             >
               <Plus size={20} style={{ color: '#c9a96e', opacity: 0.5 }} />
-              <span style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#8a7a65' }}>
+              <span style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#a89880' }}>
                 Add memory
               </span>
             </button>

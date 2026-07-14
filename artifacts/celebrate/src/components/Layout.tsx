@@ -36,13 +36,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <>
                   {/* Desktop: minimal avatar + signout */}
                   <div className="hidden md:flex items-center gap-5">
-                    <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#8a7a65' }}>
+                    <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>
                       {user.firstName ?? user.emailAddresses[0]?.emailAddress?.split('@')[0]}
                     </span>
                     <button
                       onClick={handleSignOut}
                       className="text-xs tracking-[0.12em] uppercase transition-colors hover:text-foreground"
-                      style={{ color: '#8a7a65' }}
+                      style={{ color: '#a89880' }}
                     >
                       Sign out
                     </button>
@@ -98,26 +98,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <Link
               href="/"
               className="flex flex-col items-center justify-center w-full h-full gap-1 transition-colors"
-              style={{ color: location === '/' ? '#c9a96e' : '#8a7a65' }}
+              style={{ color: location === '/' ? '#c9a96e' : '#a89880' }}
             >
               <Home className="w-5 h-5" strokeWidth={1.5} />
-              <span className="text-[9px] tracking-[0.12em] uppercase">Home</span>
+              <span className="text-[11px] tracking-[0.12em] uppercase">Home</span>
             </Link>
             <Link
               href="/events/new"
               className="flex flex-col items-center justify-center w-full h-full gap-1 transition-colors"
-              style={{ color: location === '/events/new' ? '#c9a96e' : '#8a7a65' }}
+              style={{ color: location === '/events/new' ? '#c9a96e' : '#a89880' }}
             >
               <Plus className="w-5 h-5" strokeWidth={1.5} />
-              <span className="text-[9px] tracking-[0.12em] uppercase">New</span>
+              <span className="text-[11px] tracking-[0.12em] uppercase">New</span>
             </Link>
             <button
               onClick={handleSignOut}
               className="flex flex-col items-center justify-center w-full h-full gap-1 transition-colors"
-              style={{ color: '#8a7a65' }}
+              style={{ color: '#a89880' }}
             >
               <LogOut className="w-5 h-5" strokeWidth={1.5} />
-              <span className="text-[9px] tracking-[0.12em] uppercase">Out</span>
+              <span className="text-[11px] tracking-[0.12em] uppercase">Out</span>
             </button>
           </div>
         </nav>

@@ -380,9 +380,9 @@ function EventTabs({ activeTab, eventId }: { activeTab: string; eventId: string 
           <button
             key={tab.id}
             onClick={() => setLocation(href)}
-            className="whitespace-nowrap px-0 mr-10 py-4 text-[10px] tracking-[0.2em] uppercase font-medium transition-colors"
+            className="whitespace-nowrap px-0 mr-10 py-4 text-xs tracking-[0.2em] uppercase font-medium transition-colors"
             style={{
-              color: isActive ? '#c9a96e' : '#8a7a65',
+              color: isActive ? '#c9a96e' : '#a89880',
               borderBottom: isActive ? '1px solid #c9a96e' : '1px solid transparent',
               marginBottom: '-1px',
             }}
@@ -614,7 +614,7 @@ function CelebrantAnsweredCard({
           <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>
             {name} has answered. A-Moment has been updated.
           </p>
-          <p className="text-xs mt-0.5" style={{ color: '#8a7a65' }}>
+          <p className="text-xs mt-0.5" style={{ color: '#a89880' }}>
             Their preferences are now shaping every recommendation.
           </p>
         </div>
@@ -625,7 +625,7 @@ function CelebrantAnsweredCard({
                 onClick={() => setConfirmClear(false)}
                 disabled={clearing}
                 className="px-2.5 py-1 text-xs rounded border disabled:opacity-40"
-                style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+                style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880' }}
               >
                 Cancel
               </button>
@@ -643,7 +643,7 @@ function CelebrantAnsweredCard({
             <button
               onClick={() => setConfirmClear(true)}
               className="px-2.5 py-1 text-xs rounded transition-colors"
-              style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+              style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880' }}
               title="Clear answers and re-send questionnaire"
             >
               Clear answers
@@ -655,7 +655,7 @@ function CelebrantAnsweredCard({
         <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {highlights.map(([key, value]) => (
             <div key={key}>
-              <p className="text-[9px] tracking-[0.18em] uppercase mb-1" style={{ color: '#8a7a65' }}>
+              <p className="text-[11px] tracking-[0.18em] uppercase mb-1" style={{ color: '#a89880' }}>
                 {questionMap[key] ?? key}
               </p>
               <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
@@ -682,14 +682,14 @@ function CelebrantPreferencesCard({
     <div style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}>
       <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(201,169,110,0.1)' }}>
         <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#c9a96e' }} />
-        <p className="uppercase text-[10px] tracking-[0.22em]" style={{ color: '#8a7a65' }}>
+        <p className="uppercase text-xs tracking-[0.22em]" style={{ color: '#a89880' }}>
           {name}&apos;s preferences
         </p>
       </div>
       <div className="px-5 py-4 space-y-3">
         {entries.map(([key, value]) => (
           <div key={key} className="pb-3 last:pb-0" style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}>
-            <p className="text-[9px] tracking-[0.15em] uppercase mb-1" style={{ color: '#8a7a65' }}>
+            <p className="text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: '#a89880' }}>
               {questionMap[key] ?? key}
             </p>
             <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
@@ -813,14 +813,14 @@ function PlanningJourney({
     <div className="mb-12">
       {/* Label row */}
       <div className="flex items-center justify-between mb-8">
-        <p className="uppercase text-[10px] tracking-[0.22em]" style={{ color: '#8a7a65' }}>
+        <p className="uppercase text-xs tracking-[0.22em]" style={{ color: '#a89880' }}>
           Your journey
         </p>
         {nextStep?.href && (
           <button
             type="button"
             onClick={() => setLocation(`/events/${eventId}/${nextStep.href}`)}
-            className="text-[10px] tracking-[0.15em] uppercase transition-colors"
+            className="text-xs tracking-[0.15em] uppercase transition-colors"
             style={{ color: '#c9a96e' }}
           >
             Up next: {nextStep.label} →
@@ -880,13 +880,13 @@ function PlanningJourney({
                 {/* Label */}
                 <div className="text-center">
                   <p
-                    className="text-[9px] tracking-[0.15em] uppercase whitespace-nowrap"
-                    style={{ color: step.done || isCurrent ? '#c9a96e' : '#8a7a65' }}
+                    className="text-[11px] tracking-[0.15em] uppercase whitespace-nowrap"
+                    style={{ color: step.done || isCurrent ? '#c9a96e' : '#a89880' }}
                   >
                     {step.label}
                   </p>
                   {isCurrent && (
-                    <p className="text-[8px] tracking-[0.1em] mt-0.5" style={{ color: '#8a7a65' }}>
+                    <p className="text-[8px] tracking-[0.1em] mt-0.5" style={{ color: '#a89880' }}>
                       Now
                     </p>
                   )}
@@ -1034,24 +1034,24 @@ export function EventHub() {
       <header className="mb-12 pb-10" style={{ borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
         <button
           onClick={() => setLocation('/')}
-          className="flex items-center gap-2 mb-8 uppercase text-[10px] tracking-[0.2em] transition-colors"
-          style={{ color: '#8a7a65' }}
+          className="flex items-center gap-2 mb-8 uppercase text-xs tracking-[0.2em] transition-colors"
+          style={{ color: '#a89880' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#c9a96e')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
         >
           ← Back
         </button>
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <span
-            className="uppercase text-[9px] tracking-[0.22em] px-2.5 py-1"
+            className="uppercase text-[11px] tracking-[0.22em] px-2.5 py-1"
             style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
           >
             {event.type}
           </span>
           <span
-            className="uppercase text-[9px] tracking-[0.22em] px-2.5 py-1"
-            style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#8a7a65' }}
+            className="uppercase text-[11px] tracking-[0.22em] px-2.5 py-1"
+            style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#a89880' }}
           >
             {event.status}
           </span>
@@ -1065,7 +1065,7 @@ export function EventHub() {
         </h1>
 
         {(event.startDate || event.location) && (
-          <p className="uppercase text-[10px] tracking-[0.25em]" style={{ color: '#8a7a65' }}>
+          <p className="uppercase text-xs tracking-[0.25em]" style={{ color: '#a89880' }}>
             {[
               event.location,
               event.startDate ? format(parseISO(event.startDate), 'EEEE d MMMM yyyy') : null,
@@ -1123,7 +1123,7 @@ export function EventHub() {
         {/* Left: progress + next steps */}
         <div className="lg:col-span-2 space-y-12">
           <section>
-            <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#a89880' }}>
               Progress
             </p>
             <div
@@ -1135,12 +1135,12 @@ export function EventHub() {
                   <div className="font-serif text-6xl mb-1" style={{ color: '#c9a96e' }}>
                     {summary.completionPercent}%
                   </div>
-                  <p className="text-[10px] tracking-[0.15em] uppercase" style={{ color: '#8a7a65' }}>
+                  <p className="text-xs tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>
                     Ready to celebrate
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-light" style={{ color: '#8a7a65' }}>
+                  <p className="text-sm font-light" style={{ color: '#a89880' }}>
                     {summary.confirmedGuests} / {summary.guestCount} confirmed
                   </p>
                 </div>
@@ -1155,7 +1155,7 @@ export function EventHub() {
           </section>
 
           <section>
-            <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#a89880' }}>
               Next steps
             </p>
             <div className="space-y-0">
@@ -1179,7 +1179,7 @@ export function EventHub() {
                       />
                       <p
                         className="text-sm font-light leading-relaxed transition-colors"
-                        style={{ color: done ? '#8a7a65' : '#f5f0e8', textDecoration: done ? 'line-through' : 'none' }}
+                        style={{ color: done ? '#a89880' : '#f5f0e8', textDecoration: done ? 'line-through' : 'none' }}
                       >
                         {step}
                       </p>
@@ -1187,7 +1187,7 @@ export function EventHub() {
                   );
                 })
               ) : (
-                <p className="text-sm font-light py-4" style={{ color: '#8a7a65' }}>
+                <p className="text-sm font-light py-4" style={{ color: '#a89880' }}>
                   All caught up. Chat with A-Moment to figure out what&apos;s next.
                 </p>
               )}
@@ -1332,7 +1332,7 @@ export function EventHub() {
             className="p-6"
             style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
           >
-            <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#a89880', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
               At a glance
             </p>
             <div className="grid grid-cols-2 gap-6">
@@ -1343,7 +1343,7 @@ export function EventHub() {
                 { label: 'Invites', value: summary.inviteCount },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <p className="text-[9px] tracking-[0.18em] uppercase mb-1" style={{ color: '#8a7a65' }}>{label}</p>
+                  <p className="text-[11px] tracking-[0.18em] uppercase mb-1" style={{ color: '#a89880' }}>{label}</p>
                   <p className="font-serif text-3xl" style={{ color: '#f5f0e8' }}>{value}</p>
                 </div>
               ))}
@@ -1385,7 +1385,7 @@ export function EventHub() {
             type HubTab = 'actions' | 'share' | 'danger';
 
             const tabStyle = (t: HubTab) => ({
-              color: hubTab === t ? '#c9a96e' : '#8a7a65',
+              color: hubTab === t ? '#c9a96e' : '#a89880',
               borderBottom: hubTab === t ? '1px solid #c9a96e' : '1px solid transparent',
               marginBottom: '-1px',
             });
@@ -1413,7 +1413,7 @@ export function EventHub() {
                     <button
                       key={t}
                       onClick={() => setHubTab(t)}
-                      className="py-3 mr-6 text-[9px] tracking-[0.18em] uppercase font-medium transition-colors whitespace-nowrap"
+                      className="py-3 mr-6 text-[11px] tracking-[0.18em] uppercase font-medium transition-colors whitespace-nowrap"
                       style={tabStyle(t)}
                     >
                       {t === 'danger' ? '⚠ Zone' : t === 'share' ? 'Share' : 'Actions'}
@@ -1441,7 +1441,7 @@ export function EventHub() {
                           </span>
                         )}
                       </div>
-                      <span className="text-xs font-light ml-3 transition-transform group-hover:translate-x-0.5 duration-150 flex-shrink-0" style={{ color: '#8a7a65' }}>→</span>
+                      <span className="text-xs font-light ml-3 transition-transform group-hover:translate-x-0.5 duration-150 flex-shrink-0" style={{ color: '#a89880' }}>→</span>
                     </button>
                   );
                 })}
@@ -1456,9 +1456,9 @@ export function EventHub() {
                   >
                     <div className="min-w-0">
                       <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>{item.label}</p>
-                      <p className="text-[9px] mt-0.5" style={{ color: '#8a7a65' }}>{item.sub}</p>
+                      <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>{item.sub}</p>
                     </div>
-                    <ChevronRight className="w-3 h-3 flex-shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" style={{ color: '#8a7a65' }} />
+                    <ChevronRight className="w-3 h-3 flex-shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" style={{ color: '#a89880' }} />
                   </button>
                 ))}
 
@@ -1475,19 +1475,19 @@ export function EventHub() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>Reset plan</p>
-                          <p className="text-[9px] mt-0.5" style={{ color: '#8a7a65' }}>Remove chosen plan · pick again</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>Remove chosen plan · pick again</p>
                         </div>
                         {!confirmReset ? (
                           <button
                             onClick={() => { setConfirmReset(true); setConfirmDelete(false); }}
                             className="flex-shrink-0 px-3 py-1 text-xs border border-border rounded hover:border-destructive/50 hover:text-destructive transition-colors"
-                            style={{ color: '#8a7a65' }}
+                            style={{ color: '#a89880' }}
                           >
                             Reset
                           </button>
                         ) : (
                           <div className="flex gap-1.5 flex-shrink-0">
-                            <button onClick={() => setConfirmReset(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#8a7a65' }}>Cancel</button>
+                            <button onClick={() => setConfirmReset(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#a89880' }}>Cancel</button>
                             <button onClick={handleResetPlan} disabled={actionBusy} className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40 transition-colors" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}>
                               {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null} Confirm
                             </button>
@@ -1500,7 +1500,7 @@ export function EventHub() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-light" style={{ color: '#ef4444' }}>Delete event</p>
-                          <p className="text-[9px] mt-0.5" style={{ color: '#8a7a65' }}>Permanent · cannot be undone</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>Permanent · cannot be undone</p>
                         </div>
                         {!confirmDelete ? (
                           <button
@@ -1512,7 +1512,7 @@ export function EventHub() {
                           </button>
                         ) : (
                           <div className="flex gap-1.5 flex-shrink-0">
-                            <button onClick={() => setConfirmDelete(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#8a7a65' }}>Cancel</button>
+                            <button onClick={() => setConfirmDelete(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#a89880' }}>Cancel</button>
                             <button onClick={handleDeleteEvent} disabled={actionBusy} className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40 transition-colors" style={{ background: 'rgba(239,68,68,0.85)', color: '#fff' }}>
                               {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null} Delete forever
                             </button>

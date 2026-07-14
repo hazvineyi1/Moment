@@ -182,11 +182,11 @@ function LandingPage() {
   const eyebrow: React.CSSProperties = {
     fontFamily: "'Outfit', sans-serif",
     fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase',
-    color: '#8a7a65', margin: 0,
+    color: '#a89880', margin: 0,
   };
   const body: React.CSSProperties = {
     fontFamily: "'Outfit', sans-serif",
-    fontWeight: 300, fontSize: 14, lineHeight: 1.75, color: '#8a7a65', margin: 0,
+    fontWeight: 300, fontSize: 14, lineHeight: 1.75, color: '#a89880', margin: 0,
   };
   const goldRule: React.CSSProperties = {
     height: 1,
@@ -262,11 +262,11 @@ function LandingPage() {
             </button>
             <button onClick={() => setLocation('/sign-in')} style={{
               fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase',
-              color: '#8a7a65', background: 'none', border: 'none', cursor: 'pointer',
+              color: '#a89880', background: 'none', border: 'none', cursor: 'pointer',
               transition: 'color 0.3s',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
             >Already have an account? Sign in</button>
           </div>
         </div>
@@ -311,7 +311,7 @@ function LandingPage() {
           {OCCASIONS.map(occ => (
             <span key={occ} style={{
               fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase',
-              color: '#8a7a65', border: '1px solid rgba(201,169,110,0.18)',
+              color: '#a89880', border: '1px solid rgba(201,169,110,0.18)',
               padding: '10px 22px', display: 'inline-block',
             }}>{occ}</span>
           ))}

@@ -111,12 +111,12 @@ export function EventInspirations({ eventId }: Props) {
 
         {/* URL input */}
         <form onSubmit={handleAdd} className="mb-8">
-          <p className="text-[10px] tracking-[0.18em] uppercase mb-2" style={{ color: '#8a7a65' }}>
+          <p className="text-xs tracking-[0.18em] uppercase mb-2" style={{ color: '#a89880' }}>
             Add inspiration
           </p>
           <div className="flex gap-2">
             <div className="flex-1 relative">
-              <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#8a7a65' }} />
+              <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#a89880' }} />
               <input
                 ref={inputRef}
                 type="url"
@@ -147,7 +147,7 @@ export function EventInspirations({ eventId }: Props) {
           {addError && (
             <p className="mt-2 text-xs" style={{ color: '#ef4444' }}>{addError}</p>
           )}
-          <p className="mt-2 text-[10px]" style={{ color: '#8a7a65' }}>
+          <p className="mt-2 text-xs" style={{ color: '#a89880' }}>
             Works with Instagram, TikTok, YouTube, Pinterest, travel blogs, hotel sites — any public URL.
             Instagram reels may take a moment while A-Moment reads the vibe.
           </p>
@@ -164,7 +164,7 @@ export function EventInspirations({ eventId }: Props) {
             style={{ border: '1px dashed rgba(201,169,110,0.18)' }}
           >
             <Sparkles className="w-8 h-8 mb-3" style={{ color: 'rgba(201,169,110,0.3)' }} />
-            <p className="text-sm font-light" style={{ color: '#8a7a65' }}>
+            <p className="text-sm font-light" style={{ color: '#a89880' }}>
               No inspirations yet. Paste your first URL above.
             </p>
           </div>
@@ -200,7 +200,7 @@ export function EventInspirations({ eventId }: Props) {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5">
                         <PlatformIcon url={insp.url} />
-                        <span className="text-[9px] tracking-[0.12em] uppercase" style={{ color: '#8a7a65' }}>
+                        <span className="text-[11px] tracking-[0.12em] uppercase" style={{ color: '#a89880' }}>
                           {domain(insp.url)}
                         </span>
                       </div>
@@ -214,13 +214,13 @@ export function EventInspirations({ eventId }: Props) {
                       className="flex-shrink-0 p-1 rounded transition-opacity hover:opacity-60"
                     >
                       {removingIdx === idx
-                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: '#8a7a65' }} />
-                        : <X className="w-3.5 h-3.5" style={{ color: '#8a7a65' }} />}
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: '#a89880' }} />
+                        : <X className="w-3.5 h-3.5" style={{ color: '#a89880' }} />}
                     </button>
                   </div>
 
                   {insp.description && (
-                    <p className="text-[11px] font-light leading-relaxed line-clamp-2 mb-2" style={{ color: '#8a7a65' }}>
+                    <p className="text-[11px] font-light leading-relaxed line-clamp-2 mb-2" style={{ color: '#a89880' }}>
                       {insp.description}
                     </p>
                   )}
@@ -230,7 +230,7 @@ export function EventInspirations({ eventId }: Props) {
                       {insp.vibes.map(v => (
                         <span
                           key={v}
-                          className="px-2 py-0.5 text-[9px] tracking-wide rounded-full"
+                          className="px-2 py-0.5 text-[11px] tracking-wide rounded-full"
                           style={{ background: 'rgba(201,169,110,0.08)', border: '1px solid rgba(201,169,110,0.18)', color: '#c9a96e' }}
                         >
                           {v}
@@ -250,8 +250,8 @@ export function EventInspirations({ eventId }: Props) {
             className="mt-6 rounded-xl px-4 py-4"
             style={{ background: 'rgba(201,169,110,0.03)', border: '1px solid rgba(201,169,110,0.1)' }}
           >
-            <p className="text-[9px] tracking-[0.15em] uppercase mb-1.5" style={{ color: '#8a7a65' }}>How A-Moment uses this</p>
-            <p className="text-xs font-light leading-relaxed" style={{ color: '#8a7a65' }}>
+            <p className="text-[11px] tracking-[0.15em] uppercase mb-1.5" style={{ color: '#a89880' }}>How A-Moment uses this</p>
+            <p className="text-xs font-light leading-relaxed" style={{ color: '#a89880' }}>
               When you generate or regenerate plan options, A-Moment reads the vibe, atmosphere, and style
               from your {inspirations.length} inspiration{inspirations.length !== 1 ? 's' : ''} and uses
               them to shape the character of each proposal — venues, activities, and overall feel.
