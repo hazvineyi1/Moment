@@ -84,6 +84,25 @@ function eventCoverImage(event: any): string {
 const CARD_TILTS = [-1.8, 1.2, -0.9, 2.1, -1.4, 0.8, -2.2, 1.6];
 const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 768;
 
+/* ─── Celebrant-answered helpers ──────────────────────────────────────── */
+const PLANNING_FOR_MARKER = '__PLANNING_FOR__:';
+const CELEBRANT_MARKER = '__CELEBRANT__:';
+
+function parseCelebrantStatus(description: string | null | undefined): {
+  planningForSomeone: boolean;
+  celebrantName: string;
+  celebrantAnswered: boolean;
+} {
+  if (!description) return { planningForSomeone: false, celebrantName: '', celebrantAnswered: false };
+  const idx = description.indexOf(PLANNING_FOR_MARKER);
+  if (idx === -1) return { planningForSomeone: false, celebrantName: '', celebrantAnswered: false };
+  const value = description.slice(idx + PLANNING_FOR_MARKER.length).split('\n')[0].trim();
+  if (!value.startsWith('someone')) return { planningForSomeone: false, celebrantName: '', celebrantAnswered: false };
+  const namePart = value.slice('someone'.length).replace(/^:/, '').trim();
+  const celebrantAnswered = description.includes(CELEBRANT_MARKER);
+  return { planningForSomeone: true, celebrantName: namePart, celebrantAnswered };
+}
+
 /* ─── Event card ──────────────────────────────────────────────────────── */
 function EventCard({ event, index }: { event: any; index: number }) {
   const [placed, setPlaced] = useState(false);
@@ -108,6 +127,9 @@ function EventCard({ event, index }: { event: any; index: number }) {
     : event.status === 'planning'
     ? 'Planning'
     : 'Draft';
+
+  const { planningForSomeone, celebrantName, celebrantAnswered } = parseCelebrantStatus(event.description);
+  const showAnsweredBadge = planningForSomeone && celebrantAnswered;
 
   return (
     <div ref={ref} style={{ perspective: '800px' }}>
@@ -154,6 +176,35 @@ function EventCard({ event, index }: { event: any; index: number }) {
               pointerEvents: 'none',
             }}
           />
+          {/* Celebrant-answered badge — top-right corner */}
+          {showAnsweredBadge && (
+            <div
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1"
+              style={{
+                background: 'rgba(20,16,10,0.82)',
+                border: '1px solid rgba(201,169,110,0.45)',
+                backdropFilter: 'blur(6px)',
+              }}
+            >
+              {/* Pulsing dot */}
+              <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
+                <span
+                  className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping"
+                  style={{ backgroundColor: '#c9a96e' }}
+                />
+                <span
+                  className="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: '#c9a96e' }}
+                />
+              </span>
+              <span
+                className="uppercase text-[8px] tracking-[0.18em] whitespace-nowrap"
+                style={{ color: '#c9a96e' }}
+              >
+                {celebrantName ? `${celebrantName} answered` : 'Celebrant answered'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Info panel */}
