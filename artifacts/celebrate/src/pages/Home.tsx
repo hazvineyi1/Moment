@@ -25,17 +25,54 @@ function StatusPill({ label }: { label: string }) {
   );
 }
 
-/* ─── Type → venue photo map ──────────────────────────────────────────── */
-const TYPE_IMAGES: Record<string, string> = {
-  birthday:    '/images/type-birthday.jpg',
-  wedding:     '/images/type-wedding.jpg',
-  anniversary: '/images/type-anniversary.jpg',
-  graduation:  '/images/type-graduation.jpg',
+/* ─── Type → Unsplash photo pool ─────────────────────────────────────── */
+const u = (id: string) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&q=80`;
+
+const TYPE_POOLS: Record<string, string[]> = {
+  birthday: [
+    u('1513151233558-d860c5398176'), // colourful party lights
+    u('1530103862676-de8c9debad1d'), // birthday cake sparklers
+    u('1467810563316-b5476525c0f9'), // bokeh celebration
+    u('1464349153735-7db50ed83c84'), // birthday candles close-up
+    u('1533174072545-7a4b6ad7a6c3'), // champagne pop
+    u('1519671282429-b8058da34eb1'), // rooftop party at night
+  ],
+  wedding: [
+    u('1519741497674-611481863552'), // outdoor ceremony aisle
+    u('1522673607200-164d1b6ce486'), // arch of flowers
+    u('1511285560929-80b199cd3e94'), // elegant table setting
+    u('1465495976277-4387d4b0b4c6'), // venue exterior golden hour
+    u('1606800052052-a08af7148866'), // reception hall chandeliers
+    u('1529636798458-92182e662485'), // bride bouquet close-up
+  ],
+  anniversary: [
+    u('1414235077428-338989a2e8c0'), // candlelit restaurant table
+    u('1551218808-94e220e084d2'), // fine-dining place setting
+    u('1528605248644-14dd04022da1'), // champagne glasses clinking
+    u('1559329007-35b6f8498b26'), // rose petals romantic setup
+    u('1424847651672-bf20a4b0982b'), // couple travel sunset
+    u('1481833761820-0509d3217039'), // city lights romantic night
+  ],
+  graduation: [
+    u('1523050854058-8df90110c9f1'), // caps thrown in air
+    u('1541339907198-e08756dedf3f'), // ceremony hall
+    u('1627556592933-b1f58e89babe'), // graduates celebrating outdoors
+    u('1571260899304-425eee4c7efc'), // diploma handshake moment
+    u('1434030216411-0b793f4b6901'), // academic campus green
+  ],
+  other: [
+    u('1492684223066-81342ee5ff30'), // festival lights crowd
+    u('1516450360452-9312f5e86fc7'), // celebration venue interior
+    u('1533174072545-7a4b6ad7a6c3'), // champagne celebration
+    u('1481833761820-0509d3217039'), // night-time event lights
+  ],
 };
 
-function eventCoverImage(event: any): string | null {
+function eventCoverImage(event: any): string {
   if (event.coverImage) return event.coverImage;
-  return TYPE_IMAGES[event.type] ?? '/images/type-other.jpg';
+  const pool = TYPE_POOLS[event.type] ?? TYPE_POOLS.other;
+  return pool[event.id % pool.length];
 }
 
 /* ─── Event card ──────────────────────────────────────────────────────── */
