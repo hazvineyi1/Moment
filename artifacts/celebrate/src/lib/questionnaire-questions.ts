@@ -33,8 +33,8 @@ export const QUESTIONS: Question[] = [
   {
     key: 'surprises',
     label: 'How do you feel about surprises?',
-    hint: 'Be honest — we want to get this right',
-    options: ['I love them — the more the better', 'A few small surprises are nice', 'I prefer to know the plan', 'Please no surprises at all'],
+    hint: 'Be honest. We want to get this right.',
+    options: ['I love them, the more the better', 'A few small surprises are nice', 'I prefer to know the plan', 'Please, no surprises at all'],
     multi: false,
   },
   {
@@ -62,7 +62,7 @@ export const QUESTIONS: Question[] = [
   {
     key: 'budget',
     label: 'Your budget comfort zone per person?',
-    hint: 'Rough guide — no commitment',
+    hint: 'Rough guide, no commitment.',
     options: ['Under £100', '£100–£300', '£300–£600', '£600–£1,200', 'No limit'],
     multi: false,
   },

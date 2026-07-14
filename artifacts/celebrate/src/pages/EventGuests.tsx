@@ -313,7 +313,7 @@ function AddGuestDrawer({
         <div className="p-6 pb-safe space-y-5">
           <div>
             <h2 className="font-serif text-2xl font-medium">Add a guest</h2>
-            <p className="text-sm text-muted-foreground mt-1">Name is required — everything else is optional.</p>
+            <p className="text-sm text-muted-foreground mt-1">Name is required. Everything else is optional.</p>
           </div>
 
           <input
@@ -440,12 +440,12 @@ function groupInsight(archCounts: Record<string, number>): string {
   const ref = top.filter(id => REFLECTIVE_IDS.has(id)).length;
   const lux = top.filter(id => LUXURY_IDS.has(id)).length;
   const adv = top.filter(id => ADVENTURE_IDS.has(id)).length;
-  if (he >= 2)  return 'High-energy crowd — plan for big shared moments and spontaneity.';
-  if (ref >= 2) return 'Intimate and reflective — quality conversation over spectacle.';
-  if (lux >= 1) return 'Quality-focused group — comfort, craft, and curated experiences will land well.';
-  if (adv >= 1) return 'Adventure-first — push the experience beyond the ordinary.';
-  if (he >= 1 && ref >= 1) return 'Mixed energy — build a flow that lets both high and low energy moments shine.';
-  return 'Diverse mix — variety and flexibility will keep everyone engaged.';
+  if (he >= 2)  return 'High-energy crowd. Plan for big shared moments and spontaneity.';
+  if (ref >= 2) return 'Intimate and reflective. Quality conversation over spectacle.';
+  if (lux >= 1) return 'Quality-focused group. Comfort, craft, and curated experiences will land well.';
+  if (adv >= 1) return 'Adventure-first. Push the experience beyond the ordinary.';
+  if (he >= 1 && ref >= 1) return 'Mixed energy. Build a flow that lets both high and low energy moments shine.';
+  return 'Diverse mix. Variety and flexibility will keep everyone engaged.';
 }
 
 function GroupAnalysis({ guests, eventId }: { guests: GuestShape[]; eventId: number }) {
@@ -661,7 +661,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
       {!hasPersonality && !data && (
         <div className="px-5 py-4">
           <p className="text-xs italic" style={{ color: '#8a7a65' }}>
-            Add personality tags to guests first — pairings are more accurate with at least a few archetypes set.
+            Add personality tags to guests first. Pairings are more accurate with at least a few archetypes set.
           </p>
         </div>
       )}
@@ -713,7 +713,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
           {data.roommates.length === 0 && data.travelBuddies.length === 0 && data.seatingGroups.length === 0 && (
             <div className="px-5 py-4">
               <p className="text-xs italic" style={{ color: '#8a7a65' }}>
-                {guests.length < 2 ? 'Add at least 2 guests to generate pairings.' : 'No pairings generated — try adding personality tags to your guests.'}
+                {guests.length < 2 ? 'Add at least 2 guests to generate pairings.' : 'No pairings generated. Try adding personality tags to your guests.'}
               </p>
             </div>
           )}

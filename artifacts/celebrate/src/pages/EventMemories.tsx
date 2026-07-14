@@ -311,7 +311,7 @@ export function EventMemories({ eventId }: { eventId: string }) {
           /* Empty state */
           <div style={{ maxWidth: 400, paddingTop: 40 }}>
             <p style={{ fontSize: 14, fontWeight: 300, color: '#8a7a65', lineHeight: 1.7, marginBottom: 32 }}>
-              After the celebration, add your photos here — a private album for the moments that made it memorable.
+              After the celebration, add your photos here. A private album for the moments that made it memorable.
             </p>
             <button
               onClick={() => setShowAdd(true)}
@@ -322,7 +322,7 @@ export function EventMemories({ eventId }: { eventId: string }) {
               }}
             >
               <span>Add your first memory</span>
-              <span style={{ fontSize: 16, letterSpacing: '-0.08em' }}>———›</span>
+              <span style={{ fontSize: 16 }}>→</span>
             </button>
           </div>
         ) : (

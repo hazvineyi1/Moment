@@ -446,7 +446,7 @@ export function EventOptions() {
                 onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                <span>None of these — show me different options</span>
+                <span>None of these. Show me different options</span>
               </button>
             </div>
           </>

@@ -203,7 +203,7 @@ export function GuestQuestionnairePage() {
           You're going to <strong>{eventInfo?.eventTitle}</strong>.
         </p>
         <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mb-10">
-          Answer 4 quick questions and A-Moment will use your profile to make sure the experience feels right — for you specifically.
+          Answer 4 quick questions and A-Moment will use your profile to make sure the experience feels right for you.
         </p>
         <button
           onClick={() => setPhase('q1')}
@@ -225,7 +225,7 @@ export function GuestQuestionnairePage() {
         <div className="flex-1 container mx-auto px-4 py-8 max-w-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
           <ProgressBar current={0} total={4} />
           <h2 className="font-serif text-2xl md:text-3xl font-medium mb-1">Which of these feel most like you?</h2>
-          <p className="text-sm text-muted-foreground mb-6">Pick as many as you want — or as few.</p>
+          <p className="text-sm text-muted-foreground mb-6">Pick as many as you want, or as few.</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-10">
             {ARCHETYPES.map(a => (
               <ArchetypeCard key={a.id} archetype={a} selected={archetypes.includes(a.id)} onClick={() => toggleArchetype(a.id)} />
@@ -283,7 +283,7 @@ export function GuestQuestionnairePage() {
         <div className="flex-1 container mx-auto px-4 py-8 max-w-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
           <ProgressBar current={2} total={4} />
           <h2 className="font-serif text-2xl md:text-3xl font-medium mb-1">What completely kills the vibe?</h2>
-          <p className="text-sm text-muted-foreground mb-6">Be honest — nobody sees this except A-Moment.</p>
+          <p className="text-sm text-muted-foreground mb-6">Be honest. Nobody sees this except A-Moment.</p>
           <div className="flex flex-wrap gap-2 mb-10">
             {DEALBREAKERS.map(v => (
               <Chip key={v} label={v} selected={dealbreakers.includes(v)} onClick={() => toggleDealbreaker(v)} />
@@ -312,7 +312,7 @@ export function GuestQuestionnairePage() {
         <div className="flex-1 container mx-auto px-4 py-8 max-w-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
           <ProgressBar current={3} total={4} />
           <h2 className="font-serif text-2xl md:text-3xl font-medium mb-1">Any dietary or access needs?</h2>
-          <p className="text-sm text-muted-foreground mb-6">Optional — but important to get right.</p>
+          <p className="text-sm text-muted-foreground mb-6">Optional, but important to get right.</p>
           <textarea
             value={dietary}
             onChange={e => setDietary(e.target.value)}

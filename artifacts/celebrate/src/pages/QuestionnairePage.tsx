@@ -299,7 +299,7 @@ export function QuestionnairePage({ token }: { token: string }) {
             <textarea
               value={textAnswer}
               onChange={e => setAnswers(prev => ({ ...prev, [q.key]: e.target.value }))}
-              placeholder="Optional — anything specific you want them to know…"
+              placeholder="Optional: anything specific you want them to know…"
               rows={5}
               className="w-full bg-card border border-border rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary resize-none leading-relaxed placeholder:text-muted-foreground/60"
             />
@@ -325,7 +325,7 @@ export function QuestionnairePage({ token }: { token: string }) {
           )}
 
           {q.optional && !hasAnswer && (
-            <p className="text-xs text-muted-foreground mt-3 italic">Optional — skip if not applicable</p>
+            <p className="text-xs text-muted-foreground mt-3 italic">Optional, skip if not applicable</p>
           )}
         </div>
 

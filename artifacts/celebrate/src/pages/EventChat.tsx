@@ -534,7 +534,7 @@ function getQuickReplies(eventType: string): string[] {
     sailing: ['Crewed yacht or bareboat charter?', 'What route should we take?', 'What should we pack for a sailing trip?'],
     ski: ['Which resort fits our group?', 'On-piste or off-piste focus?', 'How do we handle mixed ability levels?'],
     spa: ['What kind of treatments should anchor the trip?', 'Destination spa or city retreat?', 'What makes a spa weekend feel luxurious?'],
-    festival: ['Which festivals should we have on our radar?', 'VIP or general — what\u2019s the trade-off?', 'How do we plan around the lineup?'],
+    festival: ['Which festivals should we have on our radar?', 'VIP or general: what\u2019s the trade-off?', 'How do we plan around the lineup?'],
     corporate: ['What\u2019s the balance between work and play?', 'Any team-building ideas that don\u2019t feel forced?', 'What venues work for both sessions and dinners?'],
     reunion: ['How do we get people who haven\u2019t seen each other in years comfortable?', 'Where\u2019s a good central meeting point?', 'What activities work for mixed ages?'],
     safari: ['East Africa or Southern Africa?', 'Luxury lodge or tented camp?', 'What\u2019s the ideal time of year for wildlife?'],

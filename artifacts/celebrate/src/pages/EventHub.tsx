@@ -287,7 +287,7 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="font-medium text-sm">Your context for this event</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">A-Moment reads this. Different from your global profile — specific to this plan.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">A-Moment reads this. Specific to this plan, separate from your global profile.</p>
         </div>
         {!editing && (
           <button
@@ -306,7 +306,7 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
             onChange={(e) => setValue(e.target.value)}
             autoFocus
             rows={4}
-            placeholder={`E.g., "I'm planning this for my boss's 50th — budget is flexible but it needs to feel effortless, not flashy. He hates surprises and loves wine. The group is 8 executives, most with partners."`}
+            placeholder={`E.g., "I'm planning this for my boss's 50th. Budget is flexible but it needs to feel effortless, not flashy. He hates surprises and loves wine. The group is 8 executives, most with partners."`}
             className="w-full text-sm bg-background border border-border rounded-xl px-4 py-3 outline-none focus:border-primary resize-none leading-relaxed placeholder:text-muted-foreground/60"
           />
           <div className="flex gap-2 mt-2 justify-end">
@@ -327,7 +327,7 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
         <p className="text-sm text-foreground/80 leading-relaxed italic">{existing}</p>
       ) : (
         <p className="text-sm text-muted-foreground/60 italic">
-          Tell A-Moment who you are in the context of this specific event — your role, constraints, what this group means to you.
+          Tell A-Moment who you are in the context of this event: your role, constraints, what this group means to you.
         </p>
       )}
     </div>
@@ -591,8 +591,8 @@ function QuestionnaireBanner({
         <p className="font-medium text-sm flex items-center gap-2">
           <Link className="w-4 h-4 text-primary" />
           {celebrantName
-            ? `Share with ${celebrantName} — their answers feed into A-Moment`
-            : 'Send your celebrant the questionnaire — their answers feed into A-Moment'}
+            ? `Share with ${celebrantName}. Their answers feed into A-Moment`
+            : 'Send your celebrant the questionnaire. Their answers feed into A-Moment'}
         </p>
         {url && (
           <p className="text-xs text-muted-foreground mt-1 font-mono truncate">{url}</p>
@@ -1040,7 +1040,7 @@ export function EventHub() {
               <span
                 className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
               >
-                ———›
+                →
               </span>
             </button>
           </section>
@@ -1064,7 +1064,7 @@ export function EventHub() {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium mb-1">How will you tell {name}?</p>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Get a personalised script — timing, setting, exactly what to say, what to avoid, and how to handle any reaction.
+                        Get a personalised script: timing, setting, exactly what to say, what to avoid, and how to handle any reaction.
                       </p>
                       {revealError && (
                         <p className="text-sm text-destructive mt-2 flex items-center gap-1.5">

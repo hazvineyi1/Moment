@@ -236,7 +236,7 @@ export function Home() {
             {dashboard?.upcomingEvents ?? 0}{' '}
             {(dashboard?.upcomingEvents ?? 0) === 1 ? 'celebration' : 'celebrations'} in motion
             {(dashboard?.totalGuests ?? 0) > 0 &&
-              ` — ${dashboard?.totalGuests} people expecting something remarkable`}
+              `, ${dashboard?.totalGuests} people expecting something remarkable`}
           </p>
         )}
       </header>
@@ -291,7 +291,7 @@ export function Home() {
                 className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
                 style={{ color: '#c9a96e' }}
               >
-                ———›
+                →
               </span>
             </Link>
           </div>
@@ -312,7 +312,7 @@ export function Home() {
               className="font-serif italic text-3xl md:text-4xl mb-6 leading-snug"
               style={{ color: '#f5f0e8' }}
             >
-              A-Moment plans 24 types of celebrations — from intimate winery weekends to
+              A-Moment plans 24 types of celebrations, from intimate winery weekends to
               month-long sailing expeditions.
             </p>
             <p className="text-sm font-light leading-relaxed mb-10" style={{ color: '#8a7a65' }}>
@@ -328,7 +328,7 @@ export function Home() {
               <span
                 className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
               >
-                ———›
+                →
               </span>
             </Link>
           </div>

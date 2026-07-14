@@ -55,11 +55,11 @@ export function EventInvitePage({ eventId }: { eventId: string }) {
       })
       .then((data: PublicEvent) => {
         setEvent(data);
-        document.title = `${data.title} — A-Moment`;
+        document.title = `${data.title} | A-Moment`;
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-    return () => { document.title = 'A-Moment — Celebration Planning, Reimagined'; };
+    return () => { document.title = 'A-Moment | Celebration Planning, Reimagined'; };
   }, [eventId]);
 
   if (loading) {
@@ -75,7 +75,7 @@ export function EventInvitePage({ eventId }: { eventId: string }) {
       <div style={{ minHeight: '100dvh', background: '#060606', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, fontFamily: "'Outfit', sans-serif" }}>
         <p style={{ color: '#8a7a65', fontSize: 14, letterSpacing: '0.1em' }}>This celebration could not be found.</p>
         <button onClick={() => setLocation('/')} style={{ color: '#c9a96e', background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-          Return to A-Moment ———›
+          Return to A-Moment →
         </button>
       </div>
     );
@@ -173,7 +173,7 @@ export function EventInvitePage({ eventId }: { eventId: string }) {
 
         {/* Invitation copy */}
         <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.8, color: '#c5bdb0', marginBottom: 48, maxWidth: 540 }}>
-          This celebration is being planned with A-Moment — a concierge planning experience that crafts extraordinary occasions, down to the last detail.
+          This celebration is being planned with A-Moment, a concierge planning experience that crafts extraordinary occasions, down to the last detail.
         </p>
 
         {/* CTAs */}
@@ -188,7 +188,7 @@ export function EventInvitePage({ eventId }: { eventId: string }) {
             }}
           >
             <span>Plan your own celebration</span>
-            <span style={{ fontSize: 16, letterSpacing: '-0.08em' }}>———›</span>
+            <span style={{ fontSize: 16 }}>→</span>
           </button>
           <button
             onClick={() => setLocation('/sign-in')}

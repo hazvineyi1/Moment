@@ -46,7 +46,7 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
   const handleWhatsApp = () => {
     const name = celebrantName || 'your friend';
     const msg = encodeURIComponent(
-      `Hey ${name}! I'm planning something special for you — share your preferences so I can make it perfect:\n${questionnaireUrl}`
+      `Hey ${name}! I'm planning something special for you. Share your preferences so I can make it perfect:\n${questionnaireUrl}`
     );
     window.open(`https://wa.me/?text=${msg}`, '_blank');
   };
@@ -54,7 +54,7 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
   const handleSMS = () => {
     const name = celebrantName || 'you';
     const msg = encodeURIComponent(
-      `Hey ${name}! I'm planning something for you — fill in this quick form: ${questionnaireUrl}`
+      `Hey ${name}! I'm planning something for you. Fill in this quick form: ${questionnaireUrl}`
     );
     window.location.href = `sms:?body=${msg}`;
   };
@@ -80,7 +80,7 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
             {celebrantName ? `${celebrantName}'s event is ready` : "Event created"}
           </h1>
           <p className="text-muted-foreground leading-relaxed max-w-sm">
-            Send {celebrantName ? celebrantName : 'them'} this link — a short questionnaire that
+            Send {celebrantName ? celebrantName : 'them'} this link. A short questionnaire that
             feeds their preferences straight into A-Moment. Takes less than a minute.
           </p>
         </div>
@@ -112,7 +112,7 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
           </div>
         ) : (
           <div className="bg-muted/50 rounded-2xl p-5 mb-6 text-center text-sm text-muted-foreground">
-            Questionnaire link unavailable — you can find it in the event hub.
+            Questionnaire link unavailable. Find it in the event hub.
           </div>
         )}
 

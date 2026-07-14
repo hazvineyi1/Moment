@@ -146,15 +146,15 @@ function Protected({ children }: { children: React.ReactNode }) {
 
 // ── Landing background photos ──────────────────────────────────────────────
 const LANDING_PHOTOS = [
-  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=70', top: '2%',  left: '-9%',  w: 300, h: 390, tilt: -11, delay: 0.1 },
-  { src: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=70', top: '55%', left: '-7%',  w: 250, h: 310, tilt:   7, delay: 0.3 },
-  { src: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=70', top: '3%',  left: '76%',  w: 280, h: 370, tilt:   9, delay: 0.2 },
-  { src: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=70', top: '57%', left: '79%',  w: 230, h: 290, tilt:  -6, delay: 0.4 },
+  { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=88', top: '2%',  left: '-9%',  w: 300, h: 390, tilt: -11, delay: 0.1 },
+  { src: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=900&q=88', top: '55%', left: '-7%',  w: 250, h: 310, tilt:   7, delay: 0.3 },
+  { src: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=900&q=88', top: '3%',  left: '76%',  w: 280, h: 370, tilt:   9, delay: 0.2 },
+  { src: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=88', top: '57%', left: '79%',  w: 230, h: 290, tilt:  -6, delay: 0.4 },
 ];
 
 const STEPS = [
-  { n: '01', title: 'Tell us about the occasion', desc: 'The event, the person, and the vibe. We take it from there — no planning experience required.' },
-  { n: '02', title: 'We propose six curated plans', desc: "From intimate to extraordinary, each plan is a complete itinerary crafted around who you're celebrating." },
+  { n: '01', title: 'Tell us about the occasion', desc: 'The event, the person, and the vibe. We take it from there. No planning experience required.' },
+  { n: '02', title: 'Six curated plans, instantly', desc: "From intimate to extraordinary. Each plan is a complete itinerary built around who you are celebrating." },
   { n: '03', title: 'Refine with your concierge', desc: 'Chat to adjust every detail until it feels exactly right. Then hand it off.' },
 ];
 
@@ -246,7 +246,7 @@ function LandingPage() {
           }}>A-Moment</h1>
           <p style={{ ...body, maxWidth: 340, marginBottom: 60, ...t(0.75) }}>
             From intimate winery weekends to month-long sailing expeditions.
-            Whatever you are celebrating, we plan it — beautifully.
+            Whatever you are celebrating, we plan it. Beautifully.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, ...t(1.0) }}>
             <button onClick={() => setLocation('/sign-up')} style={{
@@ -255,7 +255,7 @@ function LandingPage() {
               color: '#c9a96e', background: 'none', border: 'none', cursor: 'pointer',
             }}>
               <span>Begin your story</span>
-              <span style={{ fontSize: 17, letterSpacing: '-0.08em' }}>———›</span>
+              <span style={{ fontSize: 17 }}>→</span>
             </button>
             <button onClick={() => setLocation('/sign-in')} style={{
               fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase',
@@ -276,7 +276,7 @@ function LandingPage() {
           fontSize: 'clamp(20px, 3.5vw, 40px)', color: '#f5f0e8',
           lineHeight: 1.35, maxWidth: 680, margin: '0 auto', opacity: 0.85,
         }}>
-          "The kind of planning that used to take weeks — done in an evening."
+          "The kind of planning that used to take weeks. Done in an evening."
         </p>
       </section>
 
@@ -331,7 +331,7 @@ function LandingPage() {
           marginBottom: 80,
         }}>
           <span>Begin your story</span>
-          <span style={{ fontSize: 17, letterSpacing: '-0.08em' }}>———›</span>
+          <span style={{ fontSize: 17 }}>→</span>
         </button>
         <div style={{ ...goldRule, maxWidth: 400, margin: '0 auto 32px' }} />
         <p style={{ fontSize: 11, letterSpacing: '0.12em', color: 'rgba(138,122,101,0.45)' }}>

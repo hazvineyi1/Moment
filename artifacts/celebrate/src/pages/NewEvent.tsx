@@ -316,7 +316,7 @@ export function NewEvent() {
                     className="w-full text-lg bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 transition-colors placeholder:text-muted-foreground/50"
                   />
                   <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                    After creating the event you can send them a short questionnaire — their answers feed straight into A-Moment.
+                    After creating the event you can send them a short questionnaire. Their answers feed straight into A-Moment.
                   </p>
                 </div>
               )}
@@ -325,7 +325,7 @@ export function NewEvent() {
                 <div className="mt-6 max-w-sm animate-in fade-in duration-300">
                   <label className="text-sm font-medium text-muted-foreground block mb-3">
                     {planningFor === 'myself' ? 'Your age range' : 'Their age range'}{' '}
-                    <span className="font-normal">(optional — shapes every recommendation)</span>
+                    <span className="font-normal">(optional, shapes every recommendation)</span>
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {AGE_RANGES.map(r => (
@@ -378,7 +378,7 @@ export function NewEvent() {
                 style={{ color: '#c9a96e' }}
               >
                 <span>Continue</span>
-                <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">———›</span>
+                <span className="text-base transition-transform group-hover:translate-x-2 duration-300">→</span>
               </button>
             </div>
           </div>
@@ -397,7 +397,7 @@ export function NewEvent() {
             <div className="mb-10">
               <p className="uppercase text-[10px] tracking-[0.22em] mb-4" style={{ color: '#8a7a65' }}>Step 2 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>What kind of experience?</h1>
-              <p className="text-sm font-light" style={{ color: '#8a7a65' }}>Pick what resonates — A-Moment can mix and match.</p>
+              <p className="text-sm font-light" style={{ color: '#8a7a65' }}>Pick what resonates. A-Moment will mix and match.</p>
             </div>
 
             {/* Experience types */}
@@ -488,7 +488,7 @@ export function NewEvent() {
                 style={{ color: '#c9a96e' }}
               >
                 <span>{experiences.length > 0 || vibes.length > 0 ? 'Continue' : 'Skip'}</span>
-                <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">———›</span>
+                <span className="text-base transition-transform group-hover:translate-x-2 duration-300">→</span>
               </button>
             </div>
           </div>
@@ -507,7 +507,7 @@ export function NewEvent() {
             <div className="mb-10">
               <p className="uppercase text-[10px] tracking-[0.22em] mb-4" style={{ color: '#8a7a65' }}>Step 3 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>The details.</h1>
-              <p className="text-sm font-light" style={{ color: '#8a7a65' }}>Rough is fine — A-Moment fills in the rest.</p>
+              <p className="text-sm font-light" style={{ color: '#8a7a65' }}>Rough is fine. A-Moment fills in the rest.</p>
             </div>
 
             <div className="max-w-xl space-y-8">
@@ -615,7 +615,7 @@ export function NewEvent() {
                 <div className="pt-7 space-y-6 animate-in fade-in duration-300" style={{ borderTop: '1px solid rgba(201,169,110,0.1)' }}>
                   <div>
                     <p className="text-sm font-light mb-0.5" style={{ color: '#f5f0e8' }}>A couple of things about you</p>
-                    <p className="text-xs font-light" style={{ color: '#8a7a65' }}>Optional — helps A-Moment curate for you specifically, not just the event.</p>
+                    <p className="text-xs font-light" style={{ color: '#8a7a65' }}>Optional. Helps A-Moment curate for you specifically, not just the event.</p>
                   </div>
 
                   <div>
@@ -685,17 +685,17 @@ export function NewEvent() {
                 ) : (
                   <>
                     <span>{planningFor === 'someone' ? 'Create event' : 'Show me my options'}</span>
-                    <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">———›</span>
+                    <span className="text-base transition-transform group-hover:translate-x-2 duration-300">→</span>
                   </>
                 )}
               </button>
               {createEvent.isError && (
-                <p className="text-xs" style={{ color: 'hsl(var(--destructive))' }}>Something went wrong — please try again.</p>
+                <p className="text-xs" style={{ color: 'hsl(var(--destructive))' }}>Something went wrong. Please try again.</p>
               )}
               <p className="text-[10px] font-light text-right max-w-xs" style={{ color: '#8a7a65' }}>
                 {planningFor === 'someone'
-                  ? "You'll get a link to share with them — their answers feed straight into A-Moment."
-                  : 'A-Moment will propose 6 plans — pick one, then refine it in conversation.'}
+                  ? "You'll get a link to share with them. Their answers feed straight into A-Moment."
+                  : 'A-Moment will propose 6 plans. Pick one, then refine it in conversation.'}
               </p>
             </div>
           </div>
