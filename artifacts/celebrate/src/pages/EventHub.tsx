@@ -600,31 +600,44 @@ function CelebrantAnsweredCard({
   answers,
   onClear,
   clearing,
-}: { celebrantName: string; answers: Record<string, string>; onClear: () => void; clearing: boolean }) {
+  eventId,
+}: { celebrantName: string; answers: Record<string, string>; onClear: () => void; clearing: boolean; eventId: string }) {
+  const [, setLocation] = useLocation();
   const name = celebrantName || 'The celebrant';
   const questionMap = Object.fromEntries(QUESTIONS.map(q => [q.key, q.label]));
-  const highlights = Object.entries(answers).filter(([, v]) => v && String(v).trim()).slice(0, 4);
+  const entries = Object.entries(answers).filter(([, v]) => v && String(v).trim());
+  const [expanded, setExpanded] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  const PREVIEW_COUNT = 5;
+  const visibleEntries = expanded ? entries : entries.slice(0, PREVIEW_COUNT);
 
   return (
-    <div className="rounded-2xl mb-6 overflow-hidden" style={{ border: '1px solid rgba(201,169,110,0.3)', background: 'rgba(201,169,110,0.05)' }}>
-      <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: highlights.length > 0 ? '1px solid rgba(201,169,110,0.12)' : undefined }}>
+    <div className="mb-6 overflow-hidden" style={{ border: '1px solid rgba(201,169,110,0.32)', background: 'rgba(201,169,110,0.04)' }}>
+      {/* Header row */}
+      <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(201,169,110,0.12)' }}>
         <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: '#c9a96e' }} />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>
-            {name} has answered. A-Moment has been updated.
+            {name} has responded
           </p>
           <p className="text-xs mt-0.5" style={{ color: '#a89880' }}>
-            Their preferences are now shaping every recommendation.
+            {entries.length} answer{entries.length !== 1 ? 's' : ''} · A-Moment has been updated
           </p>
         </div>
         <div className="flex-shrink-0 flex items-center gap-2">
+          <button
+            onClick={() => setLocation(`/events/${eventId}/plan`)}
+            className="px-3 py-1 text-xs tracking-wide transition-opacity hover:opacity-70"
+            style={{ border: '1px solid rgba(201,169,110,0.35)', color: '#c9a96e', background: 'rgba(201,169,110,0.06)' }}
+          >
+            Discuss →
+          </button>
           {confirmClear ? (
             <>
               <button
                 onClick={() => setConfirmClear(false)}
                 disabled={clearing}
-                className="px-2.5 py-1 text-xs rounded border disabled:opacity-40"
+                className="px-2.5 py-1 text-xs disabled:opacity-40"
                 style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880' }}
               >
                 Cancel
@@ -632,39 +645,73 @@ function CelebrantAnsweredCard({
               <button
                 onClick={onClear}
                 disabled={clearing}
-                className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40"
+                className="px-2.5 py-1 text-xs flex items-center gap-1 disabled:opacity-40"
                 style={{ border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
               >
-                {clearing ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                Clear
+                {clearing ? <Loader2 className="w-3 h-3 animate-spin" /> : null}Clear
               </button>
             </>
           ) : (
             <button
               onClick={() => setConfirmClear(true)}
-              className="px-2.5 py-1 text-xs rounded transition-colors"
-              style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880' }}
-              title="Clear answers and re-send questionnaire"
+              className="px-2.5 py-1 text-xs transition-colors"
+              style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#a89880' }}
             >
-              Clear answers
+              Clear
             </button>
           )}
         </div>
       </div>
-      {highlights.length > 0 && (
-        <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {highlights.map(([key, value]) => (
-            <div key={key}>
-              <p className="text-[11px] tracking-[0.18em] uppercase mb-1" style={{ color: '#a89880' }}>
-                {questionMap[key] ?? key}
-              </p>
-              <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
-                {value}
-              </p>
-            </div>
-          ))}
+
+      {/* All answers */}
+      {entries.length > 0 && (
+        <div className="px-5 py-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-0">
+            {visibleEntries.map(([key, value]) => (
+              <div
+                key={key}
+                className="pb-4 mb-1"
+                style={{ borderBottom: '1px solid rgba(201,169,110,0.07)' }}
+              >
+                <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#a89880' }}>
+                  {questionMap[key] ?? key}
+                </p>
+                <p className="text-sm font-normal leading-snug" style={{ color: '#f5f0e8' }}>
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+          {entries.length > PREVIEW_COUNT && (
+            <button
+              onClick={() => setExpanded(e => !e)}
+              className="mt-3 text-xs tracking-[0.12em] transition-opacity hover:opacity-70"
+              style={{ color: '#c9a96e' }}
+            >
+              {expanded
+                ? '↑ Show less'
+                : `↓ Show all ${entries.length} responses`}
+            </button>
+          )}
         </div>
       )}
+
+      {/* CTA footer */}
+      <div
+        className="px-5 py-3 flex items-center justify-between gap-4"
+        style={{ borderTop: '1px solid rgba(201,169,110,0.1)', background: 'rgba(201,169,110,0.02)' }}
+      >
+        <p className="text-[11px] tracking-[0.1em] leading-relaxed" style={{ color: '#a89880' }}>
+          These preferences are shaping every A-Moment recommendation for this event
+        </p>
+        <button
+          onClick={() => setLocation(`/events/${eventId}/plan`)}
+          className="flex-shrink-0 text-xs tracking-wide transition-opacity hover:opacity-70"
+          style={{ color: '#c9a96e' }}
+        >
+          Chat with A-Moment →
+        </button>
+      </div>
     </div>
   );
 }
@@ -779,7 +826,7 @@ function PlanningJourney({
         ? `${celebrantName || 'Celebrant'} responded`
         : `Waiting for ${celebrantName || 'celebrant'}`,
       done: celebrantAnswered,
-      href: 'share',
+      href: celebrantAnswered ? 'plan' : 'share',
     }] : []),
     {
       id: 'guests',
@@ -906,7 +953,7 @@ export function EventHub() {
   const id = parseInt(eventId, 10);
   const [, setLocation] = useLocation();
 
-  const { data: event, isLoading: eventLoading } = useGetEvent(id, {
+  const { data: event, isLoading: eventLoading, refetch: refetchEvent } = useGetEvent(id, {
     query: { enabled: !!id, queryKey: ['events', id] },
   });
   const { data: summary, isLoading: summaryLoading } = useGetEventSummary(id, {
@@ -915,6 +962,14 @@ export function EventHub() {
   const { data: guests } = useListGuests(id, {
     query: { enabled: !!id, queryKey: ['events', id, 'guests'] },
   });
+
+  // Poll every 10 s while waiting for the celebrant to submit the questionnaire
+  const { planningForSomeone: _pollPFS, celebrantAnswered: _pollCA } = parseQuestionnaireMeta(event?.description);
+  useEffect(() => {
+    if (!event || !_pollPFS || _pollCA) return;
+    const timer = setInterval(() => refetchEvent(), 10_000);
+    return () => clearInterval(timer);
+  }, [event?.id, _pollPFS, _pollCA]);
 
   const { getToken } = useAuth();
   const updateEvent = useUpdateEvent();
@@ -1099,6 +1154,7 @@ export function EventHub() {
                 answers={answers}
                 onClear={handleClear}
                 clearing={clearingAnswers}
+                eventId={eventId}
               />
             );
           }
