@@ -611,6 +611,139 @@ function QuestionnaireBanner({
   );
 }
 
+/* ─── Planning Journey stepper ──────────────────────────────────────── */
+function PlanningJourney({
+  event,
+  summary,
+  guests,
+  eventId,
+}: {
+  event: { description?: string | null };
+  summary: { sessionCount: number };
+  guests: { rsvpStatus: string }[];
+  eventId: string;
+}) {
+  const [, setLocation] = useLocation();
+
+  const hasPlan = !!(event.description?.includes(PLAN_MARKER));
+  const { planningForSomeone, celebrantName, celebrantAnswered } = parseQuestionnaireMeta(event.description);
+  const guestCount = guests.length;
+  const confirmedCount = guests.filter(g => g.rsvpStatus === 'confirmed').length;
+  const hasChats = summary.sessionCount > 0;
+
+  type JStep = { id: string; label: string; sub: string; done: boolean; href?: string };
+
+  const steps: JStep[] = [
+    { id: 'create', label: 'Event created', sub: 'Ready to plan', done: true },
+    ...(planningForSomeone ? [{
+      id: 'questionnaire',
+      label: celebrantAnswered ? 'Questionnaire done' : 'Send questionnaire',
+      sub: celebrantAnswered
+        ? `${celebrantName || 'Celebrant'} responded`
+        : `Waiting for ${celebrantName || 'celebrant'}`,
+      done: celebrantAnswered,
+      href: 'share',
+    }] : []),
+    {
+      id: 'guests',
+      label: guestCount > 0 ? `${guestCount} guest${guestCount !== 1 ? 's' : ''} added` : 'Add guests',
+      sub: guestCount > 0
+        ? confirmedCount > 0 ? `${confirmedCount} confirmed` : 'Responses pending'
+        : 'Help A-Moment personalise',
+      done: guestCount > 0,
+      href: 'guests',
+    },
+    {
+      id: 'plan',
+      label: hasPlan ? 'Plan locked in' : 'Choose a plan',
+      sub: hasPlan ? 'Ready to execute' : 'Review 6 curated options',
+      done: hasPlan,
+      href: 'options',
+    },
+    {
+      id: 'chat',
+      label: hasChats ? 'Actively planning' : 'Chat & refine',
+      sub: hasChats ? `${summary.sessionCount} session${summary.sessionCount !== 1 ? 's' : ''}` : 'Dial in every detail',
+      done: hasChats,
+      href: 'plan',
+    },
+  ];
+
+  const currentIdx = steps.findIndex(s => !s.done);
+  const nextStep = currentIdx !== -1 ? steps[currentIdx] : null;
+
+  return (
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Your journey</span>
+        {nextStep?.href && (
+          <button
+            type="button"
+            onClick={() => setLocation(`/events/${eventId}/${nextStep.href}`)}
+            className="ml-auto text-xs text-primary font-medium hover:underline flex items-center gap-0.5"
+          >
+            Up next: {nextStep.label}
+            <ChevronRight className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+      <div className="flex overflow-x-auto gap-0 pb-1 scrollbar-none">
+        {steps.map((step, i) => {
+          const isCurrent = i === currentIdx;
+          const isFuture = currentIdx !== -1 && i > currentIdx;
+          const isLast = i === steps.length - 1;
+          return (
+            <div key={step.id} className="flex items-center flex-1 min-w-[100px]">
+              <button
+                type="button"
+                onClick={() => step.href && setLocation(`/events/${eventId}/${step.href}`)}
+                disabled={!step.href}
+                className={`flex-1 flex flex-col items-center gap-2 px-3 py-4 rounded-2xl text-center transition-all duration-200 ${
+                  step.done
+                    ? 'bg-primary/10 border border-primary/20 hover:bg-primary/15 cursor-pointer'
+                    : isCurrent
+                    ? 'bg-card border-2 border-primary shadow-sm cursor-pointer'
+                    : 'bg-card border border-border/40 opacity-50 cursor-default'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  step.done
+                    ? 'bg-primary text-primary-foreground'
+                    : isCurrent
+                    ? 'bg-background border-2 border-primary'
+                    : 'bg-muted'
+                }`}>
+                  {step.done
+                    ? <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                    : isCurrent
+                    ? <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    : <div className="w-2 h-2 rounded-full bg-muted-foreground/30" />}
+                </div>
+                <div>
+                  <p className={`text-xs font-semibold leading-snug ${
+                    step.done ? 'text-primary' : isCurrent ? 'text-foreground' : 'text-muted-foreground'
+                  }`}>{step.label}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{step.sub}</p>
+                </div>
+                {isCurrent && (
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-primary bg-primary/10 rounded-full px-2 py-0.5">
+                    Next
+                  </span>
+                )}
+              </button>
+              {!isLast && (
+                <div className="flex-shrink-0 px-1">
+                  <ChevronRight className={`w-3.5 h-3.5 ${step.done ? 'text-primary/40' : 'text-border'}`} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main page ─────────────────────────────────────────────────────── */
 export function EventHub() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -785,6 +918,13 @@ export function EventHub() {
         }
         return null;
       })()}
+
+      <PlanningJourney
+        event={event}
+        summary={summary}
+        guests={guests ?? []}
+        eventId={eventId}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: progress + next steps */}
@@ -1014,26 +1154,75 @@ export function EventHub() {
           {/* Cost snapshot */}
           <CostEstimateWidget eventId={id} />
 
-          {/* Quick nav */}
-          <div className="space-y-2">
-            {[
-              { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with A-Moment', color: 'bg-primary/10 text-primary', href: `plan` },
-              { icon: <CalendarIcon className="w-5 h-5" />, label: 'View / change plan options', color: 'bg-accent/20 text-foreground', href: `options` },
-              { icon: <Users className="w-5 h-5" />, label: 'Manage Guests', color: 'bg-muted text-muted-foreground', href: `guests` },
-            ].map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setLocation(`/events/${eventId}/${item.href}`)}
-                className="w-full flex items-center justify-between p-4 bg-card hover:bg-muted/50 border border-border/50 rounded-xl transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${item.color}`}>{item.icon}</div>
-                  <span className="font-medium text-sm">{item.label}</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </button>
-            ))}
-          </div>
+          {/* Smart quick nav */}
+          {(() => {
+            const hasPlan = !!(event.description?.includes(PLAN_MARKER));
+            const guestCount = guests?.length ?? 0;
+            const hasChats = (summary?.sessionCount ?? 0) > 0;
+
+            // Determine recommended next action
+            let recommended = 'plan';
+            if (guestCount === 0) recommended = 'guests';
+            else if (!hasPlan) recommended = 'options';
+            else if (!hasChats) recommended = 'plan';
+
+            const items = [
+              {
+                icon: <MessageSquare className="w-5 h-5" />,
+                label: 'Chat with A-Moment',
+                sub: 'Plan details, ask questions, iterate',
+                color: 'bg-primary/10 text-primary',
+                href: 'plan',
+              },
+              {
+                icon: <CalendarIcon className="w-5 h-5" />,
+                label: 'Plan options',
+                sub: 'View or swap your 6 curated proposals',
+                color: 'bg-accent/20 text-foreground',
+                href: 'options',
+              },
+              {
+                icon: <Users className="w-5 h-5" />,
+                label: 'Guests',
+                sub: `${guestCount > 0 ? `${guestCount} added` : 'None yet'} · manage & invite`,
+                color: 'bg-muted text-muted-foreground',
+                href: 'guests',
+              },
+            ];
+
+            return (
+              <div className="space-y-2">
+                {items.map((item) => {
+                  const isRec = item.href === recommended;
+                  return (
+                    <button
+                      key={item.href}
+                      onClick={() => setLocation(`/events/${eventId}/${item.href}`)}
+                      className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200 text-left ${
+                        isRec
+                          ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90'
+                          : 'bg-card hover:bg-muted/50 border border-border/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${isRec ? 'bg-white/15' : item.color}`}>
+                          {item.icon}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className={`font-medium text-sm ${isRec ? 'text-primary-foreground' : ''}`}>{item.label}</span>
+                            {isRec && <span className="text-[9px] font-bold uppercase tracking-widest bg-white/20 rounded-full px-2 py-0.5">Recommended</span>}
+                          </div>
+                          <p className={`text-xs mt-0.5 ${isRec ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{item.sub}</p>
+                        </div>
+                      </div>
+                      <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isRec ? 'text-primary-foreground/70' : 'text-muted-foreground'}`} />
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })()}
 
           {/* Danger zone */}
           <div className="border border-destructive/20 rounded-2xl overflow-hidden">

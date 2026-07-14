@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'wouter';
+import { useParams, Link, useLocation } from 'wouter';
 import { useListGuests, useAddGuest, useDeleteGuest, useUpdateGuest } from '@workspace/api-client-react';
 import {
   Users, Plus, ChevronLeft, Loader2, Trash2, Check, X, Phone, Mail, AlertCircle,
-  ChevronDown, ChevronUp, Copy, Link2,
+  ChevronDown, ChevronUp, Copy, Link2, ChevronRight,
 } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -414,6 +414,146 @@ function AddGuestDrawer({
   );
 }
 
+/* ─── Group Analysis ────────────────────────────────────────────────── */
+type GuestShape = {
+  id: number;
+  name: string;
+  rsvpStatus: string;
+  dietaryNeeds?: string | null;
+  personality?: string | null;
+  questionnaireToken?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  notes?: string | null;
+};
+
+const HIGH_ENERGY_IDS = new Set(['energiser', 'life-of-party', 'spontaneous', 'wild-card', 'here-for-laughs']);
+const REFLECTIVE_IDS  = new Set(['deep-talker', 'observer', 'grounding', 'flow']);
+const LUXURY_IDS      = new Set(['luxe-lover', 'planner']);
+const ADVENTURE_IDS   = new Set(['adventure-first', 'connector']);
+
+function groupInsight(archCounts: Record<string, number>): string {
+  const top = Object.entries(archCounts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([id]) => id);
+  const he  = top.filter(id => HIGH_ENERGY_IDS.has(id)).length;
+  const ref = top.filter(id => REFLECTIVE_IDS.has(id)).length;
+  const lux = top.filter(id => LUXURY_IDS.has(id)).length;
+  const adv = top.filter(id => ADVENTURE_IDS.has(id)).length;
+  if (he >= 2)  return 'High-energy crowd — plan for big shared moments and spontaneity.';
+  if (ref >= 2) return 'Intimate and reflective — quality conversation over spectacle.';
+  if (lux >= 1) return 'Quality-focused group — comfort, craft, and curated experiences will land well.';
+  if (adv >= 1) return 'Adventure-first — push the experience beyond the ordinary.';
+  if (he >= 1 && ref >= 1) return 'Mixed energy — build a flow that lets both high and low energy moments shine.';
+  return 'Diverse mix — variety and flexibility will keep everyone engaged.';
+}
+
+function GroupAnalysis({ guests, eventId }: { guests: GuestShape[]; eventId: number }) {
+  const [, setLocation] = useLocation();
+
+  const confirmed = guests.filter(g => g.rsvpStatus === 'confirmed').length;
+  const pending   = guests.filter(g => g.rsvpStatus === 'pending').length;
+  const declined  = guests.filter(g => g.rsvpStatus === 'declined').length;
+
+  const archCounts: Record<string, number> = {};
+  const dietarySet = new Set<string>();
+
+  guests.forEach(g => {
+    if (g.dietaryNeeds?.trim()) dietarySet.add(g.dietaryNeeds.trim());
+    let parsed: { archetypes?: string[]; selfProfile?: { archetypes?: string[]; dietary?: string } } | null = null;
+    try { if (g.personality) parsed = JSON.parse(g.personality); } catch {}
+    [...(parsed?.archetypes ?? []), ...(parsed?.selfProfile?.archetypes ?? [])].forEach(id => {
+      archCounts[id] = (archCounts[id] ?? 0) + 1;
+    });
+    if (parsed?.selfProfile?.dietary?.trim()) dietarySet.add(parsed.selfProfile.dietary.trim());
+  });
+
+  const topArchetypes = Object.entries(archCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const maxCount = topArchetypes[0]?.[1] ?? 1;
+  const hasPersonality = topArchetypes.length > 0;
+  const dietary = [...dietarySet];
+  const insight = hasPersonality ? groupInsight(archCounts) : null;
+  const noRsvp = guests.filter(g => !g.questionnaireToken).length;
+
+  return (
+    <div className="bg-card rounded-2xl border border-border/50 overflow-hidden mb-6">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-border/40">
+        <h3 className="font-medium">Group profile</h3>
+        {insight && <p className="text-sm text-muted-foreground mt-1 italic">{insight}</p>}
+      </div>
+
+      {/* RSVP row */}
+      <div className="grid grid-cols-3 divide-x divide-border/40 border-b border-border/40">
+        {[
+          { label: 'Confirmed', count: confirmed, cls: 'text-emerald-600 dark:text-emerald-400' },
+          { label: 'Pending',   count: pending,   cls: 'text-amber-600 dark:text-amber-400'   },
+          { label: 'Declined',  count: declined,  cls: 'text-rose-600 dark:text-rose-400'     },
+        ].map(({ label, count, cls }) => (
+          <div key={label} className="flex flex-col items-center py-4 gap-0.5">
+            <span className={`text-2xl font-medium ${cls}`}>{count}</span>
+            <span className="text-xs text-muted-foreground">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Personality mix */}
+      {hasPersonality && (
+        <div className="px-5 py-4 border-b border-border/40">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Personality mix</p>
+          <div className="space-y-2.5">
+            {topArchetypes.map(([id, count]) => {
+              const arch = GUEST_ARCHETYPES.find(a => a.id === id);
+              if (!arch) return null;
+              return (
+                <div key={id} className="flex items-center gap-3">
+                  <span className="w-5 text-center text-sm flex-shrink-0">{arch.emoji}</span>
+                  <span className="text-sm w-28 flex-shrink-0 text-foreground/80">{arch.label}</span>
+                  <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-700"
+                      style={{ width: `${(count / maxCount) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground w-4 text-right flex-shrink-0">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Dietary + action row */}
+      <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex-1">
+          {dietary.length > 0 ? (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">Dietary needs</p>
+              <div className="flex flex-wrap gap-1.5">
+                {dietary.map(d => (
+                  <span key={d} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40">
+                    <AlertCircle className="w-3 h-3" /> {d}
+                  </span>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground">No dietary needs recorded.</p>
+          )}
+        </div>
+        {!hasPersonality && (
+          <p className="text-xs text-muted-foreground italic">Add personality tags to guests to see the group mix.</p>
+        )}
+        <button
+          onClick={() => setLocation(`/events/${eventId}`)}
+          className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline flex-shrink-0"
+        >
+          Back to hub <ChevronRight className="w-3 h-3" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main page ─────────────────────────────────────────────────────── */
 export function EventGuests() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -478,17 +618,20 @@ export function EventGuests() {
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {guests.map((guest) => (
-            <GuestCard
-              key={guest.id}
-              guest={guest}
-              eventId={id}
-              onDelete={handleDelete}
-              onRefetch={refetch}
-            />
-          ))}
-        </div>
+        <>
+          <GroupAnalysis guests={guests} eventId={id} />
+          <div className="space-y-3">
+            {guests.map((guest) => (
+              <GuestCard
+                key={guest.id}
+                guest={guest}
+                eventId={id}
+                onDelete={handleDelete}
+                onRefetch={refetch}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {showAdd && (
