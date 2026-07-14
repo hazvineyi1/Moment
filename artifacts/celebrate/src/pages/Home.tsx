@@ -73,8 +73,9 @@ function eventCoverImage(event: any): string {
   return pool[event.id % pool.length];
 }
 
-// Subtle permanent tilts — like photos tossed onto a table
+// Subtle permanent tilts — like photos tossed onto a table (desktop only)
 const CARD_TILTS = [-1.8, 1.2, -0.9, 2.1, -1.4, 0.8, -2.2, 1.6];
+const isMobile = () => typeof window !== 'undefined' && window.innerWidth < 768;
 
 /* ─── Event card ──────────────────────────────────────────────────────── */
 function EventCard({ event, index }: { event: any; index: number }) {
@@ -92,7 +93,7 @@ function EventCard({ event, index }: { event: any; index: number }) {
     return () => obs.disconnect();
   }, []);
 
-  const tilt = CARD_TILTS[index % CARD_TILTS.length];
+  const tilt = isMobile() ? 0 : CARD_TILTS[index % CARD_TILTS.length];
   const delay = index * 90; // ms
 
   const label = event.guestCount

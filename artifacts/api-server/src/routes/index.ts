@@ -10,6 +10,7 @@ import optionsRouter from "./options";
 import questionnaireRouter from "./questionnaire";
 import guestQuestionnaireRouter from "./guestQuestionnaire";
 import revealScriptRouter from "./revealScript";
+import memoriesRouter from "./memories";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(optionsRouter);
 router.use(questionnaireRouter);
 router.use(guestQuestionnaireRouter);
 router.use(revealScriptRouter);
+router.use(memoriesRouter);
 
 export default router;

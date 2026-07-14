@@ -38,6 +38,27 @@ function mapEvent(e: typeof eventsTable.$inferSelect, opts: { includeToken?: boo
   };
 }
 
+// ── Public endpoint — no auth required ────────────────────────────────
+router.get("/events/:eventId/public", async (req, res): Promise<void> => {
+  const id = parseInt(req.params.eventId, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid event ID" }); return; }
+  const [event] = await db
+    .select({
+      id: eventsTable.id,
+      title: eventsTable.title,
+      type: eventsTable.type,
+      location: eventsTable.location,
+      startDate: eventsTable.startDate,
+      endDate: eventsTable.endDate,
+      guestCount: eventsTable.guestCount,
+      coverImage: eventsTable.coverImage,
+    })
+    .from(eventsTable)
+    .where(eq(eventsTable.id, id));
+  if (!event) { res.status(404).json({ error: "Event not found" }); return; }
+  res.json(event);
+});
+
 router.get("/events", requireAuth, async (req, res): Promise<void> => {
   const userId = (req as any).userId as string;
   const events = await db.select().from(eventsTable)

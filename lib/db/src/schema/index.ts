@@ -5,3 +5,4 @@ export * from "./messages";
 export * from "./guests";
 export * from "./suggestions";
 export * from "./invites";
+export * from "./memories";

@@ -20,6 +20,8 @@ import { EventGuests } from '@/pages/EventGuests';
 import { QuestionnairePage } from '@/pages/QuestionnairePage';
 import { GuestQuestionnairePage } from '@/pages/GuestQuestionnairePage';
 import { ShareQuestionnaire } from '@/pages/ShareQuestionnaire';
+import { EventInvitePage } from '@/pages/EventInvitePage';
+import { EventMemories } from '@/pages/EventMemories';
 
 // ── Clerk setup ────────────────────────────────────────────────────────────
 // Copy verbatim — resolves correct key for dev and prod custom domains
@@ -150,13 +152,20 @@ const LANDING_PHOTOS = [
   { src: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=70', top: '57%', left: '79%',  w: 230, h: 290, tilt:  -6, delay: 0.4 },
 ];
 
-// Simple landing for unauthenticated visitors
+const STEPS = [
+  { n: '01', title: 'Tell us about the occasion', desc: 'The event, the person, and the vibe. We take it from there — no planning experience required.' },
+  { n: '02', title: 'We propose six curated plans', desc: "From intimate to extraordinary, each plan is a complete itinerary crafted around who you're celebrating." },
+  { n: '03', title: 'Refine with your concierge', desc: 'Chat to adjust every detail until it feels exactly right. Then hand it off.' },
+];
+
+const OCCASIONS = ['Birthday', 'Wedding', 'Anniversary', 'Graduation', 'Surprise', 'Retreat', 'Engagement', 'Farewell', 'Milestone'];
+
+// Landing page — scrollable marketing page for unauthenticated visitors
 function LandingPage() {
   const [, setLocation] = useLocation();
   const [alive, setAlive] = useState(false);
 
   useEffect(() => {
-    // Double-RAF so the CSS transition fires after first paint
     const id = requestAnimationFrame(() => requestAnimationFrame(() => setAlive(true)));
     return () => cancelAnimationFrame(id);
   }, []);
@@ -167,127 +176,168 @@ function LandingPage() {
     transition: `opacity 1s ease ${delay}s, transform 1s ease ${delay}s`,
   });
 
+  const eyebrow: React.CSSProperties = {
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase',
+    color: '#8a7a65', margin: 0,
+  };
+  const body: React.CSSProperties = {
+    fontFamily: "'Outfit', sans-serif",
+    fontWeight: 300, fontSize: 14, lineHeight: 1.75, color: '#8a7a65', margin: 0,
+  };
+  const goldRule: React.CSSProperties = {
+    height: 1,
+    background: 'linear-gradient(90deg,rgba(201,169,110,0) 0%,rgba(201,169,110,0.4) 50%,rgba(201,169,110,0) 100%)',
+  };
+
   return (
-    <div style={{ background: '#060606', minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ background: '#060606', fontFamily: "'Outfit', sans-serif" }}>
       <style>{`
         @keyframes ripple-out {
           0%   { transform: scale(0.2); opacity: 0.8; }
           100% { transform: scale(4);   opacity: 0;   }
         }
         @keyframes photo-breathe {
-          0%, 100% { transform: translateY(0px);    }
-          50%       { transform: translateY(-10px);  }
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-10px); }
         }
       `}</style>
 
-      {/* ── Drifting background photos ──── */}
-      {LANDING_PHOTOS.map((p, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute', top: p.top, left: p.left,
-            width: p.w, height: p.h,
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100dvh' }}>
+        {LANDING_PHOTOS.map((p, i) => (
+          <div key={i} style={{
+            position: 'absolute', top: p.top, left: p.left, width: p.w, height: p.h,
             transform: `rotate(${p.tilt}deg)`,
             opacity: alive ? 0.3 : 0,
             transition: `opacity 2s ease ${p.delay + 0.5}s`,
-            boxShadow: '0 28px 90px rgba(0,0,0,0.75)',
-            pointerEvents: 'none',
-          }}
-        >
-          {/* inner element carries the float animation so rotate isn't overwritten */}
-          <div style={{ width: '100%', height: '100%', animation: `photo-breathe ${5.5 + i * 0.8}s ease-in-out ${i * 0.9}s infinite` }}>
-            <img src={p.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            boxShadow: '0 28px 90px rgba(0,0,0,0.75)', pointerEvents: 'none',
+          }}>
+            <div style={{ width: '100%', height: '100%', animation: `photo-breathe ${5.5 + i * 0.8}s ease-in-out ${i * 0.9}s infinite` }}>
+              <img src={p.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      {/* ── Raindrop ripple rings ──── */}
-      {[0, 1, 2, 3].map(i => (
-        <div
-          key={i}
-          style={{
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} style={{
             position: 'absolute', top: '50%', left: '50%',
-            width: 120, height: 120,
-            marginTop: -60, marginLeft: -60,
-            borderRadius: '50%',
-            border: '1px solid rgba(201,169,110,0.3)',
-            animation: `ripple-out 5.5s ease-out ${i * 1.35}s infinite`,
-            pointerEvents: 'none',
-          }}
-        />
-      ))}
+            width: 120, height: 120, marginTop: -60, marginLeft: -60,
+            borderRadius: '50%', border: '1px solid rgba(201,169,110,0.3)',
+            animation: `ripple-out 5.5s ease-out ${i * 1.35}s infinite`, pointerEvents: 'none',
+          }} />
+        ))}
 
-      {/* ── Dark vignette over photos ──── */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 55% 65% at 50% 50%, rgba(6,6,6,0.25) 0%, rgba(6,6,6,0.82) 60%, rgba(6,6,6,0.97) 100%)',
-      }} />
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 55% 65% at 50% 50%, rgba(6,6,6,0.25) 0%, rgba(6,6,6,0.82) 60%, rgba(6,6,6,0.97) 100%)',
+        }} />
 
-      {/* ── Hero content ──── */}
-      <div style={{
-        position: 'relative', zIndex: 10,
-        minHeight: '100dvh',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        textAlign: 'center', padding: '32px',
-      }}>
-        <p style={{
-          fontFamily: "'Outfit', sans-serif",
-          fontSize: '10px', letterSpacing: '0.3em', textTransform: 'uppercase',
-          color: '#8a7a65', marginBottom: '36px',
-          ...t(0.25),
+        <div style={{
+          position: 'relative', zIndex: 10, minHeight: '100dvh',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          textAlign: 'center', padding: '32px',
         }}>
-          Every celebration deserves a memory
-        </p>
-
-        <h1 style={{
-          fontFamily: "'Playfair Display', serif",
-          fontStyle: 'italic',
-          fontSize: 'clamp(64px, 10vw, 118px)',
-          lineHeight: 0.92, color: '#f5f0e8',
-          marginBottom: '28px',
-          ...t(0.5),
-        }}>
-          A-Moment
-        </h1>
-
-        <p style={{
-          fontFamily: "'Outfit', sans-serif",
-          fontWeight: 300, fontSize: '14px', lineHeight: 1.75,
-          color: '#8a7a65', maxWidth: '340px', marginBottom: '60px',
-          ...t(0.75),
-        }}>
-          From intimate winery weekends to month-long sailing expeditions.
-          Whatever you are celebrating, we plan it — beautifully.
-        </p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', ...t(1.0) }}>
-          <button
-            onClick={() => setLocation('/sign-up')}
-            style={{
-              fontFamily: "'Outfit', sans-serif",
-              display: 'flex', alignItems: 'center', gap: '16px',
-              fontSize: '11px', letterSpacing: '0.22em', textTransform: 'uppercase',
+          <p style={{ ...eyebrow, marginBottom: 36, ...t(0.25) }}>Every celebration deserves a memory</p>
+          <h1 style={{
+            fontFamily: "'Playfair Display', serif", fontStyle: 'italic',
+            fontSize: 'clamp(64px, 10vw, 118px)', lineHeight: 0.92,
+            color: '#f5f0e8', marginBottom: 28, ...t(0.5),
+          }}>A-Moment</h1>
+          <p style={{ ...body, maxWidth: 340, marginBottom: 60, ...t(0.75) }}>
+            From intimate winery weekends to month-long sailing expeditions.
+            Whatever you are celebrating, we plan it — beautifully.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, ...t(1.0) }}>
+            <button onClick={() => setLocation('/sign-up')} style={{
+              display: 'flex', alignItems: 'center', gap: 16,
+              fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase',
               color: '#c9a96e', background: 'none', border: 'none', cursor: 'pointer',
-            }}
-          >
-            <span>Begin your story</span>
-            <span style={{ fontSize: '17px', letterSpacing: '-0.08em' }}>———›</span>
-          </button>
-          <button
-            onClick={() => setLocation('/sign-in')}
-            style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
+            }}>
+              <span>Begin your story</span>
+              <span style={{ fontSize: 17, letterSpacing: '-0.08em' }}>———›</span>
+            </button>
+            <button onClick={() => setLocation('/sign-in')} style={{
+              fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase',
               color: '#8a7a65', background: 'none', border: 'none', cursor: 'pointer',
               transition: 'color 0.3s',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
             onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
-          >
-            Already have an account? Sign in
-          </button>
+            >Already have an account? Sign in</button>
+          </div>
         </div>
       </div>
+
+      {/* ── QUOTE ─────────────────────────────────────────────────────────── */}
+      <section style={{ padding: '100px 32px', textAlign: 'center', borderTop: '1px solid rgba(201,169,110,0.08)' }}>
+        <p style={{
+          fontFamily: "'Playfair Display', serif", fontStyle: 'italic',
+          fontSize: 'clamp(20px, 3.5vw, 40px)', color: '#f5f0e8',
+          lineHeight: 1.35, maxWidth: 680, margin: '0 auto', opacity: 0.85,
+        }}>
+          "The kind of planning that used to take weeks — done in an evening."
+        </p>
+      </section>
+
+      {/* ── HOW IT WORKS ──────────────────────────────────────────────────── */}
+      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 32px 120px' }}>
+        <p style={{ ...eyebrow, marginBottom: 56 }}>How it works</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '48px 64px' }}>
+          {STEPS.map(step => (
+            <div key={step.n}>
+              <p style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: 60, color: 'rgba(201,169,110,0.15)',
+                lineHeight: 1, marginBottom: 20,
+              }}>{step.n}</p>
+              <h3 style={{
+                fontFamily: "'Playfair Display', serif", fontStyle: 'italic',
+                fontSize: 22, color: '#f5f0e8', marginBottom: 14, lineHeight: 1.2,
+              }}>{step.title}</h3>
+              <p style={{ ...body }}>{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── OCCASIONS ─────────────────────────────────────────────────────── */}
+      <section style={{ padding: '80px 32px', borderTop: '1px solid rgba(201,169,110,0.08)', textAlign: 'center' }}>
+        <p style={{ ...eyebrow, marginBottom: 48 }}>Built for every kind of celebration</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 14px' }}>
+          {OCCASIONS.map(occ => (
+            <span key={occ} style={{
+              fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase',
+              color: '#8a7a65', border: '1px solid rgba(201,169,110,0.18)',
+              padding: '10px 22px', display: 'inline-block',
+            }}>{occ}</span>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
+      <section style={{ padding: '120px 32px 100px', textAlign: 'center', borderTop: '1px solid rgba(201,169,110,0.08)' }}>
+        <h2 style={{
+          fontFamily: "'Playfair Display', serif", fontStyle: 'italic',
+          fontSize: 'clamp(40px, 6vw, 80px)', color: '#f5f0e8',
+          lineHeight: 1.05, marginBottom: 52,
+        }}>
+          Your next celebration<br />starts here.
+        </h2>
+        <button onClick={() => setLocation('/sign-up')} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 16,
+          fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase',
+          color: '#c9a96e', background: 'none', border: 'none', cursor: 'pointer',
+          marginBottom: 80,
+        }}>
+          <span>Begin your story</span>
+          <span style={{ fontSize: 17, letterSpacing: '-0.08em' }}>———›</span>
+        </button>
+        <div style={{ ...goldRule, maxWidth: 400, margin: '0 auto 32px' }} />
+        <p style={{ fontSize: 11, letterSpacing: '0.12em', color: 'rgba(138,122,101,0.45)' }}>
+          © {new Date().getFullYear()} A-Moment
+        </p>
+      </section>
     </div>
   );
 }
@@ -349,9 +399,12 @@ function AppRouter() {
             {/* Public questionnaires — no auth */}
             <Route path="/q/:token">{(p) => <QuestionnairePage token={p.token} />}</Route>
             <Route path="/gq/:token" component={GuestQuestionnairePage} />
+            {/* Public shareable event invite page */}
+            <Route path="/i/:eventId">{(p) => <EventInvitePage eventId={p.eventId} />}</Route>
             {/* Protected app routes */}
             <Route path="/events/new">{() => <Protected><NewEvent /></Protected>}</Route>
             <Route path="/events/:eventId/share">{(p) => <Protected><ShareQuestionnaire eventId={p.eventId} /></Protected>}</Route>
+            <Route path="/events/:eventId/memories">{(p) => <Protected><EventMemories eventId={p.eventId} /></Protected>}</Route>
             <Route path="/events/:eventId">{(p) => <Protected><EventHub /></Protected>}</Route>
             <Route path="/events/:eventId/options">{() => <Protected><EventOptions /></Protected>}</Route>
             <Route path="/events/:eventId/plan">{() => <Protected><EventChat /></Protected>}</Route>
