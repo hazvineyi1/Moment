@@ -151,8 +151,10 @@ function buildSystemPrompt(
 
   // ── Planning-for context
   let planningForContext: string | null = null;
+  let celebrantDisplayName: string | null = null;
   if (planningFor?.startsWith("someone")) {
     const nameRaw = planningFor.slice("someone".length).replace(/^:/, "").trim();
+    celebrantDisplayName = nameRaw || null;
     const name = nameRaw || "the celebrant";
     planningForContext = `The planner is organising this for someone else named ${name}. ${name} may or may not know the full plan yet.`;
   }
@@ -250,7 +252,7 @@ ${planningForContext ? `\nPLANNING CONTEXT:\n${planningForContext}` : ""}${
 
 ${
   celebrantContext
-    ? `\nCELEBRANT'S OWN ANSWERS (from their questionnaire — weight these heavily):\n${celebrantContext}`
+    ? `\n${celebrantDisplayName ? `${celebrantDisplayName.toUpperCase()}'S` : "CELEBRANT'S"} OWN ANSWERS (from their questionnaire — weight these heavily; these are their direct preferences, use them by name):\n${celebrantContext}`
     : ""
 }${
   guestProfilesText

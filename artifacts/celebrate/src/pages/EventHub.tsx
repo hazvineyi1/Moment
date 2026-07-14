@@ -33,6 +33,14 @@ function parseQuestionnaireMeta(description: string | null | undefined): {
   return { planningForSomeone: true, celebrantName: namePart, celebrantAnswered };
 }
 
+function parseCelebrantAnswers(description: string | null | undefined): Record<string, string> | null {
+  if (!description) return null;
+  const idx = description.indexOf(CELEBRANT_MARKER);
+  if (idx === -1) return null;
+  const raw = description.slice(idx + CELEBRANT_MARKER.length).split('\n')[0].trim();
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
 function extractHostContext(description: string | null | undefined): string {
   if (!description) return '';
   const ctxIdx = description.indexOf(CTX_MARKER);
@@ -569,6 +577,79 @@ function CostEstimateWidget({ eventId }: { eventId: number }) {
   );
 }
 
+/* ─── Celebrant answered confirmation card ──────────────────────────── */
+function CelebrantAnsweredCard({
+  celebrantName,
+  answers,
+}: { celebrantName: string; answers: Record<string, string> }) {
+  const name = celebrantName || 'The celebrant';
+  const questionMap = Object.fromEntries(QUESTIONS.map(q => [q.key, q.label]));
+  const highlights = Object.entries(answers).filter(([, v]) => v && String(v).trim()).slice(0, 4);
+
+  return (
+    <div className="rounded-2xl mb-6 overflow-hidden" style={{ border: '1px solid rgba(201,169,110,0.3)', background: 'rgba(201,169,110,0.05)' }}>
+      <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: highlights.length > 0 ? '1px solid rgba(201,169,110,0.12)' : undefined }}>
+        <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: '#c9a96e' }} />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>
+            {name} has answered — A-Moment has been updated
+          </p>
+          <p className="text-xs mt-0.5" style={{ color: '#8a7a65' }}>
+            Their preferences are now shaping every recommendation
+          </p>
+        </div>
+      </div>
+      {highlights.length > 0 && (
+        <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {highlights.map(([key, value]) => (
+            <div key={key}>
+              <p className="text-[9px] tracking-[0.18em] uppercase mb-1" style={{ color: '#8a7a65' }}>
+                {questionMap[key] ?? key}
+              </p>
+              <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
+                {value}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Celebrant preferences sidebar card ────────────────────────────── */
+function CelebrantPreferencesCard({
+  celebrantName,
+  answers,
+}: { celebrantName: string; answers: Record<string, string> }) {
+  const name = celebrantName || 'Celebrant';
+  const questionMap = Object.fromEntries(QUESTIONS.map(q => [q.key, q.label]));
+  const entries = Object.entries(answers).filter(([, v]) => v && String(v).trim());
+
+  return (
+    <div style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}>
+      <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(201,169,110,0.1)' }}>
+        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#c9a96e' }} />
+        <p className="uppercase text-[10px] tracking-[0.22em]" style={{ color: '#8a7a65' }}>
+          {name}&apos;s preferences
+        </p>
+      </div>
+      <div className="px-5 py-4 space-y-3">
+        {entries.map(([key, value]) => (
+          <div key={key} className="pb-3 last:pb-0" style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}>
+            <p className="text-[9px] tracking-[0.15em] uppercase mb-1" style={{ color: '#8a7a65' }}>
+              {questionMap[key] ?? key}
+            </p>
+            <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
+              {value}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Questionnaire share banner ────────────────────────────────────── */
 function QuestionnaireBanner({
   celebrantName, questionnaireToken,
@@ -937,19 +1018,24 @@ export function EventHub() {
 
       <EventTabs activeTab="overview" eventId={eventId} />
 
-      {/* Questionnaire share banner — shown when planning for someone and they haven't answered yet */}
+      {/* Questionnaire banner — share link OR answered confirmation */}
       {(() => {
         const { planningForSomeone, celebrantName, celebrantAnswered } = parseQuestionnaireMeta(event.description);
         const token = (event as any).questionnaireToken;
-        if (planningForSomeone && !celebrantAnswered) {
-          return (
-            <>
-              <QuestionnaireBanner celebrantName={celebrantName} questionnaireToken={token} />
-              <QuestionnaireEditor eventId={id} description={event.description} celebrantName={celebrantName} />
-            </>
-          );
+        if (!planningForSomeone) return null;
+        if (celebrantAnswered) {
+          const answers = parseCelebrantAnswers(event.description);
+          if (answers && Object.keys(answers).length > 0) {
+            return <CelebrantAnsweredCard celebrantName={celebrantName} answers={answers} />;
+          }
+          return null;
         }
-        return null;
+        return (
+          <>
+            <QuestionnaireBanner celebrantName={celebrantName} questionnaireToken={token} />
+            <QuestionnaireEditor eventId={id} description={event.description} celebrantName={celebrantName} />
+          </>
+        );
       })()}
 
       <PlanningJourney
@@ -1199,6 +1285,15 @@ export function EventHub() {
 
           {/* Per-event context for A-Moment */}
           <EventContextPanel eventId={id} description={event.description} />
+
+          {/* Celebrant preferences — only when they've answered */}
+          {(() => {
+            const { planningForSomeone, celebrantName, celebrantAnswered } = parseQuestionnaireMeta(event.description);
+            if (!planningForSomeone || !celebrantAnswered) return null;
+            const answers = parseCelebrantAnswers(event.description);
+            if (!answers || Object.keys(answers).length === 0) return null;
+            return <CelebrantPreferencesCard celebrantName={celebrantName} answers={answers} />;
+          })()}
 
           {/* Cost snapshot */}
           <CostEstimateWidget eventId={id} />
