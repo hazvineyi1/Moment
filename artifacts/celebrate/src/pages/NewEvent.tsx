@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, Loader2, MapPin, Calendar, Users, Check } from '
 const OCCASIONS = [
   { id: 'birthday',    label: 'Birthday',         icon: '🎂' },
   { id: 'anniversary', label: 'Anniversary',       icon: '🥂' },
+  { id: 'date-night',  label: 'Date Night',        icon: '🌹' },
   { id: 'wedding',     label: 'Wedding',           icon: '💍' },
   { id: 'graduation',  label: 'Graduation',        icon: '🎓' },
   { id: 'retirement',  label: 'Retirement',        icon: '🌅' },

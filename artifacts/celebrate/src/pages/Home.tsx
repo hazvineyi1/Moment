@@ -31,6 +31,13 @@ const u = (id: string) =>
 
 // All IDs below verified 200 via curl — no 404s
 const TYPE_POOLS: Record<string, string[]> = {
+  'date-night': [
+    u('1414235077428-338989a2e8c0'), // candlelit restaurant
+    u('1551218808-94e220e084d2'), // fine-dining place setting
+    u('1481833761820-0509d3217039'), // city lights romantic night
+    u('1528605248644-14dd04022da1'), // champagne glasses
+    u('1424847651672-bf20a4b0982b'), // couple at sunset
+  ],
   birthday: [
     u('1513151233558-d860c5398176'), // colourful party lights
     u('1530103862676-de8c9debad1d'), // birthday cake sparklers

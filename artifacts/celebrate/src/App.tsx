@@ -158,7 +158,7 @@ const STEPS = [
   { n: '03', title: 'Refine with your concierge', desc: 'Chat to adjust every detail until it feels exactly right. Then hand it off.' },
 ];
 
-const OCCASIONS = ['Birthday', 'Wedding', 'Anniversary', 'Graduation', 'Surprise', 'Retreat', 'Engagement', 'Farewell', 'Milestone'];
+const OCCASIONS = ['Birthday', 'Date Night', 'Wedding', 'Anniversary', 'Graduation', 'Surprise', 'Retreat', 'Engagement', 'Farewell', 'Milestone'];
 
 // Landing page — scrollable marketing page for unauthenticated visitors
 function LandingPage() {
