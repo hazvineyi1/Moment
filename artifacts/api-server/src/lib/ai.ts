@@ -32,7 +32,7 @@ export async function chatWithAI(messages: ChatMessage[], systemPrompt?: string)
       openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: msgs,
-        max_tokens: 1024,
+        max_tokens: 1800,
         temperature: 0.9,
       }),
       AI_TIMEOUT_MS,

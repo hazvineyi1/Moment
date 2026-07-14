@@ -273,7 +273,31 @@ Rules for this conversation:
 - If budget or timing hasn't been established, ask about it only when it will change your recommendations.
 - When you sense the host is ready to act on something specific (venue, invite, guest list, discover), mention that they can use the relevant section of the app — but only once per topic.
 - Never repeat what was said. Build forward.
-${chosenPlan ? "- The plan is chosen. Do not re-propose alternatives. Drill into specifics: logistics, room counts, dietary needs, exact experiences, timings, add-on decisions." : ""}`;
+${chosenPlan ? "- The plan is chosen. Do not re-propose alternatives. Drill into specifics: logistics, room counts, dietary needs, exact experiences, timings, add-on decisions." : ""}
+
+MANDATORY RESPONSE FORMAT — every single reply must end with this marker and JSON block, no exceptions, even for short replies:
+|||ACTIONS|||{"chips":["<chip1>","<chip2>","<chip3>"],"links":[<link objects or empty array>],"done":<true or false>}
+
+CHIPS rules:
+- Always exactly 3 strings. Max 7 words each. These are the exact words the user would tap to send as their next message.
+- Make them specific to what was just discussed — never generic ("Tell me more" is banned). They should advance the planning conversation.
+- Vary tone: one affirmative, one probing, one redirecting.
+
+LINKS rules:
+- Include 1–3 links whenever you mention a specific venue, hotel, lodge, cruise line, restaurant, or destination.
+- Use these URL patterns:
+  - type "venue": official website if known, else https://www.google.com/search?q=VENUE+NAME+official+site (replace spaces with +)
+  - type "booking": https://www.google.com/search?q=VENUE+NAME+book+room+reservation
+  - type "map": https://www.google.com/maps/search/VENUE+NAME+CITY+COUNTRY (replace spaces with +)
+  - type "photo": https://www.google.com/search?q=VENUE+NAME+photos&tbm=isch
+- If nothing specific was mentioned this turn, use an empty array [].
+
+DONE rules:
+- Set "done" to true only when BOTH conditions are met: (1) messageCount >= ${messageCount} is at least 18, AND (2) the key planning decisions for this event are substantially covered and you've said a natural closing. Until then always false.
+- When you do set done to true, write a warm, specific one-sentence closing — no bullet points or lists.
+
+Example of a valid action block (formatting must match exactly — single line, no line breaks inside the JSON):
+|||ACTIONS|||{"chips":["Book the bush dinner under the stars","Confirm room configuration now","What about the arrival transfer?"],"links":[{"label":"Singita Grumeti","url":"https://singita.com","type":"venue"},{"label":"View photos","url":"https://www.google.com/search?q=Singita+Grumeti+photos&tbm=isch","type":"photo"},{"label":"Find on map","url":"https://www.google.com/maps/search/Singita+Grumeti+Tanzania","type":"map"}],"done":false}`;
 }
 
 router.get("/events/:eventId/sessions", requireAuth, async (req, res): Promise<void> => {

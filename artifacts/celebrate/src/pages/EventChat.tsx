@@ -1,52 +1,64 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'wouter';
 import { useListSessions, useCreateSession, useListMessages, useSendMessage, useGetEvent } from '@workspace/api-client-react';
-import { Send, Bot, ChevronLeft, User as UserIcon, RefreshCw, Check } from 'lucide-react';
+import { Send, Bot, ChevronLeft, User as UserIcon, RefreshCw, Check, ExternalLink, Map, Camera, BookOpen, Globe } from 'lucide-react';
+
+// ─── Action block parser ───────────────────────────────────────────────────────
+interface ActionLink {
+  label: string;
+  url: string;
+  type: 'venue' | 'booking' | 'map' | 'photo' | string;
+}
+
+interface ActionBlock {
+  chips: string[];
+  links: ActionLink[];
+  done: boolean;
+}
+
+const ACTION_MARKER = '|||ACTIONS|||';
+
+function parseActionBlock(content: string): { text: string; actions: ActionBlock | null } {
+  const idx = content.lastIndexOf(ACTION_MARKER);
+  if (idx === -1) return { text: content.trim(), actions: null };
+
+  const text = content.slice(0, idx).trim();
+  const jsonStr = content.slice(idx + ACTION_MARKER.length).trim();
+  try {
+    const raw = JSON.parse(jsonStr);
+    const actions: ActionBlock = {
+      chips: Array.isArray(raw.chips) ? raw.chips.filter((c: unknown) => typeof c === 'string') : [],
+      links: Array.isArray(raw.links) ? raw.links.filter((l: unknown) => l && typeof (l as any).label === 'string') : [],
+      done: raw.done === true,
+    };
+    return { text, actions };
+  } catch {
+    return { text: content.trim(), actions: null };
+  }
+}
 
 // ─── Option card parser ────────────────────────────────────────────────────────
-interface ParsedOption {
-  number: number;
-  title: string;
-  body: string;
-}
-interface ParsedMessage {
-  preamble: string;
-  options: ParsedOption[];
-  postamble: string;
-}
+interface ParsedOption { number: number; title: string; body: string }
+interface ParsedMessage { preamble: string; options: ParsedOption[]; postamble: string }
 
-/**
- * Detects messages that contain a numbered list of **Bold:** description items
- * (at least 2 items). Returns null if the message isn't an options list.
- */
 function parseOptionsList(content: string): ParsedMessage | null {
-  // Match lines like: 1. **Title:** body  or  1. **Title** body
   const itemRe = /^(\d+)\.\s+\*\*(.+?)\*\*[:\s]+(.+)/;
   const lines = content.split('\n');
-
   const optionLines: Array<{ lineIdx: number; option: ParsedOption }> = [];
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(itemRe);
-    if (m) {
-      optionLines.push({
-        lineIdx: i,
-        option: { number: parseInt(m[1], 10), title: m[2].trim(), body: m[3].trim() },
-      });
-    }
+    if (m) optionLines.push({ lineIdx: i, option: { number: parseInt(m[1], 10), title: m[2].trim(), body: m[3].trim() } });
   }
-
   if (optionLines.length < 2) return null;
-
   const firstIdx = optionLines[0].lineIdx;
   const lastIdx = optionLines[optionLines.length - 1].lineIdx;
-
-  const preamble = lines.slice(0, firstIdx).join('\n').trim();
-  const postamble = lines.slice(lastIdx + 1).join('\n').trim();
-
-  return { preamble, options: optionLines.map(o => o.option), postamble };
+  return {
+    preamble: lines.slice(0, firstIdx).join('\n').trim(),
+    options: optionLines.map(o => o.option),
+    postamble: lines.slice(lastIdx + 1).join('\n').trim(),
+  };
 }
 
-/** Renders bold (**text**) within a string as <strong> */
 function InlineMarkdown({ text }: { text: string }) {
   const parts = text.split(/(\*\*.+?\*\*)/g);
   return (
@@ -60,26 +72,16 @@ function InlineMarkdown({ text }: { text: string }) {
   );
 }
 
-function OptionsCards({
-  parsed,
-  onChoose,
-}: {
-  parsed: ParsedMessage;
-  onChoose: (title: string) => void;
-}) {
+function OptionsCards({ parsed, onChoose }: { parsed: ParsedMessage; onChoose: (title: string) => void }) {
   const [chosen, setChosen] = useState<number | null>(null);
-
   const handleChoose = (opt: ParsedOption) => {
     if (chosen !== null) return;
     setChosen(opt.number);
     onChoose(opt.title);
   };
-
   return (
     <div className="space-y-3 w-full">
-      {parsed.preamble && (
-        <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">{parsed.preamble}</p>
-      )}
+      {parsed.preamble && <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">{parsed.preamble}</p>}
       <div className="flex flex-col gap-2 mt-1">
         {parsed.options.map(opt => {
           const isChosen = chosen === opt.number;
@@ -93,7 +95,7 @@ function OptionsCards({
               className="text-left w-full px-4 py-4 transition-all duration-200"
               style={{
                 border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.12)'}`,
-                background: isChosen ? 'rgba(201,169,110,0.05)' : '#141414',
+                background: isChosen ? 'rgba(201,169,110,0.05)' : '#1a1a1a',
                 opacity: isDimmed ? 0.4 : 1,
                 cursor: isDimmed ? 'default' : 'pointer',
               }}
@@ -101,20 +103,12 @@ function OptionsCards({
               <div className="flex items-start gap-3">
                 <span
                   className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full text-xs font-normal flex items-center justify-center transition-colors"
-                  style={{
-                    border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`,
-                    color: isChosen ? '#c9a96e' : '#a89880',
-                  }}
+                  style={{ border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`, color: isChosen ? '#c9a96e' : '#a89880' }}
                 >
                   {isChosen ? <Check className="w-3 h-3" /> : opt.number}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p
-                    className="text-sm leading-snug mb-0.5"
-                    style={{ color: isChosen ? '#c9a96e' : '#f5f0e8' }}
-                  >
-                    {opt.title}
-                  </p>
+                  <p className="text-sm leading-snug mb-0.5" style={{ color: isChosen ? '#c9a96e' : '#f5f0e8' }}>{opt.title}</p>
                   <p className="text-xs font-normal leading-relaxed" style={{ color: '#a89880' }}>{opt.body}</p>
                 </div>
               </div>
@@ -122,44 +116,52 @@ function OptionsCards({
           );
         })}
       </div>
-      {parsed.postamble && (
-        <p className="text-sm text-muted-foreground leading-relaxed mt-1 whitespace-pre-wrap italic">{parsed.postamble}</p>
-      )}
+      {parsed.postamble && <p className="text-sm text-muted-foreground leading-relaxed mt-1 whitespace-pre-wrap italic">{parsed.postamble}</p>}
     </div>
   );
 }
 
-function MessageContent({
-  content,
-  onSend,
-}: {
-  content: string;
-  onSend: (text: string) => void;
-}) {
-  const parsed = parseOptionsList(content);
-  if (parsed) {
-    return <OptionsCards parsed={parsed} onChoose={onSend} />;
-  }
+// ─── Link cards ────────────────────────────────────────────────────────────────
+function linkIcon(type: string) {
+  if (type === 'map') return <Map className="w-3 h-3" />;
+  if (type === 'photo') return <Camera className="w-3 h-3" />;
+  if (type === 'booking') return <BookOpen className="w-3 h-3" />;
+  return <Globe className="w-3 h-3" />;
+}
+
+function LinkCards({ links }: { links: ActionLink[] }) {
+  if (!links.length) return null;
   return (
-    <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">
-      <InlineMarkdown text={content} />
-    </p>
+    <div className="flex flex-wrap gap-2 mt-3 ml-11">
+      {links.map((link, i) => (
+        <a
+          key={i}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wide transition-all duration-150 hover:opacity-80"
+          style={{
+            border: '1px solid rgba(201,169,110,0.25)',
+            color: '#a89880',
+            background: 'rgba(201,169,110,0.04)',
+            textDecoration: 'none',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.5)'; e.currentTarget.style.color = '#c9a96e'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.25)'; e.currentTarget.style.color = '#a89880'; }}
+        >
+          {linkIcon(link.type)}
+          {link.label}
+          <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+        </a>
+      ))}
+    </div>
   );
 }
 
-const QUESTION_CHIPS = [
-  "Yes, let's go with that",
-  "Not quite right",
-  "Tell me more",
-  "Show me alternatives",
-];
-
-function QuestionChips({
-  onSend,
-}: {
-  onSend: (text: string) => void;
-}) {
+// ─── Action chips ──────────────────────────────────────────────────────────────
+function ActionChips({ chips, onSend }: { chips: string[]; onSend: (text: string) => void }) {
   const [chosen, setChosen] = useState<string | null>(null);
+  if (!chips.length) return null;
 
   const handle = (chip: string) => {
     if (chosen) return;
@@ -169,7 +171,7 @@ function QuestionChips({
 
   return (
     <div className="flex flex-wrap gap-2 mt-3 ml-11">
-      {QUESTION_CHIPS.map((chip) => {
+      {chips.map((chip) => {
         const isChosen = chosen === chip;
         const isDimmed = chosen !== null && !isChosen;
         return (
@@ -180,17 +182,62 @@ function QuestionChips({
             disabled={chosen !== null}
             className="px-3.5 py-1.5 text-xs tracking-wide transition-all duration-200"
             style={{
-              border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`,
-              color: isChosen ? '#c9a96e' : isDimmed ? 'rgba(201,169,110,0.25)' : '#a89880',
+              border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.22)'}`,
+              color: isChosen ? '#c9a96e' : isDimmed ? 'rgba(201,169,110,0.2)' : '#a89880',
               background: isChosen ? 'rgba(201,169,110,0.08)' : 'transparent',
               cursor: isDimmed ? 'default' : 'pointer',
-              opacity: isDimmed ? 0.4 : 1,
+              opacity: isDimmed ? 0.35 : 1,
             }}
           >
-            {chip}
+            {isChosen ? <Check className="w-3 h-3 inline mr-1" /> : null}{chip}
           </button>
         );
       })}
+    </div>
+  );
+}
+
+// ─── Message content renderer ──────────────────────────────────────────────────
+function MessageContent({ content, onSend }: { content: string; onSend: (text: string) => void }) {
+  const { text } = parseActionBlock(content);
+  const parsed = parseOptionsList(text);
+  if (parsed) return <OptionsCards parsed={parsed} onChoose={onSend} />;
+  return (
+    <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">
+      <InlineMarkdown text={text} />
+    </p>
+  );
+}
+
+// ─── Done banner ───────────────────────────────────────────────────────────────
+function ConversationDone({ eventId }: { eventId: string }) {
+  return (
+    <div
+      className="mx-auto max-w-xl mt-4 mb-2 px-6 py-5"
+      style={{ border: '1px solid rgba(201,169,110,0.28)', background: 'rgba(201,169,110,0.04)' }}
+    >
+      <p className="text-[11px] tracking-[0.18em] uppercase mb-2" style={{ color: '#a89880' }}>
+        Planning complete
+      </p>
+      <p className="text-sm font-normal leading-snug mb-4" style={{ color: '#f5f0e8' }}>
+        A-Moment has covered the essentials. Time to lock in your plan.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <Link
+          href={`/events/${eventId}/options`}
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs tracking-wide transition-opacity hover:opacity-70"
+          style={{ background: '#c9a96e', color: '#0a0a0a' }}
+        >
+          View plan options →
+        </Link>
+        <Link
+          href={`/events/${eventId}`}
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs tracking-wide transition-opacity hover:opacity-70"
+          style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#a89880' }}
+        >
+          Back to hub
+        </Link>
+      </div>
     </div>
   );
 }
@@ -204,9 +251,7 @@ function SuggestionsNudge({ eventId }: { eventId: string }) {
         style={{ border: '1px solid rgba(201,169,110,0.22)', background: 'rgba(201,169,110,0.04)' }}
       >
         <div className="min-w-0">
-          <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#a89880' }}>
-            Good moment to step back
-          </p>
+          <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#a89880' }}>Good moment to step back</p>
           <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
             You have 6 curated plan options waiting. See what A-Moment has built for you.
           </p>
@@ -223,12 +268,7 @@ function SuggestionsNudge({ eventId }: { eventId: string }) {
   );
 }
 
-type OptimisticMessage = {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  isPending?: boolean;
-};
+type OptimisticMessage = { id: string; role: 'user' | 'assistant'; content: string; isPending?: boolean };
 
 export function EventChat() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -243,103 +283,62 @@ export function EventChat() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: event } = useGetEvent(id, { query: { enabled: !!id } });
-
-  const { data: sessions, isLoading: sessionsLoading } = useListSessions(id, {
-    query: { enabled: !!id }
-  });
-
+  const { data: sessions, isLoading: sessionsLoading } = useListSessions(id, { query: { enabled: !!id } });
   const createSession = useCreateSession();
 
-  // Initialize session — guarded to prevent infinite loop
   useEffect(() => {
     if (!id || !sessions || sessionCreating || sessionError) return;
-
     if (sessions.length > 0) {
       if (!activeSessionId) setActiveSessionId(sessions[0].id);
       return;
     }
-
-    // No sessions yet — create one (once)
     setSessionCreating(true);
     createSession.mutate(
       { eventId: id, data: { title: 'Planning Session' } },
       {
-        onSuccess: (s) => {
-          setActiveSessionId(s.id);
-          setSessionCreating(false);
-        },
-        onError: () => {
-          setSessionCreating(false);
-          setSessionError(true);
-        },
+        onSuccess: (s) => { setActiveSessionId(s.id); setSessionCreating(false); },
+        onError: () => { setSessionCreating(false); setSessionError(true); },
       }
     );
   }, [sessions, id]);
 
   const { data: serverMessages, isLoading: messagesLoading, refetch: refetchMessages } = useListMessages(
-    id,
-    activeSessionId!,
-    { query: { enabled: !!id && !!activeSessionId } }
+    id, activeSessionId!, { query: { enabled: !!id && !!activeSessionId } }
   );
 
   const sendMessage = useSendMessage();
 
-  // Merge server messages with optimistic ones
   const allMessages: OptimisticMessage[] = [
-    ...(serverMessages ?? []).map((m) => ({
-      id: String(m.id),
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    })),
+    ...(serverMessages ?? []).map((m) => ({ id: String(m.id), role: m.role as 'user' | 'assistant', content: m.content })),
     ...optimisticMessages,
   ];
 
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [allMessages.length]);
+  const scrollToBottom = useCallback(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, []);
+  useEffect(() => { scrollToBottom(); }, [allMessages.length]);
 
   const handleSend = (e?: React.FormEvent, preset?: string) => {
     e?.preventDefault();
     const content = preset || input.trim();
     if (!content || !activeSessionId || sendMessage.isPending) return;
-
     setInput('');
-
-    // Optimistic: show user message + thinking bubble immediately
     const userOptId = `opt-user-${Date.now()}`;
     const thinkOptId = `opt-think-${Date.now()}`;
     setOptimisticMessages([
       { id: userOptId, role: 'user', content },
       { id: thinkOptId, role: 'assistant', content: '', isPending: true },
     ]);
-
     setTimeout(scrollToBottom, 50);
-
     sendMessage.mutate(
       { eventId: id, sessionId: activeSessionId, data: { content } },
       {
-        onSuccess: () => {
-          setOptimisticMessages([]);
-          refetchMessages();
-        },
-        onError: () => {
-          setOptimisticMessages([]);
-        },
+        onSuccess: () => { setOptimisticMessages([]); refetchMessages(); },
+        onError: () => { setOptimisticMessages([]); },
       }
     );
-
     inputRef.current?.focus();
   };
 
-  // Smart context-aware quick replies based on event type
-  const quickReplies = event?.type
-    ? getQuickReplies(event.type)
-    : ['What should we plan first?', 'Give me venue ideas.', 'Help with the guest list.'];
-
+  const quickReplies = event?.type ? getQuickReplies(event.type) : ['What should we plan first?', 'Give me venue ideas.', 'Help with the guest list.'];
   const isBooting = sessionsLoading || sessionCreating || (!activeSessionId && !sessionError);
 
   if (isBooting) {
@@ -379,24 +378,21 @@ export function EventChat() {
     );
   }
 
+  // Determine conversation done state from last assistant message
+  const lastAssistantContent = [...allMessages].reverse().find(m => m.role === 'assistant' && !m.isPending)?.content ?? '';
+  const { actions: lastActions } = parseActionBlock(lastAssistantContent);
+  const isDone = lastActions?.done === true;
+
   return (
     <div className="flex flex-col h-[100dvh] bg-background">
       {/* Header */}
       <header
         className="z-10 sticky top-0 flex-shrink-0 h-16"
-        style={{
-          background: 'rgba(10,10,10,0.92)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(201,169,110,0.1)',
-        }}
+        style={{ background: 'rgba(26,26,26,0.95)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(201,169,110,0.1)' }}
       >
         <div className="px-6 md:px-10 h-full flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-4">
-            <Link
-              href={`/events/${id}`}
-              className="transition-colors"
-              style={{ color: '#a89880' }}
-            >
+            <Link href={`/events/${id}`} className="transition-colors" style={{ color: '#a89880' }}>
               <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
             </Link>
             <div>
@@ -405,11 +401,17 @@ export function EventChat() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="relative flex h-[6px] w-[6px]">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-50" style={{ background: '#c9a96e' }} />
-              <span className="relative inline-flex rounded-full h-[6px] w-[6px]" style={{ background: '#c9a96e' }} />
-            </span>
-            <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>Live</span>
+            {isDone ? (
+              <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: '#c9a96e' }}>Complete</span>
+            ) : (
+              <>
+                <span className="relative flex h-[6px] w-[6px]">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-50" style={{ background: '#c9a96e' }} />
+                  <span className="relative inline-flex rounded-full h-[6px] w-[6px]" style={{ background: '#c9a96e' }} />
+                </span>
+                <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>Live</span>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -419,7 +421,7 @@ export function EventChat() {
         <div className="max-w-3xl mx-auto space-y-5">
           {messagesLoading ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3">
-              <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" />
             </div>
           ) : allMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
@@ -427,18 +429,11 @@ export function EventChat() {
                 <Bot className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-serif text-2xl font-medium">Let's make this unforgettable</h3>
-              <p className="text-muted-foreground max-w-md">
-                Pick a question below to kick things off, or tell me what's on your mind.
-              </p>
+              <p className="text-muted-foreground max-w-md">Pick a question below to kick things off, or tell me what's on your mind.</p>
             </div>
           ) : (
             (() => {
-              // Find the last non-pending assistant message index for chip display
-              const lastAssistantIdx = allMessages.reduce(
-                (acc, m, i) => (!m.isPending && m.role === 'assistant' ? i : acc),
-                -1,
-              );
-              // Find the index of the 6th non-pending message — nudge appears after it
+              const lastAssistantIdx = allMessages.reduce((acc, m, i) => (!m.isPending && m.role === 'assistant' ? i : acc), -1);
               const nudgeAfterIdx = (() => {
                 let count = 0;
                 for (let i = 0; i < allMessages.length; i++) {
@@ -447,13 +442,17 @@ export function EventChat() {
                 }
                 return -1;
               })();
+
               return allMessages.map((msg, msgIdx) => {
                 const isUser = msg.role === 'user';
                 const isLastAssistant = msgIdx === lastAssistantIdx;
-                const trimmed = msg.content.trimEnd();
-                const endsWithQuestion = trimmed.endsWith('?');
-                const hasOptions = !msg.isPending && parseOptionsList(msg.content) !== null;
-                const showChips = isLastAssistant && endsWithQuestion && !hasOptions && !msg.isPending;
+                const hasOptions = !msg.isPending && parseOptionsList(parseActionBlock(msg.content).text) !== null;
+
+                // Parse action block for this message
+                const { actions } = msg.isPending ? { actions: null } : parseActionBlock(msg.content);
+                const showChips = isLastAssistant && !hasOptions && !msg.isPending && (actions?.chips?.length ?? 0) > 0 && !isDone;
+                const showLinks = !isUser && !msg.isPending && (actions?.links?.length ?? 0) > 0;
+
                 return (
                   <React.Fragment key={msg.id}>
                     <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
@@ -487,18 +486,21 @@ export function EventChat() {
                           )}
                         </div>
                       </div>
-                      {showChips && (
-                        <QuestionChips onSend={(text) => handleSend(undefined, text)} />
-                      )}
+                      {/* Links — all assistant messages */}
+                      {showLinks && <LinkCards links={actions!.links} />}
+                      {/* Chips — last assistant message only, when conversation is alive */}
+                      {showChips && <ActionChips chips={actions!.chips} onSend={(text) => handleSend(undefined, text)} />}
                     </div>
-                    {msgIdx === nudgeAfterIdx && (
-                      <SuggestionsNudge eventId={eventId} />
-                    )}
+                    {msgIdx === nudgeAfterIdx && <SuggestionsNudge eventId={eventId} />}
                   </React.Fragment>
                 );
               });
             })()
           )}
+
+          {/* Done state */}
+          {isDone && !optimisticMessages.length && <ConversationDone eventId={eventId} />}
+
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -506,11 +508,7 @@ export function EventChat() {
       {/* Input */}
       <div
         className="flex-shrink-0 p-4 md:p-6 pb-safe"
-        style={{
-          background: 'rgba(10,10,10,0.92)',
-          backdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(201,169,110,0.1)',
-        }}
+        style={{ background: 'rgba(26,26,26,0.95)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(201,169,110,0.1)' }}
       >
         <div className="max-w-3xl mx-auto">
           {allMessages.filter(m => !m.isPending).length <= 1 && !sendMessage.isPending && (
@@ -521,11 +519,7 @@ export function EventChat() {
                   onClick={() => handleSend(undefined, r)}
                   disabled={sendMessage.isPending}
                   className="px-4 py-2 text-xs tracking-wide transition-colors disabled:opacity-50"
-                  style={{
-                    border: '1px solid rgba(201,169,110,0.2)',
-                    color: '#a89880',
-                    background: 'transparent',
-                  }}
+                  style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880', background: 'transparent' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#c9a96e'; e.currentTarget.style.borderColor = 'rgba(201,169,110,0.4)'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = '#a89880'; e.currentTarget.style.borderColor = 'rgba(201,169,110,0.2)'; }}
                 >
@@ -534,32 +528,38 @@ export function EventChat() {
               ))}
             </div>
           )}
-          <form onSubmit={handleSend} className="relative flex items-center">
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Talk to A-Moment…"
-              className="w-full pl-5 pr-14 py-3.5 outline-none transition-all text-sm md:text-base font-normal"
-              style={{
-                background: '#242424',
-                border: '1px solid rgba(201,169,110,0.15)',
-                color: '#f5f0e8',
-              }}
-              disabled={sendMessage.isPending}
-              onFocus={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.4)'; }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.15)'; }}
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || sendMessage.isPending}
-              className="absolute right-0 px-4 h-full flex items-center justify-center transition-all disabled:opacity-30"
-              style={{ color: '#c9a96e' }}
+
+          {isDone ? (
+            <div
+              className="w-full py-3.5 text-center text-xs tracking-wide"
+              style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#a89880', background: '#242424' }}
             >
-              <Send className="w-4 h-4" strokeWidth={1.5} />
-            </button>
-          </form>
+              This conversation is complete — your plan is ready above
+            </div>
+          ) : (
+            <form onSubmit={handleSend} className="relative flex items-center">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Talk to A-Moment…"
+                className="w-full pl-5 pr-14 py-3.5 outline-none transition-all text-sm md:text-base font-normal"
+                style={{ background: '#242424', border: '1px solid rgba(201,169,110,0.15)', color: '#f5f0e8' }}
+                disabled={sendMessage.isPending}
+                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.4)'; }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.15)'; }}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || sendMessage.isPending}
+                className="absolute right-0 px-4 h-full flex items-center justify-center transition-all disabled:opacity-30"
+                style={{ color: '#c9a96e' }}
+              >
+                <Send className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
