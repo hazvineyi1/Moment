@@ -134,12 +134,29 @@ router.patch("/events/:eventId", requireAuth, async (req, res): Promise<void> =>
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
   const data = parsed.data;
+
+  // If the client is writing a new description, strip any cached plan-options so
+  // stale proposals aren't served after a personality or date-preference change.
+  // Options are re-cached by options.ts via a direct DB update that bypasses this route.
+  const PLAN_OPTIONS_MARKER = "__PLAN_OPTIONS__:";
+  const sanitizedDescription = data.description !== undefined
+    ? (() => {
+        const idx = data.description!.indexOf(PLAN_OPTIONS_MARKER);
+        if (idx === -1) return data.description!;
+        // Strip from the marker to end of that line (inclusive of the newline)
+        const lineEnd = data.description!.indexOf("\n", idx);
+        const before = data.description!.slice(0, idx).trimEnd();
+        const after = lineEnd !== -1 ? data.description!.slice(lineEnd + 1) : "";
+        return (before && after) ? `${before}\n${after}` : (before || after);
+      })()
+    : undefined;
+
   const [updated] = await db
     .update(eventsTable)
     .set({
       ...(data.title !== undefined && { title: data.title }),
       ...(data.type !== undefined && { type: data.type }),
-      ...(data.description !== undefined && { description: data.description }),
+      ...(sanitizedDescription !== undefined && { description: sanitizedDescription }),
       ...(data.location !== undefined && { location: data.location }),
       ...(data.isInternational !== undefined && { isInternational: data.isInternational }),
       ...(data.startDate !== undefined && { startDate: data.startDate }),
