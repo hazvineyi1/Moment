@@ -923,6 +923,7 @@ export function EventHub() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
+  const [dangerError, setDangerError] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   // ── Reveal script ────────────────────────────────────────────────────
@@ -984,31 +985,36 @@ export function EventHub() {
       return next;
     });
 
-  const handleResetPlan = () => {
-    if (actionBusy) return;
+  const handleResetPlan = async () => {
     setActionBusy(true);
-    const desc = event?.description ?? '';
-    const planIdx = desc.indexOf(PLAN_MARKER);
-    const newDesc = planIdx !== -1 ? desc.slice(0, planIdx).trimEnd() : desc;
-    updateEvent.mutate(
-      { eventId: id, data: { description: newDesc } },
-      {
-        onSuccess: () => { setActionBusy(false); setConfirmReset(false); setLocation(`/events/${eventId}/options`); },
-        onError: () => { setActionBusy(false); },
-      }
-    );
+    setDangerError(null);
+    try {
+      const desc = event?.description ?? '';
+      const planIdx = desc.indexOf(PLAN_MARKER);
+      const newDesc = planIdx !== -1 ? desc.slice(0, planIdx).trimEnd() : desc;
+      await updateEvent.mutateAsync({ eventId: id, data: { description: newDesc } });
+      setConfirmReset(false);
+      setLocation(`/events/${eventId}/options`);
+    } catch (err) {
+      console.error('[reset plan]', err);
+      setDangerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setActionBusy(false);
+    }
   };
 
-  const handleDeleteEvent = () => {
-    if (actionBusy) return;
+  const handleDeleteEvent = async () => {
     setActionBusy(true);
-    deleteEvent.mutate(
-      { eventId: id },
-      {
-        onSuccess: () => { setActionBusy(false); setLocation('/'); },
-        onError: () => { setActionBusy(false); },
-      }
-    );
+    setDangerError(null);
+    try {
+      await deleteEvent.mutateAsync({ eventId: id });
+      setLocation('/');
+    } catch (err) {
+      console.error('[delete event]', err);
+      setDangerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setActionBusy(false);
+    }
   };
 
   if (eventLoading || summaryLoading) {
@@ -1512,6 +1518,11 @@ export function EventHub() {
             <div className="px-5 py-3" style={{ borderBottom: '1px solid rgba(239,68,68,0.12)', background: 'rgba(239,68,68,0.03)' }}>
               <p className="text-[9px] tracking-[0.2em] uppercase" style={{ color: 'rgba(239,68,68,0.6)' }}>Danger zone</p>
             </div>
+            {dangerError && (
+              <div className="px-4 py-3 text-xs" style={{ color: '#ef4444', borderBottom: '1px solid rgba(239,68,68,0.12)', background: 'rgba(239,68,68,0.04)' }}>
+                {dangerError}
+              </div>
+            )}
             <div className="divide-y" style={{ '--tw-divide-opacity': 1, borderColor: 'rgba(201,169,110,0.06)' } as React.CSSProperties}>
               {/* Reset plan */}
               <div className="p-4">
