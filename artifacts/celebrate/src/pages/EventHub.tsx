@@ -384,7 +384,7 @@ function EventTabs({ activeTab, eventId }: { activeTab: string; eventId: string 
             onClick={() => setLocation(href)}
             className="whitespace-nowrap px-0 mr-10 py-4 text-xs tracking-[0.2em] uppercase font-medium transition-colors"
             style={{
-              color: isActive ? '#c9a96e' : '#a89880',
+              color: isActive ? '#c9a96e' : '#c6b7a1',
               borderBottom: isActive ? '1px solid #c9a96e' : '1px solid transparent',
               marginBottom: '-1px',
             }}
@@ -626,7 +626,7 @@ function CelebrantAnsweredCard({
           <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>
             {name} has responded
           </p>
-          <p className="text-xs mt-0.5" style={{ color: '#a89880' }}>
+          <p className="text-xs mt-0.5" style={{ color: '#c6b7a1' }}>
             {entries.length} answer{entries.length !== 1 ? 's' : ''} · A-Moment has been updated
           </p>
         </div>
@@ -644,7 +644,7 @@ function CelebrantAnsweredCard({
                 onClick={() => setConfirmClear(false)}
                 disabled={clearing}
                 className="px-2.5 py-1 text-xs disabled:opacity-40"
-                style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880' }}
+                style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#c6b7a1' }}
               >
                 Cancel
               </button>
@@ -661,7 +661,7 @@ function CelebrantAnsweredCard({
             <button
               onClick={() => setConfirmClear(true)}
               className="px-2.5 py-1 text-xs transition-colors"
-              style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#a89880' }}
+              style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#c6b7a1' }}
             >
               Clear
             </button>
@@ -679,7 +679,7 @@ function CelebrantAnsweredCard({
                 className="pb-4 mb-1"
                 style={{ borderBottom: '1px solid rgba(201,169,110,0.07)' }}
               >
-                <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#a89880' }}>
+                <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#c6b7a1' }}>
                   {questionMap[key] ?? key}
                 </p>
                 <p className="text-sm font-normal leading-snug" style={{ color: '#f5f0e8' }}>
@@ -707,7 +707,7 @@ function CelebrantAnsweredCard({
         className="px-5 py-3 flex items-center justify-between gap-4"
         style={{ borderTop: '1px solid rgba(201,169,110,0.1)', background: 'rgba(201,169,110,0.02)' }}
       >
-        <p className="text-[11px] tracking-[0.1em] leading-relaxed" style={{ color: '#a89880' }}>
+        <p className="text-[11px] tracking-[0.1em] leading-relaxed" style={{ color: '#c6b7a1' }}>
           These preferences are shaping every A-Moment recommendation for this event
         </p>
         <button
@@ -741,13 +741,13 @@ function CelebrantPreferencesCard({
         style={{ borderBottom: open ? '1px solid rgba(201,169,110,0.1)' : undefined }}
       >
         <CheckCircle2 className="w-3 h-3 flex-shrink-0" style={{ color: '#c9a96e' }} />
-        <p className="flex-1 uppercase text-[11px] tracking-[0.22em]" style={{ color: '#a89880' }}>
+        <p className="flex-1 uppercase text-[11px] tracking-[0.22em]" style={{ color: '#c6b7a1' }}>
           {name}&apos;s preferences
         </p>
-        <span className="text-[11px] mr-2" style={{ color: '#a89880' }}>{entries.length}</span>
+        <span className="text-[11px] mr-2" style={{ color: '#c6b7a1' }}>{entries.length}</span>
         <ChevronDown
           className="w-3.5 h-3.5 flex-shrink-0 transition-transform"
-          style={{ color: '#a89880', transform: open ? 'rotate(180deg)' : 'none' }}
+          style={{ color: '#c6b7a1', transform: open ? 'rotate(180deg)' : 'none' }}
         />
       </button>
 
@@ -756,7 +756,7 @@ function CelebrantPreferencesCard({
         <div className="divide-y" style={{ borderColor: 'rgba(201,169,110,0.07)' }}>
           {entries.map(([key, value]) => (
             <div key={key} className="px-5 py-3">
-              <p className="text-[10px] tracking-[0.18em] uppercase mb-1" style={{ color: '#a89880' }}>
+              <p className="text-[10px] tracking-[0.18em] uppercase mb-1" style={{ color: '#c6b7a1' }}>
                 {questionMap[key] ?? key}
               </p>
               <p className="text-sm leading-snug" style={{ color: '#f5f0e8' }}>
@@ -881,7 +881,7 @@ function PlanningJourney({
     <div className="mb-12">
       {/* Label row */}
       <div className="flex items-center justify-between mb-8">
-        <p className="uppercase text-xs tracking-[0.22em]" style={{ color: '#a89880' }}>
+        <p className="uppercase text-xs tracking-[0.22em]" style={{ color: '#c6b7a1' }}>
           Your journey
         </p>
         {nextStep?.href && (
@@ -949,12 +949,12 @@ function PlanningJourney({
                 <div className="text-center">
                   <p
                     className="text-[11px] tracking-[0.15em] uppercase whitespace-nowrap"
-                    style={{ color: step.done || isCurrent ? '#c9a96e' : '#a89880' }}
+                    style={{ color: step.done || isCurrent ? '#c9a96e' : '#c6b7a1' }}
                   >
                     {step.label}
                   </p>
                   {isCurrent && (
-                    <p className="text-[8px] tracking-[0.1em] mt-0.5" style={{ color: '#a89880' }}>
+                    <p className="text-[8px] tracking-[0.1em] mt-0.5" style={{ color: '#c6b7a1' }}>
                       Now
                     </p>
                   )}
@@ -1111,9 +1111,9 @@ export function EventHub() {
         <button
           onClick={() => setLocation('/')}
           className="flex items-center gap-2 mb-8 uppercase text-xs tracking-[0.2em] transition-colors"
-          style={{ color: '#a89880' }}
+          style={{ color: '#c6b7a1' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#c9a96e')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#a89880')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#c6b7a1')}
         >
           ← Back
         </button>
@@ -1127,7 +1127,7 @@ export function EventHub() {
           </span>
           <span
             className="uppercase text-[11px] tracking-[0.22em] px-2.5 py-1"
-            style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#a89880' }}
+            style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#c6b7a1' }}
           >
             {event.status}
           </span>
@@ -1141,7 +1141,7 @@ export function EventHub() {
         </h1>
 
         {(event.startDate || event.location) && (
-          <p className="uppercase text-xs tracking-[0.25em]" style={{ color: '#a89880' }}>
+          <p className="uppercase text-xs tracking-[0.25em]" style={{ color: '#c6b7a1' }}>
             {[
               event.location,
               event.startDate ? format(parseISO(event.startDate), 'EEEE d MMMM yyyy') : null,
@@ -1200,7 +1200,7 @@ export function EventHub() {
         {/* Left: progress + next steps */}
         <div className="lg:col-span-2 space-y-12">
           <section>
-            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#a89880' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#c6b7a1' }}>
               Progress
             </p>
             <div
@@ -1212,12 +1212,12 @@ export function EventHub() {
                   <div className="font-serif text-6xl mb-1" style={{ color: '#c9a96e' }}>
                     {summary.completionPercent}%
                   </div>
-                  <p className="text-xs tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>
+                  <p className="text-xs tracking-[0.15em] uppercase" style={{ color: '#c6b7a1' }}>
                     Ready to celebrate
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-normal" style={{ color: '#a89880' }}>
+                  <p className="text-sm font-normal" style={{ color: '#c6b7a1' }}>
                     {summary.confirmedGuests} / {summary.guestCount} confirmed
                   </p>
                 </div>
@@ -1232,7 +1232,7 @@ export function EventHub() {
           </section>
 
           <section>
-            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#a89880' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#c6b7a1' }}>
               Next steps
             </p>
             <div className="space-y-0">
@@ -1257,7 +1257,7 @@ export function EventHub() {
                       />
                       <p
                         className="text-sm font-normal leading-relaxed transition-colors"
-                        style={{ color: done ? '#a89880' : '#f5f0e8', textDecoration: done ? 'line-through' : 'none' }}
+                        style={{ color: done ? '#c6b7a1' : '#f5f0e8', textDecoration: done ? 'line-through' : 'none' }}
                       >
                         {step}
                       </p>
@@ -1265,7 +1265,7 @@ export function EventHub() {
                   );
                 })
               ) : (
-                <p className="text-sm font-normal py-4" style={{ color: '#a89880' }}>
+                <p className="text-sm font-normal py-4" style={{ color: '#c6b7a1' }}>
                   All caught up. Chat with A-Moment to figure out what&apos;s next.
                 </p>
               )}
@@ -1410,7 +1410,7 @@ export function EventHub() {
             className="p-6"
             style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
           >
-            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#a89880', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#c6b7a1', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
               At a glance
             </p>
             <div className="grid grid-cols-2 gap-6">
@@ -1421,7 +1421,7 @@ export function EventHub() {
                 { label: 'Invites', value: summary.inviteCount },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <p className="text-[11px] tracking-[0.18em] uppercase mb-1" style={{ color: '#a89880' }}>{label}</p>
+                  <p className="text-[11px] tracking-[0.18em] uppercase mb-1" style={{ color: '#c6b7a1' }}>{label}</p>
                   <p className="font-serif text-3xl" style={{ color: '#f5f0e8' }}>{value}</p>
                 </div>
               ))}
@@ -1463,7 +1463,7 @@ export function EventHub() {
             type HubTab = 'actions' | 'share' | 'danger';
 
             const tabStyle = (t: HubTab) => ({
-              color: hubTab === t ? '#c9a96e' : '#a89880',
+              color: hubTab === t ? '#c9a96e' : '#c6b7a1',
               borderBottom: hubTab === t ? '1px solid #c9a96e' : '1px solid transparent',
               marginBottom: '-1px',
             });
@@ -1519,7 +1519,7 @@ export function EventHub() {
                           </span>
                         )}
                       </div>
-                      <span className="text-xs font-normal ml-3 transition-transform group-hover:translate-x-0.5 duration-150 flex-shrink-0" style={{ color: '#a89880' }}>→</span>
+                      <span className="text-xs font-normal ml-3 transition-transform group-hover:translate-x-0.5 duration-150 flex-shrink-0" style={{ color: '#c6b7a1' }}>→</span>
                     </button>
                   );
                 })}
@@ -1534,9 +1534,9 @@ export function EventHub() {
                   >
                     <div className="min-w-0">
                       <p className="text-xs font-normal" style={{ color: '#f5f0e8' }}>{item.label}</p>
-                      <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>{item.sub}</p>
+                      <p className="text-[11px] mt-0.5" style={{ color: '#c6b7a1' }}>{item.sub}</p>
                     </div>
-                    <ChevronRight className="w-3 h-3 flex-shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" style={{ color: '#a89880' }} />
+                    <ChevronRight className="w-3 h-3 flex-shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" style={{ color: '#c6b7a1' }} />
                   </button>
                 ))}
 
@@ -1553,19 +1553,19 @@ export function EventHub() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-normal" style={{ color: '#f5f0e8' }}>Reset plan</p>
-                          <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>Remove chosen plan · pick again</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: '#c6b7a1' }}>Remove chosen plan · pick again</p>
                         </div>
                         {!confirmReset ? (
                           <button
                             onClick={() => { setConfirmReset(true); setConfirmDelete(false); }}
                             className="flex-shrink-0 px-3 py-1 text-xs border border-border rounded hover:border-destructive/50 hover:text-destructive transition-colors"
-                            style={{ color: '#a89880' }}
+                            style={{ color: '#c6b7a1' }}
                           >
                             Reset
                           </button>
                         ) : (
                           <div className="flex gap-1.5 flex-shrink-0">
-                            <button onClick={() => setConfirmReset(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#a89880' }}>Cancel</button>
+                            <button onClick={() => setConfirmReset(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#c6b7a1' }}>Cancel</button>
                             <button onClick={handleResetPlan} disabled={actionBusy} className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40 transition-colors" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}>
                               {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null} Confirm
                             </button>
@@ -1578,7 +1578,7 @@ export function EventHub() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-normal" style={{ color: '#ef4444' }}>Delete event</p>
-                          <p className="text-[11px] mt-0.5" style={{ color: '#a89880' }}>Permanent · cannot be undone</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: '#c6b7a1' }}>Permanent · cannot be undone</p>
                         </div>
                         {!confirmDelete ? (
                           <button
@@ -1590,7 +1590,7 @@ export function EventHub() {
                           </button>
                         ) : (
                           <div className="flex gap-1.5 flex-shrink-0">
-                            <button onClick={() => setConfirmDelete(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#a89880' }}>Cancel</button>
+                            <button onClick={() => setConfirmDelete(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#c6b7a1' }}>Cancel</button>
                             <button onClick={handleDeleteEvent} disabled={actionBusy} className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40 transition-colors" style={{ background: 'rgba(239,68,68,0.85)', color: '#fff' }}>
                               {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null} Delete forever
                             </button>

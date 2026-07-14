@@ -109,7 +109,7 @@ function SelectCard({
       )}
       {icon && <div className="text-2xl mb-2">{icon}</div>}
       <div className="text-sm leading-snug font-normal" style={{ color: selected ? '#c9a96e' : '#f5f0e8' }}>{label}</div>
-      {desc && <div className="text-xs mt-0.5 leading-snug font-normal" style={{ color: '#a89880' }}>{desc}</div>}
+      {desc && <div className="text-xs mt-0.5 leading-snug font-normal" style={{ color: '#c6b7a1' }}>{desc}</div>}
     </button>
   );
 }
@@ -124,7 +124,7 @@ function Pill({
       className="px-4 py-2 text-sm font-normal transition-all"
       style={{
         border: selected ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.15)',
-        color: selected ? '#c9a96e' : '#a89880',
+        color: selected ? '#c9a96e' : '#c6b7a1',
         background: selected ? 'rgba(201,169,110,0.06)' : 'transparent',
       }}
     >
@@ -279,9 +279,9 @@ export function NewEvent() {
         {step === 0 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
             <div className="mb-10">
-              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880' }}>Step 1 of 3</p>
+              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>Step 1 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>Who & what?</h1>
-              <p className="text-sm font-normal" style={{ color: '#a89880' }}>Who is this for, and what are you celebrating?</p>
+              <p className="text-sm font-normal" style={{ color: '#c6b7a1' }}>Who is this for, and what are you celebrating?</p>
             </div>
 
             {/* Who is this for */}
@@ -390,19 +390,19 @@ export function NewEvent() {
             <button
               onClick={() => setStep(0)}
               className="flex items-center gap-2 text-xs tracking-[0.2em] uppercase transition-colors mb-8"
-              style={{ color: '#a89880' }}
+              style={{ color: '#c6b7a1' }}
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
             <div className="mb-10">
-              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880' }}>Step 2 of 3</p>
+              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>Step 2 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>What kind of experience?</h1>
-              <p className="text-sm font-normal" style={{ color: '#a89880' }}>Pick what resonates. A-Moment will mix and match.</p>
+              <p className="text-sm font-normal" style={{ color: '#c6b7a1' }}>Pick what resonates. A-Moment will mix and match.</p>
             </div>
 
             {/* Experience types */}
             <div className="mb-8">
-              <p className="text-xs tracking-[0.18em] uppercase mb-4" style={{ color: '#a89880' }}>
+              <p className="text-xs tracking-[0.18em] uppercase mb-4" style={{ color: '#c6b7a1' }}>
                 Experience type <span className="opacity-60">(pick as many as you like)</span>
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -430,7 +430,7 @@ export function NewEvent() {
                       <span className="text-2xl flex-shrink-0 mt-0.5">{e.icon}</span>
                       <div className="min-w-0">
                         <div className="text-sm font-normal" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{e.label}</div>
-                        <div className="text-xs leading-snug mt-0.5 font-normal" style={{ color: '#a89880' }}>{e.examples}</div>
+                        <div className="text-xs leading-snug mt-0.5 font-normal" style={{ color: '#c6b7a1' }}>{e.examples}</div>
                       </div>
                     </button>
                   );
@@ -440,7 +440,7 @@ export function NewEvent() {
 
             {/* Vibe */}
             <div className="mb-10">
-              <p className="text-xs tracking-[0.18em] uppercase mb-4" style={{ color: '#a89880' }}>
+              <p className="text-xs tracking-[0.18em] uppercase mb-4" style={{ color: '#c6b7a1' }}>
                 Energy / vibe <span className="opacity-60">(pick one or two)</span>
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -467,7 +467,7 @@ export function NewEvent() {
                       )}
                       <div className="text-2xl mb-2">{v.icon}</div>
                       <div className="text-sm font-normal" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{v.label}</div>
-                      <div className="text-xs font-normal mt-0.5 leading-relaxed" style={{ color: '#a89880' }}>{v.desc}</div>
+                      <div className="text-xs font-normal mt-0.5 leading-relaxed" style={{ color: '#c6b7a1' }}>{v.desc}</div>
                     </button>
                   );
                 })}
@@ -478,7 +478,7 @@ export function NewEvent() {
               <button
                 onClick={() => setStep(2)}
                 className="text-xs tracking-[0.15em] uppercase transition-colors"
-                style={{ color: '#a89880' }}
+                style={{ color: '#c6b7a1' }}
               >
                 Skip →
               </button>
@@ -500,14 +500,14 @@ export function NewEvent() {
             <button
               onClick={() => setStep(1)}
               className="flex items-center gap-2 text-xs tracking-[0.2em] uppercase transition-colors mb-8"
-              style={{ color: '#a89880' }}
+              style={{ color: '#c6b7a1' }}
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
             <div className="mb-10">
-              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#a89880' }}>Step 3 of 3</p>
+              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>Step 3 of 3</p>
               <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>The details.</h1>
-              <p className="text-sm font-normal" style={{ color: '#a89880' }}>Rough is fine. A-Moment fills in the rest.</p>
+              <p className="text-sm font-normal" style={{ color: '#c6b7a1' }}>Rough is fine. A-Moment fills in the rest.</p>
             </div>
 
             <div className="max-w-xl space-y-8">
@@ -527,7 +527,7 @@ export function NewEvent() {
                       className="px-4 py-2 text-xs tracking-[0.12em] uppercase transition-all"
                       style={{
                         background: dateType === t ? 'rgba(201,169,110,0.1)' : 'transparent',
-                        color: dateType === t ? '#c9a96e' : '#a89880',
+                        color: dateType === t ? '#c9a96e' : '#c6b7a1',
                         borderRight: t === 'fixed' ? '1px solid rgba(201,169,110,0.15)' : undefined,
                       }}
                     >
@@ -551,7 +551,7 @@ export function NewEvent() {
                 {dateType === 'flexible' && (
                   <div className="animate-in fade-in duration-200 space-y-3">
                     <div>
-                      <p className="text-xs tracking-[0.15em] uppercase mb-2" style={{ color: '#a89880' }}>Around which month?</p>
+                      <p className="text-xs tracking-[0.15em] uppercase mb-2" style={{ color: '#c6b7a1' }}>Around which month?</p>
                       <div className="flex flex-wrap gap-2">
                         {MONTHS.map((m) => (
                           <Pill key={m} label={m} selected={flexMonth === m} onClick={() => setFlexMonth(flexMonth === m ? '' : m)} />
@@ -559,7 +559,7 @@ export function NewEvent() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs tracking-[0.15em] uppercase mb-2" style={{ color: '#a89880' }}>How long?</p>
+                      <p className="text-xs tracking-[0.15em] uppercase mb-2" style={{ color: '#c6b7a1' }}>How long?</p>
                       <div className="flex flex-wrap gap-2">
                         {DURATIONS.map((d) => (
                           <Pill key={d.id} label={d.label} selected={flexDuration === d.id} onClick={() => setFlexDuration(flexDuration === d.id ? '' : d.id)} />
@@ -572,7 +572,7 @@ export function NewEvent() {
 
               {/* Group size */}
               <div>
-                <label className="text-xs tracking-[0.18em] uppercase flex items-center gap-1.5 mb-4" style={{ color: '#a89880' }}>
+                <label className="text-xs tracking-[0.18em] uppercase flex items-center gap-1.5 mb-4" style={{ color: '#c6b7a1' }}>
                   <Users className="w-3.5 h-3.5" /> How many people?
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -584,7 +584,7 @@ export function NewEvent() {
 
               {/* Budget */}
               <div>
-                <label className="text-xs tracking-[0.18em] uppercase block mb-4" style={{ color: '#a89880' }}>
+                <label className="text-xs tracking-[0.18em] uppercase block mb-4" style={{ color: '#c6b7a1' }}>
                   Budget feel <span className="opacity-60">(optional)</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -598,7 +598,7 @@ export function NewEvent() {
                         className="px-4 py-2 text-sm font-normal transition-all"
                         style={{
                           border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.15)',
-                          color: sel ? '#c9a96e' : '#a89880',
+                          color: sel ? '#c9a96e' : '#c6b7a1',
                           background: sel ? 'rgba(201,169,110,0.06)' : 'transparent',
                         }}
                       >
@@ -615,11 +615,11 @@ export function NewEvent() {
                 <div className="pt-7 space-y-6 animate-in fade-in duration-300" style={{ borderTop: '1px solid rgba(201,169,110,0.1)' }}>
                   <div>
                     <p className="text-sm font-normal mb-0.5" style={{ color: '#f5f0e8' }}>A couple of things about you</p>
-                    <p className="text-xs font-normal" style={{ color: '#a89880' }}>Optional. Helps A-Moment curate for you specifically, not just the event.</p>
+                    <p className="text-xs font-normal" style={{ color: '#c6b7a1' }}>Optional. Helps A-Moment curate for you specifically, not just the event.</p>
                   </div>
 
                   <div>
-                    <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#a89880' }}>How do you travel?</p>
+                    <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#c6b7a1' }}>How do you travel?</p>
                     <div className="grid grid-cols-2 gap-2">
                       {TRAVEL_STYLES.map((ts) => {
                         const sel = travelStyle === ts.id;
@@ -644,7 +644,7 @@ export function NewEvent() {
                             )}
                             <span className="text-lg">{ts.icon}</span>
                             <div className="text-sm font-normal mt-1" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{ts.label}</div>
-                            <div className="text-xs font-normal" style={{ color: '#a89880' }}>{ts.desc}</div>
+                            <div className="text-xs font-normal" style={{ color: '#c6b7a1' }}>{ts.desc}</div>
                           </button>
                         );
                       })}
@@ -652,7 +652,7 @@ export function NewEvent() {
                   </div>
 
                   <div>
-                    <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#a89880' }}>What kills a trip for you?</p>
+                    <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#c6b7a1' }}>What kills a trip for you?</p>
                     <div className="flex flex-wrap gap-2">
                       {DEALBREAKERS.map((d) => (
                         <Pill
@@ -692,7 +692,7 @@ export function NewEvent() {
               {createEvent.isError && (
                 <p className="text-xs" style={{ color: 'hsl(var(--destructive))' }}>Something went wrong. Please try again.</p>
               )}
-              <p className="text-xs font-normal text-right max-w-xs" style={{ color: '#a89880' }}>
+              <p className="text-xs font-normal text-right max-w-xs" style={{ color: '#c6b7a1' }}>
                 {planningFor === 'someone'
                   ? "You'll get a link to share with them. Their answers feed straight into A-Moment."
                   : 'A-Moment will propose 6 plans. Pick one, then refine it in conversation.'}

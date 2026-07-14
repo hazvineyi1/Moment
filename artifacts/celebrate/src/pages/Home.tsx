@@ -2,13 +2,46 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 import { useGetDashboard } from '@workspace/api-client-react';
 import { useUser } from '@clerk/react';
-import { Loader2 } from 'lucide-react';
+import {
+  Loader2, Cake, Heart, Gem, Church, Diamond, Plane, Baby, Users,
+  GraduationCap, Armchair, PartyPopper, Ship, Sailboat, Tent, Wine,
+  Snowflake, Umbrella, Car, Building2, Flower2, Music, Briefcase,
+  Gift, Sparkles, type LucideIcon,
+} from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+
+/* ─── Celebration types (24) ──────────────────────────────────────────── */
+const CELEBRATION_TYPES: { label: string; Icon: LucideIcon }[] = [
+  { label: 'Birthday', Icon: Cake },
+  { label: 'Date Night', Icon: Heart },
+  { label: 'Anniversary', Icon: Gem },
+  { label: 'Wedding', Icon: Church },
+  { label: 'Engagement', Icon: Diamond },
+  { label: 'Honeymoon', Icon: Plane },
+  { label: 'Babymoon', Icon: Baby },
+  { label: 'Reunion', Icon: Users },
+  { label: 'Graduation', Icon: GraduationCap },
+  { label: 'Retirement', Icon: Armchair },
+  { label: 'Bachelor/ette', Icon: PartyPopper },
+  { label: 'Cruise', Icon: Ship },
+  { label: 'Sailing', Icon: Sailboat },
+  { label: 'Safari', Icon: Tent },
+  { label: 'Winery', Icon: Wine },
+  { label: 'Ski Trip', Icon: Snowflake },
+  { label: 'Beach', Icon: Umbrella },
+  { label: 'Road Trip', Icon: Car },
+  { label: 'City Break', Icon: Building2 },
+  { label: 'Wellness', Icon: Flower2 },
+  { label: 'Festival', Icon: Music },
+  { label: 'Corporate', Icon: Briefcase },
+  { label: 'Holiday', Icon: Gift },
+  { label: 'Other', Icon: Sparkles },
+];
 
 /* ─── Gold hairline separator ─────────────────────────────────────────── */
 const GoldRule = () => (
   <div
-    className="w-full h-px my-20"
+    className="w-full h-px my-12 md:my-14"
     style={{ background: 'linear-gradient(90deg, rgba(201,169,110,0) 0%, rgba(201,169,110,0.4) 50%, rgba(201,169,110,0) 100%)' }}
   />
 );
@@ -219,7 +252,7 @@ function EventCard({ event, index }: { event: any; index: number }) {
             {(event.location || event.startDate) && (
               <p
                 className="uppercase text-[11px] tracking-[0.18em] truncate"
-                style={{ color: '#a89880' }}
+                style={{ color: '#c6b7a1' }}
               >
                 {[
                   event.location,
@@ -265,10 +298,10 @@ export function Home() {
     hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-8 md:px-16 py-12 md:py-20 animate-in fade-in duration-700">
+    <div className="mx-auto w-full max-w-7xl px-8 md:px-16 py-10 md:py-14 animate-in fade-in duration-700">
 
       {/* ── Hero greeting ─────────────────────────────────────────────── */}
-      <header className="mb-16 md:mb-24">
+      <header className="mb-10 md:mb-14">
         <h1
           className="font-serif italic leading-[1.0] mb-4"
           style={{
@@ -282,7 +315,7 @@ export function Home() {
         {hasEvents && (
           <p
             className="text-sm font-normal tracking-wide"
-            style={{ color: '#a89880' }}
+            style={{ color: '#c6b7a1' }}
           >
             {dashboard?.upcomingEvents ?? 0}{' '}
             {(dashboard?.upcomingEvents ?? 0) === 1 ? 'celebration' : 'celebrations'} in motion
@@ -297,7 +330,7 @@ export function Home() {
         <section>
           <p
             className="uppercase text-xs tracking-[0.22em] mb-8"
-            style={{ color: '#a89880' }}
+            style={{ color: '#c6b7a1' }}
           >
             Upcoming Celebrations
           </p>
@@ -350,56 +383,71 @@ export function Home() {
       ) : (
         /* ── Empty state ─────────────────────────────────────────────── */
         <section>
-          <GoldRule />
-
-          <div className="max-w-2xl">
+          <div className="max-w-3xl">
             <p
-              className="uppercase text-xs tracking-[0.22em] mb-6"
-              style={{ color: '#a89880' }}
+              className="uppercase text-sm tracking-[0.24em] mb-5"
+              style={{ color: '#c9a96e' }}
             >
               Where to begin
             </p>
             <p
-              className="font-serif italic text-3xl md:text-4xl mb-6 leading-snug"
+              className="font-serif italic text-4xl md:text-5xl mb-5 leading-[1.1]"
               style={{ color: '#f5f0e8' }}
             >
-              A-Moment plans 24 types of celebrations, from intimate winery weekends to
-              month-long sailing expeditions.
+              A-Moment plans 24 kinds of celebrations — from intimate winery
+              weekends to month-long sailing expeditions.
             </p>
-            <p className="text-sm font-normal leading-relaxed mb-10" style={{ color: '#a89880' }}>
+            <p className="text-base md:text-lg font-normal leading-relaxed" style={{ color: '#c6b7a1' }}>
               Tell it what you have in mind. No forms, no agencies, no chasing quotes.
             </p>
+          </div>
 
+          {/* Celebration types — pick one to start */}
+          <div className="mt-10 md:mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {CELEBRATION_TYPES.map(({ label, Icon }) => (
+              <Link
+                key={label}
+                href="/events/new"
+                className="group flex items-center gap-3 px-4 py-4 transition-all duration-200 hover:-translate-y-0.5"
+                style={{
+                  border: '1px solid rgba(201,169,110,0.16)',
+                  backgroundColor: 'rgba(201,169,110,0.02)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(201,169,110,0.5)';
+                  e.currentTarget.style.backgroundColor = 'rgba(201,169,110,0.06)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(201,169,110,0.16)';
+                  e.currentTarget.style.backgroundColor = 'rgba(201,169,110,0.02)';
+                }}
+              >
+                <Icon
+                  className="w-5 h-5 shrink-0 transition-colors"
+                  strokeWidth={1.5}
+                  style={{ color: '#c9a96e' }}
+                />
+                <span
+                  className="font-sans text-sm md:text-[15px] tracking-wide transition-colors"
+                  style={{ color: '#e8ddcd' }}
+                >
+                  {label}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-10 md:mt-12">
             <Link
               href="/events/new"
-              className="group inline-flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-colors"
+              className="group inline-flex items-center gap-4 text-sm tracking-[0.2em] uppercase transition-transform"
               style={{ color: '#c9a96e' }}
             >
               <span>Start planning</span>
-              <span
-                className="font-normal tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
-              >
+              <span className="font-normal tracking-[-0.08em] text-lg transition-transform group-hover:translate-x-2 duration-300">
                 →
               </span>
             </Link>
-          </div>
-
-          <GoldRule />
-
-          {/* Celebration types — minimal grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px" style={{ border: '1px solid rgba(201,169,110,0.1)' }}>
-            {[
-              'Birthday', 'Wedding', 'Anniversary', 'Reunion',
-              'Safari', 'Sailing', 'Winery', 'Ski Trip',
-            ].map((t) => (
-              <div
-                key={t}
-                className="px-4 py-5 text-xs tracking-[0.12em] uppercase"
-                style={{ color: '#a89880', borderRight: '1px solid rgba(201,169,110,0.08)', borderBottom: '1px solid rgba(201,169,110,0.08)' }}
-              >
-                {t}
-              </div>
-            ))}
           </div>
         </section>
       )}

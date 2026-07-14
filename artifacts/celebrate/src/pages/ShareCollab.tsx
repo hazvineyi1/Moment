@@ -83,7 +83,7 @@ export function ShareCollab({ eventId }: { eventId: string }) {
       subtitle="Invite a co-planner to help you shape this event, or hand the whole thing over to someone else."
     >
       {/* Mode picker */}
-      <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#a89880' }}>
+      <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#c6b7a1' }}>
         What are you doing?
       </p>
       <div className="grid grid-cols-2 gap-3 mb-6">
@@ -102,16 +102,16 @@ export function ShareCollab({ eventId }: { eventId: string }) {
                 background: active ? 'rgba(201,169,110,0.08)' : 'transparent',
               }}
             >
-              <Icon className="w-6 h-6" style={{ color: active ? '#c9a96e' : '#a89880' }} />
+              <Icon className="w-6 h-6" style={{ color: active ? '#c9a96e' : '#c6b7a1' }} />
               <span className="text-sm font-medium" style={{ color: active ? '#c9a96e' : '#f5f0e8' }}>{label}</span>
-              <span className="text-xs" style={{ color: '#a89880' }}>{sub}</span>
+              <span className="text-xs" style={{ color: '#c6b7a1' }}>{sub}</span>
             </button>
           );
         })}
       </div>
 
       {/* Recipient name */}
-      <p className="text-xs tracking-[0.18em] uppercase mb-2" style={{ color: '#a89880' }}>
+      <p className="text-xs tracking-[0.18em] uppercase mb-2" style={{ color: '#c6b7a1' }}>
         Their name (optional)
       </p>
       <input
@@ -135,7 +135,7 @@ export function ShareCollab({ eventId }: { eventId: string }) {
           style={{ background: 'rgba(201,169,110,0.03)', border: '1px solid rgba(201,169,110,0.1)' }}
         >
           <Crown className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: '#c9a96e' }} />
-          <p className="text-xs leading-relaxed" style={{ color: '#a89880' }}>
+          <p className="text-xs leading-relaxed" style={{ color: '#c6b7a1' }}>
             The recipient will need to sign into A-Moment to access the event. Once they're in, you can share
             your login details or set up a shared account so they can pick up exactly where you left off.
           </p>

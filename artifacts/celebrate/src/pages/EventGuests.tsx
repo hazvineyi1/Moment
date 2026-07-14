@@ -438,7 +438,7 @@ function GuestLinksSendPanel({ guests }: { guests: GuestShape[] }) {
   };
 
   const eyebrow: React.CSSProperties = {
-    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#a89880',
+    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#c6b7a1',
     fontFamily: "'Outfit', sans-serif",
   };
 
@@ -453,18 +453,18 @@ function GuestLinksSendPanel({ guests }: { guests: GuestShape[] }) {
         <Send className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#c9a96e' }} />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>Send to guests</p>
-          <p className="text-xs mt-0.5" style={{ color: '#a89880' }}>
+          <p className="text-xs mt-0.5" style={{ color: '#c6b7a1' }}>
             {pendingCount > 0
               ? `${pendingCount} profile${pendingCount !== 1 ? 's' : ''} still pending · send each guest their personal link`
               : `All ${completedCount} guest profiles complete`}
           </p>
         </div>
-        <span className="text-[11px] mr-1.5" style={{ color: '#a89880' }}>
+        <span className="text-[11px] mr-1.5" style={{ color: '#c6b7a1' }}>
           {completedCount}/{withLinks.length}
         </span>
         <ChevronDown
           className="w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200"
-          style={{ color: '#a89880', transform: open ? 'rotate(180deg)' : 'none' }}
+          style={{ color: '#c6b7a1', transform: open ? 'rotate(180deg)' : 'none' }}
         />
       </button>
 
@@ -523,7 +523,7 @@ function GuestLinksSendPanel({ guests }: { guests: GuestShape[] }) {
                   <p className="text-sm font-medium truncate" style={{ color: '#f5f0e8' }}>
                     {guest.name}
                   </p>
-                  <p className="text-[11px] font-mono truncate mt-0.5" style={{ color: '#a89880' }}>
+                  <p className="text-[11px] font-mono truncate mt-0.5" style={{ color: '#c6b7a1' }}>
                     /gq/{guest.questionnaireToken?.slice(0, 10)}…
                   </p>
                 </div>
@@ -540,7 +540,7 @@ function GuestLinksSendPanel({ guests }: { guests: GuestShape[] }) {
                   ) : (
                     <span
                       className="text-[10px] tracking-[0.14em] uppercase px-2 py-0.5"
-                      style={{ border: '1px solid rgba(201,169,110,0.12)', color: '#a89880' }}
+                      style={{ border: '1px solid rgba(201,169,110,0.12)', color: '#c6b7a1' }}
                     >
                       Pending
                     </span>
@@ -554,7 +554,7 @@ function GuestLinksSendPanel({ guests }: { guests: GuestShape[] }) {
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all"
                     style={{
                       border: `1px solid ${isCopied ? 'rgba(201,169,110,0.4)' : 'rgba(201,169,110,0.18)'}`,
-                      color: isCopied ? '#c9a96e' : '#a89880',
+                      color: isCopied ? '#c9a96e' : '#c6b7a1',
                       background: isCopied ? 'rgba(201,169,110,0.07)' : 'transparent',
                     }}
                   >
@@ -569,7 +569,7 @@ function GuestLinksSendPanel({ guests }: { guests: GuestShape[] }) {
 
           {/* Footer note */}
           <div className="px-5 py-3" style={{ borderTop: '1px solid rgba(201,169,110,0.06)' }}>
-            <p className="text-[11px] leading-relaxed" style={{ color: '#a89880' }}>
+            <p className="text-[11px] leading-relaxed" style={{ color: '#c6b7a1' }}>
               Each link is unique to that guest. Once they fill in their personality, must-haves, and any dealbreakers,
               A-Moment will factor them into seating, pairings, and activity design.
             </p>
@@ -751,11 +751,11 @@ function PairRow({ pair }: { pair: Pair }) {
     <div className="py-3.5" style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}>
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-sm" style={{ color: '#f5f0e8' }}>
-          {pair.guest1.name} <span style={{ color: '#a89880' }}>+</span> {pair.guest2.name}
+          {pair.guest1.name} <span style={{ color: '#c6b7a1' }}>+</span> {pair.guest2.name}
         </span>
         <ScoreDots score={pair.compatibilityScore} />
       </div>
-      <p className="text-xs leading-relaxed" style={{ color: '#a89880' }}>{pair.reason}</p>
+      <p className="text-xs leading-relaxed" style={{ color: '#c6b7a1' }}>{pair.reason}</p>
     </div>
   );
 }
@@ -786,7 +786,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
 
   const eyebrow: React.CSSProperties = {
     fontFamily: "'Outfit', sans-serif",
-    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#a89880',
+    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#c6b7a1',
   };
 
   return (
@@ -796,12 +796,12 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
         <div>
           <p style={eyebrow}>Psychology &amp; pairings</p>
           {!data && (
-            <p className="text-xs mt-1 font-normal" style={{ color: '#a89880' }}>
+            <p className="text-xs mt-1 font-normal" style={{ color: '#c6b7a1' }}>
               AI-matched roommates, travel buddies &amp; seating groups based on personality.
             </p>
           )}
           {data?.reasoning && (
-            <p className="text-xs mt-1 italic font-normal" style={{ color: '#a89880' }}>{data.reasoning}</p>
+            <p className="text-xs mt-1 italic font-normal" style={{ color: '#c6b7a1' }}>{data.reasoning}</p>
           )}
         </div>
         <button
@@ -810,7 +810,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
           className="flex items-center gap-2 px-4 py-2 text-xs font-medium rounded transition-colors flex-shrink-0"
           style={{
             border: '1px solid rgba(201,169,110,0.3)',
-            color: loading ? '#a89880' : '#c9a96e',
+            color: loading ? '#c6b7a1' : '#c9a96e',
             background: 'transparent',
           }}
         >
@@ -825,7 +825,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
 
       {!hasPersonality && !data && (
         <div className="px-5 py-4">
-          <p className="text-xs italic" style={{ color: '#a89880' }}>
+          <p className="text-xs italic" style={{ color: '#c6b7a1' }}>
             Add personality tags to guests first. Pairings are more accurate with at least a few archetypes set.
           </p>
         </div>
@@ -864,9 +864,9 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
                   <div key={i} className="p-4" style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.03)' }}>
                     <div className="flex items-start justify-between mb-2">
                       <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>{g.tableName}</p>
-                      <span className="text-xs italic" style={{ color: '#a89880' }}>{g.vibe}</span>
+                      <span className="text-xs italic" style={{ color: '#c6b7a1' }}>{g.vibe}</span>
                     </div>
-                    <p className="text-xs" style={{ color: '#a89880' }}>
+                    <p className="text-xs" style={{ color: '#c6b7a1' }}>
                       {g.guests.map(gs => gs.name).join(' · ')}
                     </p>
                   </div>
@@ -877,7 +877,7 @@ function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: num
 
           {data.roommates.length === 0 && data.travelBuddies.length === 0 && data.seatingGroups.length === 0 && (
             <div className="px-5 py-4">
-              <p className="text-xs italic" style={{ color: '#a89880' }}>
+              <p className="text-xs italic" style={{ color: '#c6b7a1' }}>
                 {guests.length < 2 ? 'Add at least 2 guests to generate pairings.' : 'No pairings generated. Try adding personality tags to your guests.'}
               </p>
             </div>

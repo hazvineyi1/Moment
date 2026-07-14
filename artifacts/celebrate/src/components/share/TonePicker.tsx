@@ -17,7 +17,7 @@ interface Props {
 export function TonePicker({ label = 'Message tone', tones, value, onChange }: Props) {
   return (
     <div className="mb-5">
-      <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#a89880' }}>
+      <p className="text-xs tracking-[0.18em] uppercase mb-3" style={{ color: '#c6b7a1' }}>
         {label}
       </p>
       <div className={`grid gap-2 mb-0`} style={{ gridTemplateColumns: `repeat(${tones.length}, 1fr)` }}>
@@ -38,7 +38,7 @@ export function TonePicker({ label = 'Message tone', tones, value, onChange }: P
                 {t.label}
               </span>
               {t.desc && (
-                <span className="text-[11px] leading-tight" style={{ color: '#a89880' }}>
+                <span className="text-[11px] leading-tight" style={{ color: '#c6b7a1' }}>
                   {t.desc}
                 </span>
               )}

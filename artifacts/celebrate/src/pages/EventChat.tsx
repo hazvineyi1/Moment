@@ -103,13 +103,13 @@ function OptionsCards({ parsed, onChoose }: { parsed: ParsedMessage; onChoose: (
               <div className="flex items-start gap-3">
                 <span
                   className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full text-xs font-normal flex items-center justify-center transition-colors"
-                  style={{ border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`, color: isChosen ? '#c9a96e' : '#a89880' }}
+                  style={{ border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`, color: isChosen ? '#c9a96e' : '#c6b7a1' }}
                 >
                   {isChosen ? <Check className="w-3 h-3" /> : opt.number}
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm leading-snug mb-0.5" style={{ color: isChosen ? '#c9a96e' : '#f5f0e8' }}>{opt.title}</p>
-                  <p className="text-xs font-normal leading-relaxed" style={{ color: '#a89880' }}>{opt.body}</p>
+                  <p className="text-xs font-normal leading-relaxed" style={{ color: '#c6b7a1' }}>{opt.body}</p>
                 </div>
               </div>
             </button>
@@ -142,12 +142,12 @@ function LinkCards({ links }: { links: ActionLink[] }) {
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wide transition-all duration-150 hover:opacity-80"
           style={{
             border: '1px solid rgba(201,169,110,0.25)',
-            color: '#a89880',
+            color: '#c6b7a1',
             background: 'rgba(201,169,110,0.04)',
             textDecoration: 'none',
           }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.5)'; e.currentTarget.style.color = '#c9a96e'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.25)'; e.currentTarget.style.color = '#a89880'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.25)'; e.currentTarget.style.color = '#c6b7a1'; }}
         >
           {linkIcon(link.type)}
           {link.label}
@@ -183,7 +183,7 @@ function ActionChips({ chips, onSend }: { chips: string[]; onSend: (text: string
             className="px-3.5 py-1.5 text-xs tracking-wide transition-all duration-200"
             style={{
               border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.22)'}`,
-              color: isChosen ? '#c9a96e' : isDimmed ? 'rgba(201,169,110,0.2)' : '#a89880',
+              color: isChosen ? '#c9a96e' : isDimmed ? 'rgba(201,169,110,0.2)' : '#c6b7a1',
               background: isChosen ? 'rgba(201,169,110,0.08)' : 'transparent',
               cursor: isDimmed ? 'default' : 'pointer',
               opacity: isDimmed ? 0.35 : 1,
@@ -216,7 +216,7 @@ function ConversationDone({ eventId }: { eventId: string }) {
       className="mx-auto max-w-xl mt-4 mb-2 px-6 py-5"
       style={{ border: '1px solid rgba(201,169,110,0.28)', background: 'rgba(201,169,110,0.04)' }}
     >
-      <p className="text-[11px] tracking-[0.18em] uppercase mb-2" style={{ color: '#a89880' }}>
+      <p className="text-[11px] tracking-[0.18em] uppercase mb-2" style={{ color: '#c6b7a1' }}>
         Planning complete
       </p>
       <p className="text-sm font-normal leading-snug mb-4" style={{ color: '#f5f0e8' }}>
@@ -233,7 +233,7 @@ function ConversationDone({ eventId }: { eventId: string }) {
         <Link
           href={`/events/${eventId}`}
           className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs tracking-wide transition-opacity hover:opacity-70"
-          style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#a89880' }}
+          style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c6b7a1' }}
         >
           Back to hub
         </Link>
@@ -251,7 +251,7 @@ function SuggestionsNudge({ eventId }: { eventId: string }) {
         style={{ border: '1px solid rgba(201,169,110,0.22)', background: 'rgba(201,169,110,0.04)' }}
       >
         <div className="min-w-0">
-          <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#a89880' }}>Good moment to step back</p>
+          <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#c6b7a1' }}>Good moment to step back</p>
           <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
             You have 6 curated plan options waiting. See what A-Moment has built for you.
           </p>
@@ -392,12 +392,12 @@ export function EventChat() {
       >
         <div className="px-6 md:px-10 h-full flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-4">
-            <Link href={`/events/${id}`} className="transition-colors" style={{ color: '#a89880' }}>
+            <Link href={`/events/${id}`} className="transition-colors" style={{ color: '#c6b7a1' }}>
               <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
             </Link>
             <div>
               <h2 className="font-serif italic text-base leading-tight" style={{ color: '#f5f0e8' }}>A-Moment</h2>
-              <p className="text-xs tracking-wide truncate max-w-[180px] md:max-w-sm" style={{ color: '#a89880' }}>{event?.title}</p>
+              <p className="text-xs tracking-wide truncate max-w-[180px] md:max-w-sm" style={{ color: '#c6b7a1' }}>{event?.title}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -409,7 +409,7 @@ export function EventChat() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-50" style={{ background: '#c9a96e' }} />
                   <span className="relative inline-flex rounded-full h-[6px] w-[6px]" style={{ background: '#c9a96e' }} />
                 </span>
-                <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: '#a89880' }}>Live</span>
+                <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: '#c6b7a1' }}>Live</span>
               </>
             )}
           </div>
@@ -519,9 +519,9 @@ export function EventChat() {
                   onClick={() => handleSend(undefined, r)}
                   disabled={sendMessage.isPending}
                   className="px-4 py-2 text-xs tracking-wide transition-colors disabled:opacity-50"
-                  style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#a89880', background: 'transparent' }}
+                  style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#c6b7a1', background: 'transparent' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#c9a96e'; e.currentTarget.style.borderColor = 'rgba(201,169,110,0.4)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#a89880'; e.currentTarget.style.borderColor = 'rgba(201,169,110,0.2)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#c6b7a1'; e.currentTarget.style.borderColor = 'rgba(201,169,110,0.2)'; }}
                 >
                   {r}
                 </button>
@@ -532,7 +532,7 @@ export function EventChat() {
           {isDone ? (
             <div
               className="w-full py-3.5 text-center text-xs tracking-wide"
-              style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#a89880', background: '#242424' }}
+              style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#c6b7a1', background: '#242424' }}
             >
               This conversation is complete — your plan is ready above
             </div>
