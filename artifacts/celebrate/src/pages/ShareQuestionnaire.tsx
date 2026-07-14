@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useSearch } from 'wouter';
 import { useGetEvent } from '@workspace/api-client-react';
-import { Check, Copy, Link, ArrowRight, Loader2 } from 'lucide-react';
+import { Check, Copy, Link, ArrowRight, Loader2, ChevronDown } from 'lucide-react';
+import { QUESTIONS } from '../lib/questionnaire-questions';
 
 function extractPlanningForName(description: string | null | undefined): string {
   if (!description) return '';
@@ -33,6 +34,7 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
     : '';
 
   const [copied, setCopied] = useState(false);
+  const [showQuestions, setShowQuestions] = useState(false);
 
   const handleCopy = async () => {
     if (!questionnaireUrl) return;
@@ -131,6 +133,37 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
             </button>
           </div>
         )}
+
+        {/* Questions preview */}
+        <div className="mb-8 border border-border/60 rounded-2xl overflow-hidden">
+          <button
+            onClick={() => setShowQuestions(v => !v)}
+            className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/40 transition-colors"
+          >
+            <span className="text-sm font-medium text-foreground">
+              What {celebrantName || 'they'} will be asked
+            </span>
+            <ChevronDown
+              className="w-4 h-4 text-muted-foreground transition-transform"
+              style={{ transform: showQuestions ? 'rotate(180deg)' : 'rotate(0deg)' }}
+            />
+          </button>
+          {showQuestions && (
+            <div className="border-t border-border/60 divide-y divide-border/40">
+              {QUESTIONS.map((q, i) => (
+                <div key={q.key} className="px-5 py-3.5">
+                  <p className="text-xs text-muted-foreground mb-1">Q{i + 1}{q.optional ? ' · optional' : ''}</p>
+                  <p className="text-sm text-foreground font-medium leading-snug">{q.label}</p>
+                  {q.options && (
+                    <p className="text-xs text-muted-foreground/70 mt-1 leading-relaxed">
+                      {q.options.join(' · ')}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Skip / continue */}
         <div className="mt-auto space-y-3">
