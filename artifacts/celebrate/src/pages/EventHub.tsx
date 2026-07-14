@@ -337,12 +337,15 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
 function EventTabs({ activeTab, eventId }: { activeTab: string; eventId: string }) {
   const [, setLocation] = useLocation();
   const tabs = [
-    { id: 'overview', label: 'Hub' },
+    { id: 'overview', label: 'Overview' },
     { id: 'chat',     label: 'Plan' },
     { id: 'guests',   label: 'Guests' },
   ];
   return (
-    <div className="flex items-center overflow-x-auto no-scrollbar border-b border-border/60 pb-px mb-8">
+    <div
+      className="flex items-center overflow-x-auto no-scrollbar mb-10"
+      style={{ borderBottom: '1px solid rgba(201,169,110,0.12)' }}
+    >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         const href = tab.id === 'overview'
@@ -352,11 +355,12 @@ function EventTabs({ activeTab, eventId }: { activeTab: string; eventId: string 
           <button
             key={tab.id}
             onClick={() => setLocation(href)}
-            className={`whitespace-nowrap px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-              isActive
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-            }`}
+            className="whitespace-nowrap px-0 mr-10 py-4 text-[10px] tracking-[0.2em] uppercase font-medium transition-colors"
+            style={{
+              color: isActive ? '#c9a96e' : '#8a7a65',
+              borderBottom: isActive ? '1px solid #c9a96e' : '1px solid transparent',
+              marginBottom: '-1px',
+            }}
           >
             {tab.label}
           </button>
@@ -673,72 +677,91 @@ function PlanningJourney({
   const nextStep = currentIdx !== -1 ? steps[currentIdx] : null;
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Your journey</span>
+    <div className="mb-12">
+      {/* Label row */}
+      <div className="flex items-center justify-between mb-8">
+        <p className="uppercase text-[10px] tracking-[0.22em]" style={{ color: '#8a7a65' }}>
+          Your journey
+        </p>
         {nextStep?.href && (
           <button
             type="button"
             onClick={() => setLocation(`/events/${eventId}/${nextStep.href}`)}
-            className="ml-auto text-xs text-primary font-medium hover:underline flex items-center gap-0.5"
+            className="text-[10px] tracking-[0.15em] uppercase transition-colors"
+            style={{ color: '#c9a96e' }}
           >
-            Up next: {nextStep.label}
-            <ChevronRight className="w-3 h-3" />
+            Up next: {nextStep.label} →
           </button>
         )}
       </div>
-      <div className="flex overflow-x-auto gap-0 pb-1 scrollbar-none">
-        {steps.map((step, i) => {
-          const isCurrent = i === currentIdx;
-          const isFuture = currentIdx !== -1 && i > currentIdx;
-          const isLast = i === steps.length - 1;
-          return (
-            <div key={step.id} className="flex items-center flex-1 min-w-[100px]">
+
+      {/* Timeline — horizontal dots */}
+      <div className="relative px-2">
+        {/* Base line */}
+        <div
+          className="absolute top-[5px] left-2 right-2 h-px"
+          style={{ background: 'rgba(201,169,110,0.12)' }}
+        />
+        {/* Progress line */}
+        <div
+          className="absolute top-[5px] left-2 h-px transition-all duration-700"
+          style={{
+            background: '#c9a96e',
+            width: currentIdx === -1
+              ? '100%'
+              : `${(currentIdx / (steps.length - 1)) * 100}%`,
+          }}
+        />
+
+        {/* Dots */}
+        <div className="relative flex justify-between">
+          {steps.map((step, i) => {
+            const isCurrent = i === currentIdx;
+            const isFuture = currentIdx !== -1 && i > currentIdx;
+            return (
               <button
+                key={step.id}
                 type="button"
                 onClick={() => step.href && setLocation(`/events/${eventId}/${step.href}`)}
                 disabled={!step.href}
-                className={`flex-1 flex flex-col items-center gap-2 px-3 py-4 rounded-2xl text-center transition-all duration-200 ${
-                  step.done
-                    ? 'bg-primary/10 border border-primary/20 hover:bg-primary/15 cursor-pointer'
-                    : isCurrent
-                    ? 'bg-card border-2 border-primary shadow-sm cursor-pointer'
-                    : 'bg-card border border-border/40 opacity-50 cursor-default'
-                }`}
+                className="flex flex-col items-center gap-3 group"
+                style={{ cursor: step.href ? 'pointer' : 'default' }}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  step.done
-                    ? 'bg-primary text-primary-foreground'
-                    : isCurrent
-                    ? 'bg-background border-2 border-primary'
-                    : 'bg-muted'
-                }`}>
-                  {step.done
-                    ? <Check className="w-3.5 h-3.5" strokeWidth={3} />
-                    : isCurrent
-                    ? <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    : <div className="w-2 h-2 rounded-full bg-muted-foreground/30" />}
+                {/* Dot */}
+                <div className="relative">
+                  {isCurrent && (
+                    <div
+                      className="absolute -inset-[4px] rounded-full animate-ping opacity-20"
+                      style={{ background: '#c9a96e' }}
+                    />
+                  )}
+                  <div
+                    className="w-[11px] h-[11px] rounded-full relative z-10"
+                    style={{
+                      background: step.done || isCurrent ? '#c9a96e' : 'transparent',
+                      border: isFuture ? '1px solid rgba(201,169,110,0.2)' : '1px solid #c9a96e',
+                      boxShadow: isCurrent ? '0 0 8px rgba(201,169,110,0.4)' : 'none',
+                    }}
+                  />
                 </div>
-                <div>
-                  <p className={`text-xs font-semibold leading-snug ${
-                    step.done ? 'text-primary' : isCurrent ? 'text-foreground' : 'text-muted-foreground'
-                  }`}>{step.label}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{step.sub}</p>
+                {/* Label */}
+                <div className="text-center">
+                  <p
+                    className="text-[9px] tracking-[0.15em] uppercase whitespace-nowrap"
+                    style={{ color: step.done || isCurrent ? '#c9a96e' : '#8a7a65' }}
+                  >
+                    {step.label}
+                  </p>
+                  {isCurrent && (
+                    <p className="text-[8px] tracking-[0.1em] mt-0.5" style={{ color: '#8a7a65' }}>
+                      Now
+                    </p>
+                  )}
                 </div>
-                {isCurrent && (
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-primary bg-primary/10 rounded-full px-2 py-0.5">
-                    Next
-                  </span>
-                )}
               </button>
-              {!isLast && (
-                <div className="flex-shrink-0 px-1">
-                  <ChevronRight className={`w-3.5 h-3.5 ${step.done ? 'text-primary/40' : 'text-border'}`} />
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -856,7 +879,7 @@ export function EventHub() {
   if (eventLoading || summaryLoading) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <Loader2 className="w-5 h-5 animate-spin" style={{ color: '#c9a96e' }} />
       </div>
     );
   }
@@ -864,43 +887,52 @@ export function EventHub() {
   if (!event || !summary) return <div className="p-8">Event not found.</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl animate-in fade-in duration-500">
-      {/* Hero */}
-      <div className="relative rounded-3xl overflow-hidden bg-card border border-border/50 mb-8">
-        <div className="h-48 md:h-64 bg-muted relative">
-          {event.coverImage ? (
-            <img src={event.coverImage} alt={event.title} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/20 via-accent/10 to-transparent" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-          <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 right-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="bg-primary/90 text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-md">
-                {event.type.toUpperCase()}
-              </span>
-              <span className="bg-black/40 text-white text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-md border border-white/20">
-                {event.status.toUpperCase()}
-              </span>
-            </div>
-            <h1 className="text-3xl md:text-5xl font-serif font-medium text-white mb-2">{event.title}</h1>
-            <div className="flex flex-wrap items-center gap-4 text-white/80 text-sm md:text-base">
-              {event.startDate && (
-                <div className="flex items-center gap-1.5">
-                  <CalendarIcon className="w-4 h-4" />
-                  <span>{format(parseISO(event.startDate), 'MMMM d, yyyy')}</span>
-                </div>
-              )}
-              {event.location && (
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4" />
-                  <span>{event.location}</span>
-                </div>
-              )}
-            </div>
-          </div>
+    <div className="mx-auto px-8 md:px-16 py-12 md:py-20 max-w-7xl animate-in fade-in duration-700">
+      {/* Hero — editorial text header */}
+      <header className="mb-12 pb-10" style={{ borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
+        <button
+          onClick={() => setLocation('/')}
+          className="flex items-center gap-2 mb-8 uppercase text-[10px] tracking-[0.2em] transition-colors"
+          style={{ color: '#8a7a65' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#c9a96e')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
+        >
+          ← Back
+        </button>
+
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <span
+            className="uppercase text-[9px] tracking-[0.22em] px-2.5 py-1"
+            style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
+          >
+            {event.type}
+          </span>
+          <span
+            className="uppercase text-[9px] tracking-[0.22em] px-2.5 py-1"
+            style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#8a7a65' }}
+          >
+            {event.status}
+          </span>
         </div>
-      </div>
+
+        <h1
+          className="font-serif text-4xl md:text-6xl mb-5 leading-tight"
+          style={{ color: '#f5f0e8' }}
+        >
+          {event.title}
+        </h1>
+
+        {(event.startDate || event.location) && (
+          <p className="uppercase text-[10px] tracking-[0.25em]" style={{ color: '#8a7a65' }}>
+            {[
+              event.location,
+              event.startDate ? format(parseISO(event.startDate), 'EEEE d MMMM yyyy') : null,
+            ]
+              .filter(Boolean)
+              .join(' \u00b7 ')}
+          </p>
+        )}
+      </header>
 
       <EventTabs activeTab="overview" eventId={eventId} />
 
@@ -926,37 +958,46 @@ export function EventHub() {
         eventId={eventId}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         {/* Left: progress + next steps */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-12">
           <section>
-            <h2 className="text-2xl font-serif mb-6 flex items-center gap-2">
-              <CheckCircle2 className="w-6 h-6 text-primary" /> Planning progress
-            </h2>
-            <div className="bg-card rounded-2xl p-6 md:p-8 border border-border/50">
-              <div className="flex items-end justify-between mb-4">
+            <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65' }}>
+              Progress
+            </p>
+            <div
+              className="p-8"
+              style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
+            >
+              <div className="flex items-end justify-between mb-6">
                 <div>
-                  <div className="text-5xl font-serif font-medium text-primary mb-2">
+                  <div className="font-serif text-6xl mb-1" style={{ color: '#c9a96e' }}>
                     {summary.completionPercent}%
                   </div>
-                  <p className="text-muted-foreground">Ready to celebrate</p>
+                  <p className="text-[10px] tracking-[0.15em] uppercase" style={{ color: '#8a7a65' }}>
+                    Ready to celebrate
+                  </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium">{summary.confirmedGuests} / {summary.guestCount} confirmed</p>
+                  <p className="text-sm font-light" style={{ color: '#8a7a65' }}>
+                    {summary.confirmedGuests} / {summary.guestCount} confirmed
+                  </p>
                 </div>
               </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden">
+              <div className="h-px overflow-hidden" style={{ background: 'rgba(201,169,110,0.12)' }}>
                 <div
-                  className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${summary.completionPercent}%` }}
+                  className="h-full transition-all duration-1000 ease-out"
+                  style={{ width: `${summary.completionPercent}%`, background: '#c9a96e', height: '1px' }}
                 />
               </div>
             </div>
           </section>
 
           <section>
-            <h2 className="text-xl font-serif mb-4">Next steps</h2>
-            <div className="space-y-3">
+            <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65' }}>
+              Next steps
+            </p>
+            <div className="space-y-0">
               {summary.nextSteps && summary.nextSteps.length > 0 ? (
                 summary.nextSteps.map((step, i) => {
                   const done = completedSteps.has(i);
@@ -965,35 +1006,42 @@ export function EventHub() {
                       key={i}
                       type="button"
                       onClick={() => toggleStep(i)}
-                      className={`w-full flex items-start gap-4 p-4 rounded-xl border text-left transition-all duration-200 cursor-pointer group ${
-                        done
-                          ? 'bg-primary/5 border-primary/30'
-                          : 'bg-card border-border/50 hover:border-primary/40 hover:bg-primary/3'
-                      }`}
+                      className="w-full flex items-start gap-5 py-4 text-left transition-all duration-200 cursor-pointer group"
+                      style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}
                     >
-                      <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-colors ${
-                        done ? 'border-primary bg-primary' : 'border-muted-foreground/30 group-hover:border-primary/50'
-                      }`}>
-                        {done && <CheckCircle2 className="w-4 h-4 text-primary-foreground" strokeWidth={3} />}
-                      </div>
-                      <p className={`leading-relaxed transition-colors ${done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{step}</p>
+                      <div
+                        className="w-[10px] h-[10px] rounded-full flex-shrink-0 mt-1 transition-colors"
+                        style={{
+                          background: done ? '#c9a96e' : 'transparent',
+                          border: done ? '1px solid #c9a96e' : '1px solid rgba(201,169,110,0.3)',
+                        }}
+                      />
+                      <p
+                        className="text-sm font-light leading-relaxed transition-colors"
+                        style={{ color: done ? '#8a7a65' : '#f5f0e8', textDecoration: done ? 'line-through' : 'none' }}
+                      >
+                        {step}
+                      </p>
                     </button>
                   );
                 })
               ) : (
-                <div className="p-6 text-center text-muted-foreground bg-card rounded-xl border border-border/50">
-                  <p>All caught up. Chat with A-Moment to figure out what&apos;s next.</p>
-                </div>
+                <p className="text-sm font-light py-4" style={{ color: '#8a7a65' }}>
+                  All caught up. Chat with A-Moment to figure out what&apos;s next.
+                </p>
               )}
             </div>
             <button
               onClick={() => setLocation(`/events/${eventId}/plan`)}
-              className="w-full mt-6 flex items-center justify-between p-4 bg-foreground text-background rounded-xl hover:bg-primary transition-colors group"
+              className="mt-8 group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-colors"
+              style={{ color: '#c9a96e' }}
             >
-              <span className="font-medium flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" /> Ask A-Moment what to do next
+              <span>Chat with A-Moment</span>
+              <span
+                className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300"
+              >
+                ———›
               </span>
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </section>
 
@@ -1116,28 +1164,28 @@ export function EventHub() {
           })()}
         </div>
 
-        {/* Right: stats, predictions, cost, quick actions */}
-        <div className="space-y-5">
+        {/* Right: stats, actions, cost */}
+        <div className="space-y-8">
           {/* At a glance */}
-          <div className="bg-card rounded-2xl p-5 border border-border/50">
-            <h3 className="font-medium text-sm border-b border-border/50 pb-3 mb-4">At a glance</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-muted-foreground text-xs">Guests</p>
-                <p className="text-2xl font-medium">{summary.guestCount}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Venues saved</p>
-                <p className="text-2xl font-medium">{summary.savedSuggestions}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Chats</p>
-                <p className="text-2xl font-medium">{summary.sessionCount}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Invites</p>
-                <p className="text-2xl font-medium">{summary.inviteCount}</p>
-              </div>
+          <div
+            className="p-6"
+            style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
+          >
+            <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
+              At a glance
+            </p>
+            <div className="grid grid-cols-2 gap-6">
+              {[
+                { label: 'Guests', value: summary.guestCount },
+                { label: 'Saved', value: summary.savedSuggestions },
+                { label: 'Chats', value: summary.sessionCount },
+                { label: 'Invites', value: summary.inviteCount },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <p className="text-[9px] tracking-[0.18em] uppercase mb-1" style={{ color: '#8a7a65' }}>{label}</p>
+                  <p className="font-serif text-3xl" style={{ color: '#f5f0e8' }}>{value}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -1191,32 +1239,47 @@ export function EventHub() {
             ];
 
             return (
-              <div className="space-y-2">
+              <div
+                className="p-6 space-y-0"
+                style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
+              >
+                <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
+                  Quick actions
+                </p>
                 {items.map((item) => {
                   const isRec = item.href === recommended;
                   return (
                     <button
                       key={item.href}
                       onClick={() => setLocation(`/events/${eventId}/${item.href}`)}
-                      className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200 text-left ${
-                        isRec
-                          ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90'
-                          : 'bg-card hover:bg-muted/50 border border-border/50'
-                      }`}
+                      className="w-full flex items-center justify-between py-4 text-left transition-colors group"
+                      style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${isRec ? 'bg-white/15' : item.color}`}>
-                          {item.icon}
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span
+                            className="text-xs font-light tracking-wide transition-colors"
+                            style={{ color: isRec ? '#c9a96e' : '#f5f0e8' }}
+                          >
+                            {item.label}
+                          </span>
+                          {isRec && (
+                            <span
+                              className="text-[8px] tracking-[0.15em] uppercase px-1.5 py-0.5"
+                              style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
+                            >
+                              Recommended
+                            </span>
+                          )}
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className={`font-medium text-sm ${isRec ? 'text-primary-foreground' : ''}`}>{item.label}</span>
-                            {isRec && <span className="text-[9px] font-bold uppercase tracking-widest bg-white/20 rounded-full px-2 py-0.5">Recommended</span>}
-                          </div>
-                          <p className={`text-xs mt-0.5 ${isRec ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{item.sub}</p>
-                        </div>
+                        <p className="text-[10px]" style={{ color: '#8a7a65' }}>{item.sub}</p>
                       </div>
-                      <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isRec ? 'text-primary-foreground/70' : 'text-muted-foreground'}`} />
+                      <span
+                        className="text-base font-light tracking-[-0.08em] transition-transform group-hover:translate-x-1 duration-200"
+                        style={{ color: isRec ? '#c9a96e' : '#8a7a65' }}
+                      >
+                        →
+                      </span>
                     </button>
                   );
                 })}
@@ -1225,11 +1288,11 @@ export function EventHub() {
           })()}
 
           {/* Danger zone */}
-          <div className="border border-destructive/20 rounded-2xl overflow-hidden">
-            <div className="px-5 py-3 bg-destructive/5 border-b border-destructive/20">
-              <p className="text-xs font-medium text-destructive/70 uppercase tracking-wide">Danger zone</p>
+          <div style={{ border: '1px solid rgba(239,68,68,0.15)' }}>
+            <div className="px-5 py-3" style={{ borderBottom: '1px solid rgba(239,68,68,0.12)', background: 'rgba(239,68,68,0.03)' }}>
+              <p className="text-[9px] tracking-[0.2em] uppercase" style={{ color: 'rgba(239,68,68,0.6)' }}>Danger zone</p>
             </div>
-            <div className="divide-y divide-border/50">
+            <div className="divide-y" style={{ '--tw-divide-opacity': 1, borderColor: 'rgba(201,169,110,0.06)' } as React.CSSProperties}>
               {/* Reset plan */}
               <div className="p-4">
                 <div className="flex items-start justify-between gap-3">

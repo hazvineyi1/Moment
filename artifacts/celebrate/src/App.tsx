@@ -146,26 +146,53 @@ function Protected({ children }: { children: React.ReactNode }) {
 function LandingPage() {
   const [, setLocation] = useLocation();
   return (
-    <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-6 text-center">
-      <div className="mb-8">
-        <img src={`${basePath}/logo.svg`} alt="A-Moment" className="w-16 h-16 mx-auto mb-4" />
-        <h1 className="text-5xl font-serif font-medium text-foreground mb-3">A-Moment</h1>
-        <p className="text-muted-foreground text-lg max-w-sm mx-auto leading-relaxed">
-          One app for every kind of planning. Celebrations, trips, surprises — whatever you are building, A-Moment handles it.
+    <div
+      className="min-h-[100dvh] flex flex-col items-center justify-center px-8 text-center relative overflow-hidden"
+      style={{ background: '#0a0a0a' }}
+    >
+      {/* Subtle gold radial glow */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%)' }}
+      />
+
+      <div className="relative mb-16 max-w-xl">
+        <p
+          className="uppercase text-[10px] tracking-[0.28em] mb-10"
+          style={{ color: '#8a7a65' }}
+        >
+          Celebration planning, reimagined
+        </p>
+        <h1
+          className="font-serif italic leading-[1.0] mb-6"
+          style={{ fontSize: 'clamp(56px, 8vw, 96px)', color: '#f5f0e8' }}
+        >
+          A-Moment
+        </h1>
+        <p className="text-sm font-light leading-relaxed max-w-sm mx-auto" style={{ color: '#8a7a65' }}>
+          From intimate winery weekends to month-long sailing expeditions. Whatever you are celebrating, A-Moment plans it.
         </p>
       </div>
-      <div className="flex flex-col gap-3 w-full max-w-xs">
+
+      <div className="relative flex flex-col items-center gap-5">
         <button
           onClick={() => setLocation('/sign-up')}
-          className="w-full py-3.5 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors"
+          className="group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-colors"
+          style={{ color: '#c9a96e' }}
         >
-          Get started
+          <span>Get started</span>
+          <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">
+            ———›
+          </span>
         </button>
         <button
           onClick={() => setLocation('/sign-in')}
-          className="w-full py-3.5 border border-border rounded-full font-medium hover:bg-muted transition-colors text-foreground"
+          className="text-[10px] tracking-[0.15em] uppercase transition-colors"
+          style={{ color: '#8a7a65' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#f5f0e8')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
         >
-          Sign in
+          Already have an account? Sign in
         </button>
       </div>
     </div>

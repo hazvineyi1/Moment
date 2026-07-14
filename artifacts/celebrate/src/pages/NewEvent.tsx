@@ -92,20 +92,23 @@ function SelectCard({
     <button
       type="button"
       onClick={onClick}
-      className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-150 hover:-translate-y-0.5 ${
-        selected
-          ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
-          : 'border-border/50 hover:border-primary/40 bg-card'
-      }`}
+      className="relative p-4 text-left transition-all duration-150"
+      style={{
+        border: selected ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
+        background: selected ? 'rgba(201,169,110,0.06)' : '#141414',
+      }}
     >
       {selected && (
-        <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-          <Check className="w-3 h-3" />
+        <span
+          className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center"
+          style={{ background: '#c9a96e' }}
+        >
+          <Check className="w-3 h-3" style={{ color: '#0a0a0a' }} />
         </span>
       )}
       {icon && <div className="text-2xl mb-2">{icon}</div>}
-      <div className="font-medium text-sm leading-snug">{label}</div>
-      {desc && <div className="text-xs text-muted-foreground mt-0.5 leading-snug">{desc}</div>}
+      <div className="text-sm leading-snug font-light" style={{ color: selected ? '#c9a96e' : '#f5f0e8' }}>{label}</div>
+      {desc && <div className="text-xs mt-0.5 leading-snug font-light" style={{ color: '#8a7a65' }}>{desc}</div>}
     </button>
   );
 }
@@ -117,11 +120,12 @@ function Pill({
     <button
       type="button"
       onClick={onClick}
-      className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
-        selected
-          ? 'bg-primary text-primary-foreground border-primary'
-          : 'border-border bg-card hover:border-primary/50 text-foreground'
-      }`}
+      className="px-4 py-2 text-sm font-light transition-all"
+      style={{
+        border: selected ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.15)',
+        color: selected ? '#c9a96e' : '#8a7a65',
+        background: selected ? 'rgba(201,169,110,0.06)' : 'transparent',
+      }}
     >
       {label}
     </button>
@@ -260,20 +264,23 @@ export function NewEvent() {
   /* ══════════════════════════════════════════════════════════════════ */
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
-      {/* Progress bar */}
-      <div className="h-1 bg-border/30">
-        <div className="h-full bg-primary transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+      {/* Progress bar — gold hairline */}
+      <div className="h-px" style={{ background: 'rgba(201,169,110,0.1)' }}>
+        <div
+          className="h-full transition-all duration-500 ease-out"
+          style={{ width: `${progress}%`, background: '#c9a96e', height: '1px' }}
+        />
       </div>
 
-      <div className="flex-1 flex flex-col container mx-auto px-4 py-8 md:py-14 max-w-4xl">
+      <div className="flex-1 flex flex-col mx-auto px-8 md:px-16 py-12 md:py-20 max-w-4xl w-full">
 
         {/* ══════════ STEP 0: Who & What ══════════════════════════════ */}
         {step === 0 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <div className="mb-7">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 1 of 3</p>
-              <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">Who & what?</h1>
-              <p className="text-base text-muted-foreground">Who is this for, and what are you celebrating?</p>
+            <div className="mb-10">
+              <p className="uppercase text-[10px] tracking-[0.22em] mb-4" style={{ color: '#8a7a65' }}>Step 1 of 3</p>
+              <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>Who & what?</h1>
+              <p className="text-sm font-light" style={{ color: '#8a7a65' }}>Who is this for, and what are you celebrating?</p>
             </div>
 
             {/* Who is this for */}
@@ -366,9 +373,11 @@ export function NewEvent() {
               <button
                 onClick={() => setStep(1)}
                 disabled={!planningFor}
-                className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-40"
+                className="group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-all disabled:opacity-30"
+                style={{ color: '#c9a96e' }}
               >
-                Continue <ArrowRight className="w-4 h-4" />
+                <span>Continue</span>
+                <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">———›</span>
               </button>
             </div>
           </div>
@@ -377,85 +386,108 @@ export function NewEvent() {
         {/* ══════════ STEP 1: Experience & Vibe ═══════════════════════ */}
         {step === 1 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <button onClick={() => setStep(0)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back
+            <button
+              onClick={() => setStep(0)}
+              className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase transition-colors mb-8"
+              style={{ color: '#8a7a65' }}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
-            <div className="mb-7">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 2 of 3</p>
-              <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">What kind of experience?</h1>
-              <p className="text-base text-muted-foreground">Pick what resonates — A-Moment can mix and match.</p>
+            <div className="mb-10">
+              <p className="uppercase text-[10px] tracking-[0.22em] mb-4" style={{ color: '#8a7a65' }}>Step 2 of 3</p>
+              <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>What kind of experience?</h1>
+              <p className="text-sm font-light" style={{ color: '#8a7a65' }}>Pick what resonates — A-Moment can mix and match.</p>
             </div>
 
             {/* Experience types */}
-            <div className="mb-6">
-              <p className="text-sm font-medium text-muted-foreground mb-3">Experience type <span className="font-normal">(pick as many as you like)</span></p>
+            <div className="mb-8">
+              <p className="text-[10px] tracking-[0.18em] uppercase mb-4" style={{ color: '#8a7a65' }}>
+                Experience type <span className="opacity-60">(pick as many as you like)</span>
+              </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {EXPERIENCES.map((e) => (
-                  <button
-                    key={e.id}
-                    type="button"
-                    onClick={() => toggleExp(e.id)}
-                    className={`relative flex items-start gap-3 p-4 rounded-2xl border-2 text-left transition-all duration-150 ${
-                      experiences.includes(e.id)
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border/60 hover:border-primary/40 bg-card'
-                    }`}
-                  >
-                    {experiences.includes(e.id) && (
-                      <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                        <Check className="w-3 h-3" />
-                      </span>
-                    )}
-                    <span className="text-2xl flex-shrink-0 mt-0.5">{e.icon}</span>
-                    <div className="min-w-0">
-                      <div className="font-medium text-sm">{e.label}</div>
-                      <div className="text-xs text-muted-foreground leading-snug mt-0.5">{e.examples}</div>
-                    </div>
-                  </button>
-                ))}
+                {EXPERIENCES.map((e) => {
+                  const sel = experiences.includes(e.id);
+                  return (
+                    <button
+                      key={e.id}
+                      type="button"
+                      onClick={() => toggleExp(e.id)}
+                      className="relative flex items-start gap-3 p-4 text-left transition-all duration-150"
+                      style={{
+                        border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
+                        background: sel ? 'rgba(201,169,110,0.06)' : '#141414',
+                      }}
+                    >
+                      {sel && (
+                        <span
+                          className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center"
+                          style={{ background: '#c9a96e' }}
+                        >
+                          <Check className="w-3 h-3" style={{ color: '#0a0a0a' }} />
+                        </span>
+                      )}
+                      <span className="text-2xl flex-shrink-0 mt-0.5">{e.icon}</span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-light" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{e.label}</div>
+                        <div className="text-xs leading-snug mt-0.5 font-light" style={{ color: '#8a7a65' }}>{e.examples}</div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Vibe */}
-            <div className="mb-8">
-              <p className="text-sm font-medium text-muted-foreground mb-3">Energy / vibe <span className="font-normal">(pick one or two)</span></p>
+            <div className="mb-10">
+              <p className="text-[10px] tracking-[0.18em] uppercase mb-4" style={{ color: '#8a7a65' }}>
+                Energy / vibe <span className="opacity-60">(pick one or two)</span>
+              </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {VIBES.map((v) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => toggleVibe(v.id)}
-                    className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-150 ${
-                      vibes.includes(v.id)
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border/60 hover:border-primary/40 bg-card'
-                    }`}
-                  >
-                    {vibes.includes(v.id) && (
-                      <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                        <Check className="w-3 h-3" />
-                      </span>
-                    )}
-                    <div className="text-2xl mb-1.5">{v.icon}</div>
-                    <div className="font-semibold text-sm">{v.label}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{v.desc}</div>
-                  </button>
-                ))}
+                {VIBES.map((v) => {
+                  const sel = vibes.includes(v.id);
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => toggleVibe(v.id)}
+                      className="relative p-4 text-left transition-all duration-150"
+                      style={{
+                        border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
+                        background: sel ? 'rgba(201,169,110,0.06)' : '#141414',
+                      }}
+                    >
+                      {sel && (
+                        <span
+                          className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center"
+                          style={{ background: '#c9a96e' }}
+                        >
+                          <Check className="w-3 h-3" style={{ color: '#0a0a0a' }} />
+                        </span>
+                      )}
+                      <div className="text-2xl mb-2">{v.icon}</div>
+                      <div className="text-sm font-light" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{v.label}</div>
+                      <div className="text-xs font-light mt-0.5 leading-relaxed" style={{ color: '#8a7a65' }}>{v.desc}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setStep(2)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-[10px] tracking-[0.15em] uppercase transition-colors"
+                style={{ color: '#8a7a65' }}
               >
                 Skip →
               </button>
               <button
                 onClick={() => setStep(2)}
-                className="flex items-center gap-2 bg-foreground text-background px-7 py-3 rounded-full font-medium hover:bg-primary hover:text-primary-foreground transition-all"
+                className="group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-all"
+                style={{ color: '#c9a96e' }}
               >
-                {experiences.length > 0 || vibes.length > 0 ? 'Continue' : 'Skip'} <ArrowRight className="w-4 h-4" />
+                <span>{experiences.length > 0 || vibes.length > 0 ? 'Continue' : 'Skip'}</span>
+                <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">———›</span>
               </button>
             </div>
           </div>
@@ -464,13 +496,17 @@ export function NewEvent() {
         {/* ══════════ STEP 2: The Details ══════════════════════════════ */}
         {step === 2 && (
           <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <button onClick={() => setStep(1)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back
+            <button
+              onClick={() => setStep(1)}
+              className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase transition-colors mb-8"
+              style={{ color: '#8a7a65' }}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
-            <div className="mb-8">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 3 of 3</p>
-              <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">The details.</h1>
-              <p className="text-base text-muted-foreground">Rough is fine — A-Moment fills in the rest.</p>
+            <div className="mb-10">
+              <p className="uppercase text-[10px] tracking-[0.22em] mb-4" style={{ color: '#8a7a65' }}>Step 3 of 3</p>
+              <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>The details.</h1>
+              <p className="text-sm font-light" style={{ color: '#8a7a65' }}>Rough is fine — A-Moment fills in the rest.</p>
             </div>
 
             <div className="max-w-xl space-y-8">
@@ -481,17 +517,18 @@ export function NewEvent() {
                   <Calendar className="w-3.5 h-3.5" /> When?
                 </label>
                 {/* Toggle */}
-                <div className="inline-flex rounded-full border border-border bg-muted p-0.5 mb-4">
+                <div className="inline-flex mb-4" style={{ border: '1px solid rgba(201,169,110,0.15)' }}>
                   {(['fixed', 'flexible'] as const).map((t) => (
                     <button
                       key={t}
                       type="button"
                       onClick={() => setDateType(t)}
-                      className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                        dateType === t
-                          ? 'bg-background text-foreground shadow-sm'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
+                      className="px-4 py-2 text-xs tracking-[0.12em] uppercase transition-all"
+                      style={{
+                        background: dateType === t ? 'rgba(201,169,110,0.1)' : 'transparent',
+                        color: dateType === t ? '#c9a96e' : '#8a7a65',
+                        borderRight: t === 'fixed' ? '1px solid rgba(201,169,110,0.15)' : undefined,
+                      }}
                     >
                       {t === 'fixed' ? 'Fixed date' : 'Flexible window'}
                     </button>
@@ -504,7 +541,8 @@ export function NewEvent() {
                       type="date"
                       value={fixedDate}
                       onChange={(e) => setFixedDate(e.target.value)}
-                      className="text-base bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 transition-colors"
+                      className="text-base outline-none py-2 px-0 transition-colors font-light bg-transparent"
+                      style={{ borderBottom: '1px solid rgba(201,169,110,0.3)', color: '#f5f0e8' }}
                     />
                   </div>
                 )}
@@ -512,7 +550,7 @@ export function NewEvent() {
                 {dateType === 'flexible' && (
                   <div className="animate-in fade-in duration-200 space-y-3">
                     <div>
-                      <p className="text-xs text-muted-foreground mb-2">Around which month?</p>
+                      <p className="text-[10px] tracking-[0.15em] uppercase mb-2" style={{ color: '#8a7a65' }}>Around which month?</p>
                       <div className="flex flex-wrap gap-2">
                         {MONTHS.map((m) => (
                           <Pill key={m} label={m} selected={flexMonth === m} onClick={() => setFlexMonth(flexMonth === m ? '' : m)} />
@@ -520,7 +558,7 @@ export function NewEvent() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground mb-2">How long?</p>
+                      <p className="text-[10px] tracking-[0.15em] uppercase mb-2" style={{ color: '#8a7a65' }}>How long?</p>
                       <div className="flex flex-wrap gap-2">
                         {DURATIONS.map((d) => (
                           <Pill key={d.id} label={d.label} selected={flexDuration === d.id} onClick={() => setFlexDuration(flexDuration === d.id ? '' : d.id)} />
@@ -533,7 +571,7 @@ export function NewEvent() {
 
               {/* Group size */}
               <div>
-                <label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mb-3">
+                <label className="text-[10px] tracking-[0.18em] uppercase flex items-center gap-1.5 mb-4" style={{ color: '#8a7a65' }}>
                   <Users className="w-3.5 h-3.5" /> How many people?
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -545,65 +583,75 @@ export function NewEvent() {
 
               {/* Budget */}
               <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-3">
-                  Budget feel <span className="font-normal">(optional)</span>
+                <label className="text-[10px] tracking-[0.18em] uppercase block mb-4" style={{ color: '#8a7a65' }}>
+                  Budget feel <span className="opacity-60">(optional)</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {BUDGETS.map((b) => (
-                    <button
-                      key={b.id}
-                      type="button"
-                      onClick={() => setBudget(budget === b.id ? '' : b.id)}
-                      className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
-                        budget === b.id
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'border-border bg-card hover:border-primary/50 text-foreground'
-                      }`}
-                    >
-                      <span className="font-medium">{b.label}</span>
-                      <span className="text-xs ml-1.5 opacity-70">{b.desc}</span>
-                    </button>
-                  ))}
+                  {BUDGETS.map((b) => {
+                    const sel = budget === b.id;
+                    return (
+                      <button
+                        key={b.id}
+                        type="button"
+                        onClick={() => setBudget(budget === b.id ? '' : b.id)}
+                        className="px-4 py-2 text-sm font-light transition-all"
+                        style={{
+                          border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.15)',
+                          color: sel ? '#c9a96e' : '#8a7a65',
+                          background: sel ? 'rgba(201,169,110,0.06)' : 'transparent',
+                        }}
+                      >
+                        <span>{b.label}</span>
+                        <span className="text-xs ml-1.5 opacity-60">{b.desc}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Personality section — only for "myself" path */}
               {planningFor === 'myself' && (
-                <div className="border-t border-border/40 pt-7 space-y-6 animate-in fade-in duration-300">
+                <div className="pt-7 space-y-6 animate-in fade-in duration-300" style={{ borderTop: '1px solid rgba(201,169,110,0.1)' }}>
                   <div>
-                    <p className="text-sm font-medium mb-0.5">A couple of things about you</p>
-                    <p className="text-xs text-muted-foreground">Optional — helps A-Moment curate for you specifically, not just the event.</p>
+                    <p className="text-sm font-light mb-0.5" style={{ color: '#f5f0e8' }}>A couple of things about you</p>
+                    <p className="text-xs font-light" style={{ color: '#8a7a65' }}>Optional — helps A-Moment curate for you specifically, not just the event.</p>
                   </div>
 
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">How do you travel?</p>
+                    <p className="text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: '#8a7a65' }}>How do you travel?</p>
                     <div className="grid grid-cols-2 gap-2">
-                      {TRAVEL_STYLES.map((ts) => (
-                        <button
-                          key={ts.id}
-                          type="button"
-                          onClick={() => setTravelStyle(travelStyle === ts.id ? '' : ts.id)}
-                          className={`relative p-3 rounded-xl border-2 text-left transition-all ${
-                            travelStyle === ts.id
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border/50 hover:border-primary/40 bg-card'
-                          }`}
-                        >
-                          {travelStyle === ts.id && (
-                            <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                              <Check className="w-2.5 h-2.5" />
-                            </span>
-                          )}
-                          <span className="text-lg">{ts.icon}</span>
-                          <div className="font-medium text-sm mt-1">{ts.label}</div>
-                          <div className="text-xs text-muted-foreground">{ts.desc}</div>
-                        </button>
-                      ))}
+                      {TRAVEL_STYLES.map((ts) => {
+                        const sel = travelStyle === ts.id;
+                        return (
+                          <button
+                            key={ts.id}
+                            type="button"
+                            onClick={() => setTravelStyle(travelStyle === ts.id ? '' : ts.id)}
+                            className="relative p-3 text-left transition-all"
+                            style={{
+                              border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
+                              background: sel ? 'rgba(201,169,110,0.06)' : '#141414',
+                            }}
+                          >
+                            {sel && (
+                              <span
+                                className="absolute top-1.5 right-1.5 w-4 h-4 flex items-center justify-center"
+                                style={{ background: '#c9a96e' }}
+                              >
+                                <Check className="w-2.5 h-2.5" style={{ color: '#0a0a0a' }} />
+                              </span>
+                            )}
+                            <span className="text-lg">{ts.icon}</span>
+                            <div className="text-sm font-light mt-1" style={{ color: sel ? '#c9a96e' : '#f5f0e8' }}>{ts.label}</div>
+                            <div className="text-xs font-light" style={{ color: '#8a7a65' }}>{ts.desc}</div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">What kills a trip for you?</p>
+                    <p className="text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: '#8a7a65' }}>What kills a trip for you?</p>
                     <div className="flex flex-wrap gap-2">
                       {DEALBREAKERS.map((d) => (
                         <Pill
@@ -621,22 +669,29 @@ export function NewEvent() {
             </div>
 
             {/* Submit */}
-            <div className="mt-12 flex flex-col items-end gap-2">
+            <div className="mt-12 flex flex-col items-end gap-3">
               <button
                 onClick={handleSubmit}
                 disabled={createEvent.isPending}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-9 py-4 rounded-full font-medium text-base hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/20 disabled:opacity-50"
+                className="group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-all disabled:opacity-40"
+                style={{ color: '#c9a96e' }}
               >
                 {createEvent.isPending ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" /> {planningFor === 'someone' ? 'Creating...' : 'Building your options...'}</>
+                  <span className="flex items-center gap-3">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {planningFor === 'someone' ? 'Creating...' : 'Building your options...'}
+                  </span>
                 ) : (
-                  <>{planningFor === 'someone' ? 'Create event' : 'Show me my options'}</>
+                  <>
+                    <span>{planningFor === 'someone' ? 'Create event' : 'Show me my options'}</span>
+                    <span className="font-light tracking-[-0.08em] text-base transition-transform group-hover:translate-x-2 duration-300">———›</span>
+                  </>
                 )}
               </button>
               {createEvent.isError && (
-                <p className="text-xs text-destructive">Something went wrong — please try again.</p>
+                <p className="text-xs" style={{ color: 'hsl(var(--destructive))' }}>Something went wrong — please try again.</p>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] font-light text-right max-w-xs" style={{ color: '#8a7a65' }}>
                 {planningFor === 'someone'
                   ? "You'll get a link to share with them — their answers feed straight into A-Moment."
                   : 'A-Moment will propose 6 plans — pick one, then refine it in conversation.'}

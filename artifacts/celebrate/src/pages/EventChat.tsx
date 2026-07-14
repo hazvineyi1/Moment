@@ -90,25 +90,32 @@ function OptionsCards({
               type="button"
               onClick={() => handleChoose(opt)}
               disabled={chosen !== null}
-              className={`text-left w-full rounded-2xl border px-4 py-3.5 transition-all duration-200 ${
-                isChosen
-                  ? 'border-primary bg-primary/8 shadow-sm shadow-primary/10'
-                  : isDimmed
-                  ? 'border-border/40 bg-muted/30 opacity-50 cursor-default'
-                  : 'border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 active:scale-[0.99]'
-              }`}
+              className="text-left w-full px-4 py-4 transition-all duration-200"
+              style={{
+                border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.12)'}`,
+                background: isChosen ? 'rgba(201,169,110,0.05)' : '#141414',
+                opacity: isDimmed ? 0.4 : 1,
+                cursor: isDimmed ? 'default' : 'pointer',
+              }}
             >
               <div className="flex items-start gap-3">
-                <span className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border text-xs font-semibold flex items-center justify-center transition-colors ${
-                  isChosen ? 'bg-primary border-primary text-primary-foreground' : 'border-border text-muted-foreground'
-                }`}>
+                <span
+                  className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full text-xs font-light flex items-center justify-center transition-colors"
+                  style={{
+                    border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`,
+                    color: isChosen ? '#c9a96e' : '#8a7a65',
+                  }}
+                >
                   {isChosen ? <Check className="w-3 h-3" /> : opt.number}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold leading-snug mb-0.5 ${isChosen ? 'text-primary' : 'text-foreground'}`}>
+                  <p
+                    className="text-sm leading-snug mb-0.5"
+                    style={{ color: isChosen ? '#c9a96e' : '#f5f0e8' }}
+                  >
                     {opt.title}
                   </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{opt.body}</p>
+                  <p className="text-xs font-light leading-relaxed" style={{ color: '#8a7a65' }}>{opt.body}</p>
                 </div>
               </div>
             </button>
@@ -161,7 +168,7 @@ function QuestionChips({
   };
 
   return (
-    <div className="flex flex-wrap gap-2 mt-2 ml-11">
+    <div className="flex flex-wrap gap-2 mt-3 ml-11">
       {QUESTION_CHIPS.map((chip) => {
         const isChosen = chosen === chip;
         const isDimmed = chosen !== null && !isChosen;
@@ -171,13 +178,14 @@ function QuestionChips({
             type="button"
             onClick={() => handle(chip)}
             disabled={chosen !== null}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${
-              isChosen
-                ? 'bg-primary text-primary-foreground border-primary'
-                : isDimmed
-                ? 'opacity-30 cursor-default border-border text-muted-foreground'
-                : 'bg-card border-border text-foreground hover:border-primary/60 hover:bg-primary/5 active:scale-[0.97]'
-            }`}
+            className="px-3.5 py-1.5 text-xs tracking-wide transition-all duration-200"
+            style={{
+              border: `1px solid ${isChosen ? '#c9a96e' : 'rgba(201,169,110,0.2)'}`,
+              color: isChosen ? '#c9a96e' : isDimmed ? 'rgba(201,169,110,0.25)' : '#8a7a65',
+              background: isChosen ? 'rgba(201,169,110,0.08)' : 'transparent',
+              cursor: isDimmed ? 'default' : 'pointer',
+              opacity: isDimmed ? 0.4 : 1,
+            }}
           >
             {chip}
           </button>
@@ -346,23 +354,34 @@ export function EventChat() {
   return (
     <div className="flex flex-col h-[100dvh] bg-background">
       {/* Header */}
-      <header className="glass-panel border-b border-border/40 z-10 sticky top-0 flex-shrink-0 h-16">
-        <div className="container mx-auto px-4 h-full flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href={`/events/${id}`} className="p-2 -ml-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
-              <ChevronLeft className="w-5 h-5" />
+      <header
+        className="z-10 sticky top-0 flex-shrink-0 h-16"
+        style={{
+          background: 'rgba(10,10,10,0.92)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(201,169,110,0.1)',
+        }}
+      >
+        <div className="px-6 md:px-10 h-full flex items-center justify-between max-w-5xl mx-auto">
+          <div className="flex items-center gap-4">
+            <Link
+              href={`/events/${id}`}
+              className="transition-colors"
+              style={{ color: '#8a7a65' }}
+            >
+              <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
             </Link>
             <div>
-              <h2 className="font-serif font-medium text-lg leading-tight">A-Moment</h2>
-              <p className="text-xs text-muted-foreground truncate max-w-[180px] md:max-w-sm">{event?.title}</p>
+              <h2 className="font-serif italic text-base leading-tight" style={{ color: '#f5f0e8' }}>A-Moment</h2>
+              <p className="text-[10px] tracking-wide truncate max-w-[180px] md:max-w-sm" style={{ color: '#8a7a65' }}>{event?.title}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+            <span className="relative flex h-[6px] w-[6px]">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-50" style={{ background: '#c9a96e' }} />
+              <span className="relative inline-flex rounded-full h-[6px] w-[6px]" style={{ background: '#c9a96e' }} />
             </span>
-            <span className="text-xs font-medium text-muted-foreground">online</span>
+            <span className="text-[9px] tracking-[0.15em] uppercase" style={{ color: '#8a7a65' }}>Live</span>
           </div>
         </div>
       </header>
@@ -401,18 +420,22 @@ export function EventChat() {
                 return (
                   <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
                     <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
-                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center self-end mb-0.5 ${
-                        isUser
-                          ? 'bg-foreground text-background'
-                          : 'bg-primary/10 text-primary border border-primary/20'
-                      }`}>
-                        {isUser ? <UserIcon className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
+                      <div
+                        className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center self-end mb-0.5"
+                        style={isUser
+                          ? { background: '#f5f0e8' }
+                          : { background: 'rgba(201,169,110,0.08)', border: '1px solid rgba(201,169,110,0.2)' }}
+                      >
+                        {isUser
+                          ? <UserIcon className="w-3.5 h-3.5" style={{ color: '#0a0a0a' }} />
+                          : <Bot className="w-3.5 h-3.5" style={{ color: '#c9a96e' }} />}
                       </div>
-                      <div className={`max-w-[78%] rounded-2xl px-4 py-3 ${
-                        isUser
-                          ? 'bg-foreground text-background rounded-tr-sm'
-                          : 'bg-card border border-border/50 text-foreground rounded-tl-sm shadow-sm'
-                      }`}>
+                      <div
+                        className="max-w-[78%] px-4 py-3"
+                        style={isUser
+                          ? { background: 'rgba(245,240,232,0.95)', color: '#0a0a0a' }
+                          : { background: '#141414', border: '1px solid rgba(201,169,110,0.1)', color: '#f5f0e8' }}
+                      >
                         {msg.isPending ? (
                           <div className="flex items-center gap-1.5 h-5">
                             <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -439,16 +462,30 @@ export function EventChat() {
       </div>
 
       {/* Input */}
-      <div className="flex-shrink-0 p-4 bg-background/80 backdrop-blur border-t border-border/40 pb-safe">
+      <div
+        className="flex-shrink-0 p-4 md:p-6 pb-safe"
+        style={{
+          background: 'rgba(10,10,10,0.92)',
+          backdropFilter: 'blur(20px)',
+          borderTop: '1px solid rgba(201,169,110,0.1)',
+        }}
+      >
         <div className="max-w-3xl mx-auto">
           {allMessages.filter(m => !m.isPending).length <= 1 && !sendMessage.isPending && (
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-4">
               {quickReplies.map((r, i) => (
                 <button
                   key={i}
                   onClick={() => handleSend(undefined, r)}
                   disabled={sendMessage.isPending}
-                  className="px-4 py-2 bg-card border border-border/60 rounded-full text-sm text-foreground hover:border-primary/50 hover:bg-primary/5 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-xs tracking-wide transition-colors disabled:opacity-50"
+                  style={{
+                    border: '1px solid rgba(201,169,110,0.2)',
+                    color: '#8a7a65',
+                    background: 'transparent',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#c9a96e'; e.currentTarget.style.borderColor = 'rgba(201,169,110,0.4)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#8a7a65'; e.currentTarget.style.borderColor = 'rgba(201,169,110,0.2)'; }}
                 >
                   {r}
                 </button>
@@ -462,15 +499,23 @@ export function EventChat() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Talk to A-Moment…"
-              className="w-full bg-card border border-border rounded-full pl-5 pr-14 py-3.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-sm md:text-base"
+              className="w-full pl-5 pr-14 py-3.5 outline-none transition-all text-sm md:text-base font-light"
+              style={{
+                background: '#141414',
+                border: '1px solid rgba(201,169,110,0.15)',
+                color: '#f5f0e8',
+              }}
               disabled={sendMessage.isPending}
+              onFocus={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.4)'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.15)'; }}
             />
             <button
               type="submit"
               disabled={!input.trim() || sendMessage.isPending}
-              className="absolute right-2 p-2.5 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 disabled:opacity-40 transition-all"
+              className="absolute right-0 px-4 h-full flex items-center justify-center transition-all disabled:opacity-30"
+              style={{ color: '#c9a96e' }}
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4" strokeWidth={1.5} />
             </button>
           </form>
         </div>

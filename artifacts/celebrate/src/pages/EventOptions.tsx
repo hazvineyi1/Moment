@@ -46,21 +46,29 @@ function PlanCard({
     n >= 1000 ? `$${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `$${n}`;
 
   return (
-    <div className="group relative bg-card border border-border/60 rounded-3xl overflow-hidden hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+    <div
+      className="group relative overflow-hidden transition-all duration-300"
+      style={{ border: '1px solid rgba(201,169,110,0.12)', background: '#141414' }}
+      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,169,110,0.3)')}
+      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(201,169,110,0.12)')}
+    >
       {/* Header band */}
       <div className="px-6 pt-6 pb-4">
-        <div className="flex items-start justify-between gap-3 mb-1">
-          <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <span className="text-[9px] tracking-[0.22em] uppercase" style={{ color: '#8a7a65' }}>
             Option {index + 1}
           </span>
           {option.vibe && (
-            <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-medium flex-shrink-0">
+            <span
+              className="text-[9px] tracking-[0.15em] uppercase px-2.5 py-1 flex-shrink-0"
+              style={{ border: '1px solid rgba(201,169,110,0.25)', color: '#c9a96e' }}
+            >
               {option.vibe}
             </span>
           )}
         </div>
-        <h2 className="text-xl md:text-2xl font-serif font-medium leading-tight mb-1">{option.name}</h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">{option.tagline}</p>
+        <h2 className="font-serif text-2xl md:text-3xl leading-tight mb-2" style={{ color: '#f5f0e8' }}>{option.name}</h2>
+        <p className="text-sm font-light leading-relaxed" style={{ color: '#8a7a65' }}>{option.tagline}</p>
       </div>
 
       {/* Meta row */}
@@ -81,32 +89,36 @@ function PlanCard({
 
       {/* Pricing block */}
       <div className="px-6 pb-4 space-y-2">
-        {/* Accommodation + experiences */}
-        <div className="flex items-center justify-between bg-primary/8 rounded-2xl px-4 py-2.5">
-          <span className="text-xs text-muted-foreground font-medium">Stay + experiences</span>
-          <span className="text-xl font-semibold text-primary">
+        <div
+          className="flex items-center justify-between px-4 py-3"
+          style={{ background: 'rgba(201,169,110,0.05)', border: '1px solid rgba(201,169,110,0.12)' }}
+        >
+          <span className="text-[10px] tracking-[0.15em] uppercase" style={{ color: '#8a7a65' }}>Stay + experiences</span>
+          <span className="font-serif text-xl" style={{ color: '#c9a96e' }}>
             {formatPrice(option.priceRange.perPersonMin)}–{formatPrice(option.priceRange.perPersonMax)}
-            <span className="text-sm font-normal text-muted-foreground ml-1">pp</span>
+            <span className="text-xs font-light ml-1" style={{ color: '#8a7a65' }}>pp</span>
           </span>
         </div>
 
-        {/* Flights */}
         {option.flightEstimate && (
-          <div className="flex items-center justify-between bg-muted/60 rounded-2xl px-4 py-2.5">
+          <div
+            className="flex items-center justify-between px-4 py-3"
+            style={{ background: 'rgba(10,10,10,0.5)', border: '1px solid rgba(201,169,110,0.08)' }}
+          >
             <div className="flex items-center gap-2">
-              <Plane className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+              <Plane className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#8a7a65' }} />
               <div>
-                <span className="text-xs text-muted-foreground font-medium">Flights (round-trip)</span>
+                <span className="text-[10px] tracking-[0.12em] uppercase" style={{ color: '#8a7a65' }}>Flights (round-trip)</span>
                 {option.flightEstimate.carriers?.length > 0 && (
-                  <p className="text-xs text-muted-foreground/60 leading-tight">
+                  <p className="text-[9px] leading-tight mt-0.5" style={{ color: 'rgba(138,122,101,0.6)' }}>
                     {option.flightEstimate.carriers.join(' · ')}
                   </p>
                 )}
               </div>
             </div>
-            <span className="text-base font-semibold text-foreground">
+            <span className="text-base font-light" style={{ color: '#f5f0e8' }}>
               {formatPrice(option.flightEstimate.perPersonMin)}–{formatPrice(option.flightEstimate.perPersonMax)}
-              <span className="text-xs font-normal text-muted-foreground ml-1">pp</span>
+              <span className="text-xs ml-1" style={{ color: '#8a7a65' }}>pp</span>
             </span>
           </div>
         )}
@@ -179,9 +191,15 @@ function PlanCard({
         <button
           onClick={() => onChoose(option)}
           disabled={isChoosing}
-          className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-2xl py-3.5 font-medium text-sm hover:bg-primary/90 transition-all hover:shadow-md hover:shadow-primary/20 disabled:opacity-50"
+          className="w-full flex items-center justify-between px-6 py-4 text-xs tracking-[0.2em] uppercase transition-all disabled:opacity-50"
+          style={{
+            border: '1px solid rgba(201,169,110,0.3)',
+            color: '#c9a96e',
+            background: 'rgba(201,169,110,0.04)',
+          }}
         >
-          {isChoosing ? 'Locking in your plan…' : <>Choose this plan <ArrowRight className="w-4 h-4" /></>}
+          <span>{isChoosing ? 'Locking in your plan…' : 'Choose this plan'}</span>
+          <span className="font-light tracking-[-0.08em] text-base">→</span>
         </button>
       </div>
     </div>
@@ -289,10 +307,10 @@ export function EventOptions() {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
-      {/* Progress — step 5 of 5 conceptually, just a full bar */}
-      <div className="h-1 bg-primary" />
+      {/* Progress — gold hairline at top */}
+      <div className="h-px" style={{ background: '#c9a96e' }} />
 
-      <div className="flex-1 container mx-auto px-4 py-8 md:py-14 max-w-5xl">
+      <div className="flex-1 mx-auto px-8 md:px-16 py-12 md:py-20 max-w-7xl w-full">
         {loading && <LoadingState />}
 
         {error && !loading && (
@@ -309,18 +327,20 @@ export function EventOptions() {
 
         {options && !loading && (
           <>
-            <div className="mb-10">
-              <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Your options</p>
-              <h1 className="text-3xl md:text-5xl font-serif font-medium mb-3">
+            <div className="mb-12">
+              <p className="uppercase text-[10px] tracking-[0.22em] mb-5" style={{ color: '#8a7a65' }}>
+                Your options
+              </p>
+              <h1 className="font-serif text-4xl md:text-6xl mb-4" style={{ color: '#f5f0e8' }}>
                 Six directions.{' '}
-                <span className="text-muted-foreground">Pick one.</span>
+                <span className="italic" style={{ color: '#8a7a65' }}>Pick one.</span>
               </h1>
-              <p className="text-base text-muted-foreground max-w-lg">
-                Each is a real, specific plan. Once you choose, A-Moment will help you lock in every detail inside the conversation.
+              <p className="text-sm font-light max-w-lg leading-relaxed" style={{ color: '#8a7a65' }}>
+                Each is a real, specific plan. Once you choose, A-Moment will help you lock in every detail.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {options.map((opt, i) => (
                 <PlanCard
                   key={opt.id}
@@ -332,12 +352,16 @@ export function EventOptions() {
               ))}
             </div>
 
-            <div className="mt-8 flex justify-center">
+            <div className="mt-10 flex justify-center">
               <button
                 onClick={handleRetry}
-                className="flex items-center gap-2 px-6 py-3 border border-border rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+                className="group flex items-center gap-4 text-xs tracking-[0.2em] uppercase transition-colors"
+                style={{ color: '#8a7a65' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#c9a96e')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#8a7a65')}
               >
-                <RefreshCw className="w-4 h-4" /> None of these — show me different options
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>None of these — show me different options</span>
               </button>
             </div>
           </>
