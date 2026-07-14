@@ -140,6 +140,53 @@ function MessageContent({
   );
 }
 
+const QUESTION_CHIPS = [
+  "Yes, let's go with that",
+  "Not quite right",
+  "Tell me more",
+  "Show me alternatives",
+];
+
+function QuestionChips({
+  onSend,
+}: {
+  onSend: (text: string) => void;
+}) {
+  const [chosen, setChosen] = useState<string | null>(null);
+
+  const handle = (chip: string) => {
+    if (chosen) return;
+    setChosen(chip);
+    onSend(chip);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2 mt-2 ml-11">
+      {QUESTION_CHIPS.map((chip) => {
+        const isChosen = chosen === chip;
+        const isDimmed = chosen !== null && !isChosen;
+        return (
+          <button
+            key={chip}
+            type="button"
+            onClick={() => handle(chip)}
+            disabled={chosen !== null}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${
+              isChosen
+                ? 'bg-primary text-primary-foreground border-primary'
+                : isDimmed
+                ? 'opacity-30 cursor-default border-border text-muted-foreground'
+                : 'bg-card border-border text-foreground hover:border-primary/60 hover:bg-primary/5 active:scale-[0.97]'
+            }`}
+          >
+            {chip}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 type OptimisticMessage = {
   id: string;
   role: 'user' | 'assistant';
@@ -338,37 +385,54 @@ export function EventChat() {
               </p>
             </div>
           ) : (
-            allMessages.map((msg) => {
-              const isUser = msg.role === 'user';
-              return (
-                <div key={msg.id} className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
-                  <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center self-end mb-0.5 ${
-                    isUser
-                      ? 'bg-foreground text-background'
-                      : 'bg-primary/10 text-primary border border-primary/20'
-                  }`}>
-                    {isUser ? <UserIcon className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
-                  </div>
-                  <div className={`max-w-[78%] rounded-2xl px-4 py-3 ${
-                    isUser
-                      ? 'bg-foreground text-background rounded-tr-sm'
-                      : 'bg-card border border-border/50 text-foreground rounded-tl-sm shadow-sm'
-                  }`}>
-                    {msg.isPending ? (
-                      <div className="flex items-center gap-1.5 h-5">
-                        <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            (() => {
+              // Find the last non-pending assistant message index for chip display
+              const lastAssistantIdx = allMessages.reduce(
+                (acc, m, i) => (!m.isPending && m.role === 'assistant' ? i : acc),
+                -1,
+              );
+              return allMessages.map((msg, msgIdx) => {
+                const isUser = msg.role === 'user';
+                const isLastAssistant = msgIdx === lastAssistantIdx;
+                const trimmed = msg.content.trimEnd();
+                const endsWithQuestion = trimmed.endsWith('?');
+                const hasOptions = !msg.isPending && parseOptionsList(msg.content) !== null;
+                const showChips = isLastAssistant && endsWithQuestion && !hasOptions && !msg.isPending;
+                return (
+                  <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                    <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center self-end mb-0.5 ${
+                        isUser
+                          ? 'bg-foreground text-background'
+                          : 'bg-primary/10 text-primary border border-primary/20'
+                      }`}>
+                        {isUser ? <UserIcon className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
                       </div>
-                    ) : isUser ? (
-                      <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">{msg.content}</p>
-                    ) : (
-                      <MessageContent content={msg.content} onSend={(text) => handleSend(undefined, text)} />
+                      <div className={`max-w-[78%] rounded-2xl px-4 py-3 ${
+                        isUser
+                          ? 'bg-foreground text-background rounded-tr-sm'
+                          : 'bg-card border border-border/50 text-foreground rounded-tl-sm shadow-sm'
+                      }`}>
+                        {msg.isPending ? (
+                          <div className="flex items-center gap-1.5 h-5">
+                            <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                          </div>
+                        ) : isUser ? (
+                          <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">{msg.content}</p>
+                        ) : (
+                          <MessageContent content={msg.content} onSend={(text) => handleSend(undefined, text)} />
+                        )}
+                      </div>
+                    </div>
+                    {showChips && (
+                      <QuestionChips onSend={(text) => handleSend(undefined, text)} />
                     )}
                   </div>
-                </div>
-              );
-            })
+                );
+              });
+            })()
           )}
           <div ref={messagesEndRef} />
         </div>
