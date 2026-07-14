@@ -195,6 +195,34 @@ function QuestionChips({
   );
 }
 
+/* ─── Suggestions nudge ────────────────────────────────────────────────────── */
+function SuggestionsNudge({ eventId }: { eventId: string }) {
+  return (
+    <div className="my-2 flex justify-center">
+      <div
+        className="flex items-center justify-between gap-6 px-5 py-4 w-full max-w-xl"
+        style={{ border: '1px solid rgba(201,169,110,0.22)', background: 'rgba(201,169,110,0.04)' }}
+      >
+        <div className="min-w-0">
+          <p className="text-[9px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#8a7a65' }}>
+            Good moment to step back
+          </p>
+          <p className="text-xs font-light leading-snug" style={{ color: '#f5f0e8' }}>
+            You have 6 curated plan options waiting. See what A-Moment has built for you.
+          </p>
+        </div>
+        <Link
+          href={`/events/${eventId}/options`}
+          className="flex-shrink-0 text-xs font-medium tracking-wide whitespace-nowrap transition-opacity hover:opacity-70"
+          style={{ color: '#c9a96e' }}
+        >
+          See options →
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 type OptimisticMessage = {
   id: string;
   role: 'user' | 'assistant';
@@ -410,6 +438,15 @@ export function EventChat() {
                 (acc, m, i) => (!m.isPending && m.role === 'assistant' ? i : acc),
                 -1,
               );
+              // Find the index of the 6th non-pending message — nudge appears after it
+              const nudgeAfterIdx = (() => {
+                let count = 0;
+                for (let i = 0; i < allMessages.length; i++) {
+                  if (!allMessages[i].isPending) count++;
+                  if (count === 6) return i;
+                }
+                return -1;
+              })();
               return allMessages.map((msg, msgIdx) => {
                 const isUser = msg.role === 'user';
                 const isLastAssistant = msgIdx === lastAssistantIdx;
@@ -418,41 +455,46 @@ export function EventChat() {
                 const hasOptions = !msg.isPending && parseOptionsList(msg.content) !== null;
                 const showChips = isLastAssistant && endsWithQuestion && !hasOptions && !msg.isPending;
                 return (
-                  <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
-                    <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
-                      <div
-                        className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center self-end mb-0.5"
-                        style={isUser
-                          ? { background: '#f5f0e8' }
-                          : { background: 'rgba(201,169,110,0.08)', border: '1px solid rgba(201,169,110,0.2)' }}
-                      >
-                        {isUser
-                          ? <UserIcon className="w-3.5 h-3.5" style={{ color: '#0a0a0a' }} />
-                          : <Bot className="w-3.5 h-3.5" style={{ color: '#c9a96e' }} />}
+                  <React.Fragment key={msg.id}>
+                    <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                      <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
+                        <div
+                          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center self-end mb-0.5"
+                          style={isUser
+                            ? { background: '#f5f0e8' }
+                            : { background: 'rgba(201,169,110,0.08)', border: '1px solid rgba(201,169,110,0.2)' }}
+                        >
+                          {isUser
+                            ? <UserIcon className="w-3.5 h-3.5" style={{ color: '#0a0a0a' }} />
+                            : <Bot className="w-3.5 h-3.5" style={{ color: '#c9a96e' }} />}
+                        </div>
+                        <div
+                          className="max-w-[78%] px-4 py-3"
+                          style={isUser
+                            ? { background: 'rgba(245,240,232,0.95)', color: '#0a0a0a' }
+                            : { background: '#141414', border: '1px solid rgba(201,169,110,0.1)', color: '#f5f0e8' }}
+                        >
+                          {msg.isPending ? (
+                            <div className="flex items-center gap-1.5 h-5">
+                              <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                          ) : isUser ? (
+                            <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">{msg.content}</p>
+                          ) : (
+                            <MessageContent content={msg.content} onSend={(text) => handleSend(undefined, text)} />
+                          )}
+                        </div>
                       </div>
-                      <div
-                        className="max-w-[78%] px-4 py-3"
-                        style={isUser
-                          ? { background: 'rgba(245,240,232,0.95)', color: '#0a0a0a' }
-                          : { background: '#141414', border: '1px solid rgba(201,169,110,0.1)', color: '#f5f0e8' }}
-                      >
-                        {msg.isPending ? (
-                          <div className="flex items-center gap-1.5 h-5">
-                            <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                          </div>
-                        ) : isUser ? (
-                          <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">{msg.content}</p>
-                        ) : (
-                          <MessageContent content={msg.content} onSend={(text) => handleSend(undefined, text)} />
-                        )}
-                      </div>
+                      {showChips && (
+                        <QuestionChips onSend={(text) => handleSend(undefined, text)} />
+                      )}
                     </div>
-                    {showChips && (
-                      <QuestionChips onSend={(text) => handleSend(undefined, text)} />
+                    {msgIdx === nudgeAfterIdx && (
+                      <SuggestionsNudge eventId={eventId} />
                     )}
-                  </div>
+                  </React.Fragment>
                 );
               });
             })()
