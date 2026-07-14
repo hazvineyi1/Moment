@@ -25,6 +25,19 @@ function StatusPill({ label }: { label: string }) {
   );
 }
 
+/* ─── Type → venue photo map ──────────────────────────────────────────── */
+const TYPE_IMAGES: Record<string, string> = {
+  birthday:    '/images/type-birthday.jpg',
+  wedding:     '/images/type-wedding.jpg',
+  anniversary: '/images/type-anniversary.jpg',
+  graduation:  '/images/type-graduation.jpg',
+};
+
+function eventCoverImage(event: any): string | null {
+  if (event.coverImage) return event.coverImage;
+  return TYPE_IMAGES[event.type] ?? '/images/type-other.jpg';
+}
+
 /* ─── Event card ──────────────────────────────────────────────────────── */
 function EventCard({ event, index }: { event: any; index: number }) {
   const hour = new Date().getHours();
@@ -45,18 +58,11 @@ function EventCard({ event, index }: { event: any; index: number }) {
     >
       {/* Image — 70% of card */}
       <div className="relative overflow-hidden" style={{ height: '70%', minHeight: '220px' }}>
-        {event.coverImage ? (
-          <img
-            src={event.coverImage}
-            alt={event.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div
-            className="w-full h-full"
-            style={{ background: 'linear-gradient(135deg, #1a1510 0%, #0f0c08 100%)' }}
-          />
-        )}
+        <img
+          src={eventCoverImage(event)}
+          alt={event.title}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
         {/* Subtle scrim at bottom of image */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/80 via-transparent to-transparent" />
       </div>
