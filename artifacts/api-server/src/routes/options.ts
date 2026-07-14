@@ -135,7 +135,7 @@ Within these tiers, vary price points and character. Across all 6 options no two
 
 When guest personality profiles or a celebrant age are provided, use them to inform each plan's character, pacing, and activity mix. The whyThisWorks field must reference the group's specific personality mix or the celebrant's age/vibe — never be generic.
 
-Prices must be realistic and well-researched. priceRange covers accommodation + experiences per person (excluding flights). flightEstimate is a realistic round-trip economy/business estimate per person from a major hub near the event's home base, with 2–3 real carriers that fly that route. For option-6 (cruise/water), flightEstimate should cover getting to the departure port. localTransport lists the practical ways to get around at the destination with indicative prices (e.g. "Private airport transfers ~$80 each way", "Metro day pass €10", "Rental car from €45/day"). For option-6 list embarkation logistics instead.
+Prices must be realistic and well-researched. priceRange covers accommodation + experiences per person (excluding flights). flightEstimate is a realistic round-trip economy/business estimate per person from a major hub near the event's home base, with 2–3 real carriers that fly that route. For option-6 (cruise/water), flightEstimate should cover getting to the departure port. localTransport lists the practical ways to get around at the destination with indicative prices in USD (e.g. "Private airport transfers ~$80 each way", "Metro day pass ~$10", "Rental car from ~$50/day"). All prices must be expressed in USD regardless of destination. For option-6 list embarkation logistics instead.
 
 Respond with a JSON object containing an "options" array of exactly 6 objects, each with this exact shape:
 {

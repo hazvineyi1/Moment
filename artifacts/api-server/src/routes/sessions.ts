@@ -207,7 +207,7 @@ Name: ${(chosenPlan as any).name}
 Destination: ${(chosenPlan as any).destination}
 Venue: ${(chosenPlan as any).venue}
 Duration: ${(chosenPlan as any).duration}
-Price range: ${(chosenPlan as any).priceRange?.perPersonMin}–${(chosenPlan as any).priceRange?.perPersonMax} per person
+Price range: ${(chosenPlan as any).priceRange?.perPersonMin}–${(chosenPlan as any).priceRange?.perPersonMax} per person (USD)
 Highlights: ${((chosenPlan as any).highlights ?? []).join(", ")}
 Available add-ons: ${((chosenPlan as any).addOns ?? []).join(", ")}
 Vibe: ${(chosenPlan as any).vibe ?? ""}

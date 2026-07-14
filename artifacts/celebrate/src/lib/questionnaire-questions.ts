@@ -63,7 +63,7 @@ export const QUESTIONS: Question[] = [
     key: 'budget',
     label: 'Your budget comfort zone per person?',
     hint: 'Rough guide, no commitment.',
-    options: ['Under £100', '£100–£300', '£300–£600', '£600–£1,200', 'No limit'],
+    options: ['Under $100', '$100–$300', '$300–$600', '$600–$1,200', 'No limit'],
     multi: false,
   },
   {
