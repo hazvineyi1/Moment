@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, Link, useLocation } from 'wouter';
+import { useAuth } from '@clerk/react';
 import { useListGuests, useAddGuest, useDeleteGuest, useUpdateGuest } from '@workspace/api-client-react';
 import {
   Users, Plus, ChevronLeft, Loader2, Trash2, Check, X, Phone, Mail, AlertCircle,
-  ChevronDown, ChevronUp, Copy, Link2, ChevronRight,
+  ChevronDown, ChevronUp, Copy, Link2, ChevronRight, Sparkles, RefreshCw,
 } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -554,6 +555,174 @@ function GroupAnalysis({ guests, eventId }: { guests: GuestShape[]; eventId: num
   );
 }
 
+/* ─── Guest pairings panel ──────────────────────────────────────────── */
+interface PairingGuest { id: number; name: string }
+interface Pair { guest1: PairingGuest; guest2: PairingGuest; compatibilityScore: number; reason: string }
+interface SeatingGroup { tableName: string; guests: PairingGuest[]; vibe: string }
+interface PairingsData {
+  roommates: Pair[];
+  travelBuddies: Pair[];
+  seatingGroups: SeatingGroup[];
+  reasoning: string;
+}
+
+function ScoreDots({ score }: { score: number }) {
+  const filled = Math.round((score / 100) * 5);
+  return (
+    <span className="flex gap-0.5">
+      {[1,2,3,4,5].map(i => (
+        <span key={i} style={{
+          width: 5, height: 5, borderRadius: '50%',
+          background: i <= filled ? '#c9a96e' : 'rgba(201,169,110,0.18)',
+          display: 'inline-block',
+        }} />
+      ))}
+    </span>
+  );
+}
+
+function PairRow({ pair }: { pair: Pair }) {
+  return (
+    <div className="py-3.5" style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-sm" style={{ color: '#f5f0e8' }}>
+          {pair.guest1.name} <span style={{ color: '#8a7a65' }}>+</span> {pair.guest2.name}
+        </span>
+        <ScoreDots score={pair.compatibilityScore} />
+      </div>
+      <p className="text-xs leading-relaxed" style={{ color: '#8a7a65' }}>{pair.reason}</p>
+    </div>
+  );
+}
+
+function GuestPairings({ guests, eventId }: { guests: GuestShape[]; eventId: number }) {
+  const { getToken } = useAuth();
+  const [data, setData] = useState<PairingsData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const hasPersonality = guests.some(g => !!g.personality);
+
+  const generate = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const token = await getToken();
+      const res = await fetch(`${BASE}/api/events/${eventId}/guests/pairings`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error('Could not generate pairings');
+      setData(await res.json());
+    } catch (e: any) {
+      setError(e.message ?? 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const eyebrow: React.CSSProperties = {
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#8a7a65',
+  };
+
+  return (
+    <div className="mb-6" style={{ border: '1px solid rgba(201,169,110,0.18)', background: 'rgba(201,169,110,0.02)' }}>
+      {/* Header */}
+      <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(201,169,110,0.1)' }}>
+        <div>
+          <p style={eyebrow}>Psychology &amp; pairings</p>
+          {!data && (
+            <p className="text-xs mt-1 font-light" style={{ color: '#8a7a65' }}>
+              AI-matched roommates, travel buddies &amp; seating groups based on personality.
+            </p>
+          )}
+          {data?.reasoning && (
+            <p className="text-xs mt-1 italic font-light" style={{ color: '#8a7a65' }}>{data.reasoning}</p>
+          )}
+        </div>
+        <button
+          onClick={generate}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 text-xs font-medium rounded transition-colors flex-shrink-0"
+          style={{
+            border: '1px solid rgba(201,169,110,0.3)',
+            color: loading ? '#8a7a65' : '#c9a96e',
+            background: 'transparent',
+          }}
+        >
+          {loading
+            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            : data
+            ? <RefreshCw className="w-3.5 h-3.5" />
+            : <Sparkles className="w-3.5 h-3.5" />}
+          {loading ? 'Analysing…' : data ? 'Regenerate' : 'Analyse group'}
+        </button>
+      </div>
+
+      {!hasPersonality && !data && (
+        <div className="px-5 py-4">
+          <p className="text-xs italic" style={{ color: '#8a7a65' }}>
+            Add personality tags to guests first — pairings are more accurate with at least a few archetypes set.
+          </p>
+        </div>
+      )}
+
+      {error && (
+        <div className="px-5 py-4">
+          <p className="text-xs" style={{ color: '#ef4444' }}>{error}</p>
+        </div>
+      )}
+
+      {data && (
+        <div className="divide-y" style={{ borderColor: 'rgba(201,169,110,0.08)' }}>
+          {/* Roommates */}
+          {data.roommates.length > 0 && (
+            <div className="px-5 py-4">
+              <p style={{ ...eyebrow, marginBottom: 12 }}>🛏 Roommates</p>
+              {data.roommates.map((p, i) => <PairRow key={i} pair={p} />)}
+            </div>
+          )}
+
+          {/* Travel buddies */}
+          {data.travelBuddies.length > 0 && (
+            <div className="px-5 py-4">
+              <p style={{ ...eyebrow, marginBottom: 12 }}>✈️ Travel buddies</p>
+              {data.travelBuddies.map((p, i) => <PairRow key={i} pair={p} />)}
+            </div>
+          )}
+
+          {/* Seating groups */}
+          {data.seatingGroups.length > 0 && (
+            <div className="px-5 py-4">
+              <p style={{ ...eyebrow, marginBottom: 12 }}>🍽 Seating groups</p>
+              <div className="space-y-3">
+                {data.seatingGroups.map((g, i) => (
+                  <div key={i} className="p-4" style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.03)' }}>
+                    <div className="flex items-start justify-between mb-2">
+                      <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>{g.tableName}</p>
+                      <span className="text-xs italic" style={{ color: '#8a7a65' }}>{g.vibe}</span>
+                    </div>
+                    <p className="text-xs" style={{ color: '#8a7a65' }}>
+                      {g.guests.map(gs => gs.name).join(' · ')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {data.roommates.length === 0 && data.travelBuddies.length === 0 && data.seatingGroups.length === 0 && (
+            <div className="px-5 py-4">
+              <p className="text-xs italic" style={{ color: '#8a7a65' }}>
+                {guests.length < 2 ? 'Add at least 2 guests to generate pairings.' : 'No pairings generated — try adding personality tags to your guests.'}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main page ─────────────────────────────────────────────────────── */
 export function EventGuests() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -620,6 +789,7 @@ export function EventGuests() {
       ) : (
         <>
           <GroupAnalysis guests={guests} eventId={id} />
+          <GuestPairings guests={guests} eventId={id} />
           <div className="space-y-3">
             {guests.map((guest) => (
               <GuestCard
