@@ -41,6 +41,23 @@ function parseCelebrantAnswers(description: string | null | undefined): Record<s
   try { return JSON.parse(raw); } catch { return null; }
 }
 
+function stripCelebrantAnswers(description: string | null | undefined): string {
+  const desc = description ?? '';
+  const needle = '\n' + CELEBRANT_MARKER;
+  const idx = desc.indexOf(needle);
+  if (idx !== -1) {
+    const lineEnd = desc.indexOf('\n', idx + needle.length);
+    return (lineEnd !== -1 ? desc.slice(0, idx) + desc.slice(lineEnd) : desc.slice(0, idx)).trimEnd();
+  }
+  // marker without preceding newline (edge case)
+  const bareIdx = desc.indexOf(CELEBRANT_MARKER);
+  if (bareIdx !== -1) {
+    const lineEnd = desc.indexOf('\n', bareIdx + CELEBRANT_MARKER.length);
+    return (lineEnd !== -1 ? desc.slice(0, bareIdx) + desc.slice(lineEnd) : desc.slice(0, bareIdx)).trimEnd();
+  }
+  return desc;
+}
+
 function extractHostContext(description: string | null | undefined): string {
   if (!description) return '';
   const ctxIdx = description.indexOf(CTX_MARKER);
@@ -581,10 +598,13 @@ function CostEstimateWidget({ eventId }: { eventId: number }) {
 function CelebrantAnsweredCard({
   celebrantName,
   answers,
-}: { celebrantName: string; answers: Record<string, string> }) {
+  onClear,
+  clearing,
+}: { celebrantName: string; answers: Record<string, string>; onClear: () => void; clearing: boolean }) {
   const name = celebrantName || 'The celebrant';
   const questionMap = Object.fromEntries(QUESTIONS.map(q => [q.key, q.label]));
   const highlights = Object.entries(answers).filter(([, v]) => v && String(v).trim()).slice(0, 4);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   return (
     <div className="rounded-2xl mb-6 overflow-hidden" style={{ border: '1px solid rgba(201,169,110,0.3)', background: 'rgba(201,169,110,0.05)' }}>
@@ -592,11 +612,43 @@ function CelebrantAnsweredCard({
         <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: '#c9a96e' }} />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>
-            {name} has answered — A-Moment has been updated
+            {name} has answered. A-Moment has been updated.
           </p>
           <p className="text-xs mt-0.5" style={{ color: '#8a7a65' }}>
-            Their preferences are now shaping every recommendation
+            Their preferences are now shaping every recommendation.
           </p>
+        </div>
+        <div className="flex-shrink-0 flex items-center gap-2">
+          {confirmClear ? (
+            <>
+              <button
+                onClick={() => setConfirmClear(false)}
+                disabled={clearing}
+                className="px-2.5 py-1 text-xs rounded border disabled:opacity-40"
+                style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onClear}
+                disabled={clearing}
+                className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40"
+                style={{ border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
+              >
+                {clearing ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                Clear
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setConfirmClear(true)}
+              className="px-2.5 py-1 text-xs rounded transition-colors"
+              style={{ border: '1px solid rgba(201,169,110,0.2)', color: '#8a7a65' }}
+              title="Clear answers and re-send questionnaire"
+            >
+              Clear answers
+            </button>
+          )}
         </div>
       </div>
       {highlights.length > 0 && (
@@ -886,6 +938,7 @@ export function EventHub() {
   const [revealError, setRevealError] = useState('');
   const [revealCopied, setRevealCopied] = useState(false);
   const [copiedInvite, setCopiedInvite] = useState(false);
+  const [clearingAnswers, setClearingAnswers] = useState(false);
 
   const generateRevealScript = async () => {
     setRevealLoading(true);
@@ -1026,7 +1079,21 @@ export function EventHub() {
         if (celebrantAnswered) {
           const answers = parseCelebrantAnswers(event.description);
           if (answers && Object.keys(answers).length > 0) {
-            return <CelebrantAnsweredCard celebrantName={celebrantName} answers={answers} />;
+            const handleClear = () => {
+              setClearingAnswers(true);
+              updateEvent.mutate(
+                { eventId: id, data: { description: stripCelebrantAnswers(event.description) } },
+                { onSuccess: () => setClearingAnswers(false), onError: () => setClearingAnswers(false) }
+              );
+            };
+            return (
+              <CelebrantAnsweredCard
+                celebrantName={celebrantName}
+                answers={answers}
+                onClear={handleClear}
+                clearing={clearingAnswers}
+              />
+            );
           }
           return null;
         }
