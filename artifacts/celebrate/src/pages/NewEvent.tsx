@@ -323,7 +323,11 @@ export function NewEvent() {
         />
       </div>
 
-      <div className="flex-1 flex flex-col mx-auto px-8 md:px-16 py-8 md:py-12 max-w-5xl w-full">
+      <div className="flex-1 flex items-start justify-center px-4 sm:px-8 py-8 md:py-14 w-full">
+        <div
+          className="w-full max-w-3xl p-6 sm:p-10"
+          style={{ border: '1px solid rgba(201,169,110,0.14)', background: 'rgba(201,169,110,0.02)' }}
+        >
 
         {/* ══════════ STEP 0: Who & What ══════════════════════════════ */}
         {step === 0 && (
@@ -773,6 +777,7 @@ export function NewEvent() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

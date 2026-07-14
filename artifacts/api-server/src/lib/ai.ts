@@ -7,7 +7,7 @@ const openai = new OpenAI({
 
 // Chat/JSON model. Works with OpenAI ("gpt-4o-mini") or, via Anthropic's
 // OpenAI-compatible endpoint, a Claude model ("claude-sonnet-4-6").
-export const CHAT_MODEL = process.env.CHAT_MODEL || "gpt-4o-mini";
+export const CHAT_MODEL = process.env.CHAT_MODEL || "claude-sonnet-5";
 
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
@@ -60,12 +60,19 @@ export async function generateJSON<T>(prompt: string, systemPrompt: string): Pro
         ],
         max_tokens: 2048,
         temperature: 0.8,
-        response_format: { type: "json_object" },
       }),
       AI_TIMEOUT_MS,
       "generateJSON"
     );
-    const text = response.choices[0]?.message?.content ?? "{}";
+    const raw = response.choices[0]?.message?.content ?? "{}";
+    // Tolerate models that wrap JSON in ```json ... ``` fences or add stray prose.
+    let text = raw.trim()
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/,"")
+      .trim();
+    const firstBrace = text.indexOf("{");
+    const lastBrace = text.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace !== -1) text = text.slice(firstBrace, lastBrace + 1);
     return JSON.parse(text) as T;
   } catch (err: any) {
     console.error("generateJSON error:", err?.message ?? err);
