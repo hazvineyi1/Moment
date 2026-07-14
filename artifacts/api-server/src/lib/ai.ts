@@ -37,7 +37,6 @@ export async function chatWithAI(messages: ChatMessage[], systemPrompt?: string)
         model: CHAT_MODEL,
         messages: msgs,
         max_tokens: 1800,
-        temperature: 0.9,
       }),
       AI_TIMEOUT_MS,
       "chatWithAI"
@@ -59,7 +58,6 @@ export async function generateJSON<T>(prompt: string, systemPrompt: string): Pro
           { role: "user", content: prompt },
         ],
         max_tokens: 2048,
-        temperature: 0.8,
       }),
       AI_TIMEOUT_MS,
       "generateJSON"
