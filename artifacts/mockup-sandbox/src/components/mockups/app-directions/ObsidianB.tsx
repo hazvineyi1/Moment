@@ -102,7 +102,7 @@ export default function ObsidianB() {
           >
             <img
               className="ob-hero-img absolute inset-0 w-full h-full object-cover"
-              src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&q=80&w=1200"
+              src="/__mockup/images/venue-wedding-amalfi.jpg"
               alt="Wedding in Amalfi"
             />
             {/* Richer scrim for large card */}
@@ -153,7 +153,7 @@ export default function ObsidianB() {
             >
               <img
                 className="ob-sm-img absolute inset-0 w-full h-full object-cover"
-                src="https://images.unsplash.com/photo-1542314831-c5a42a1f8b8c?auto=format&fit=crop&q=80&w=800"
+                src="/__mockup/images/venue-birthday-london.jpg"
                 alt="Birthday in London"
               />
               <div
@@ -183,7 +183,7 @@ export default function ObsidianB() {
             >
               <img
                 className="ob-sm-img absolute inset-0 w-full h-full object-cover"
-                src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=800"
+                src="/__mockup/images/venue-anniversary-tokyo.jpg"
                 alt="Anniversary in Tokyo"
                 style={{ filter: 'grayscale(70%)' }}
               />
