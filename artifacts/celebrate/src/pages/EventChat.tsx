@@ -1,7 +1,144 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'wouter';
 import { useListSessions, useCreateSession, useListMessages, useSendMessage, useGetEvent } from '@workspace/api-client-react';
-import { Send, Sparkles, ChevronLeft, User as UserIcon, RefreshCw } from 'lucide-react';
+import { Send, Sparkles, ChevronLeft, User as UserIcon, RefreshCw, Check } from 'lucide-react';
+
+// ─── Option card parser ────────────────────────────────────────────────────────
+interface ParsedOption {
+  number: number;
+  title: string;
+  body: string;
+}
+interface ParsedMessage {
+  preamble: string;
+  options: ParsedOption[];
+  postamble: string;
+}
+
+/**
+ * Detects messages that contain a numbered list of **Bold:** description items
+ * (at least 2 items). Returns null if the message isn't an options list.
+ */
+function parseOptionsList(content: string): ParsedMessage | null {
+  // Match lines like: 1. **Title:** body  or  1. **Title** body
+  const itemRe = /^(\d+)\.\s+\*\*(.+?)\*\*[:\s]+(.+)/;
+  const lines = content.split('\n');
+
+  const optionLines: Array<{ lineIdx: number; option: ParsedOption }> = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(itemRe);
+    if (m) {
+      optionLines.push({
+        lineIdx: i,
+        option: { number: parseInt(m[1], 10), title: m[2].trim(), body: m[3].trim() },
+      });
+    }
+  }
+
+  if (optionLines.length < 2) return null;
+
+  const firstIdx = optionLines[0].lineIdx;
+  const lastIdx = optionLines[optionLines.length - 1].lineIdx;
+
+  const preamble = lines.slice(0, firstIdx).join('\n').trim();
+  const postamble = lines.slice(lastIdx + 1).join('\n').trim();
+
+  return { preamble, options: optionLines.map(o => o.option), postamble };
+}
+
+/** Renders bold (**text**) within a string as <strong> */
+function InlineMarkdown({ text }: { text: string }) {
+  const parts = text.split(/(\*\*.+?\*\*)/g);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith('**') && p.endsWith('**')
+          ? <strong key={i}>{p.slice(2, -2)}</strong>
+          : <span key={i}>{p}</span>
+      )}
+    </>
+  );
+}
+
+function OptionsCards({
+  parsed,
+  onChoose,
+}: {
+  parsed: ParsedMessage;
+  onChoose: (title: string) => void;
+}) {
+  const [chosen, setChosen] = useState<number | null>(null);
+
+  const handleChoose = (opt: ParsedOption) => {
+    if (chosen !== null) return;
+    setChosen(opt.number);
+    onChoose(opt.title);
+  };
+
+  return (
+    <div className="space-y-3 w-full">
+      {parsed.preamble && (
+        <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">{parsed.preamble}</p>
+      )}
+      <div className="flex flex-col gap-2 mt-1">
+        {parsed.options.map(opt => {
+          const isChosen = chosen === opt.number;
+          const isDimmed = chosen !== null && !isChosen;
+          return (
+            <button
+              key={opt.number}
+              type="button"
+              onClick={() => handleChoose(opt)}
+              disabled={chosen !== null}
+              className={`text-left w-full rounded-2xl border px-4 py-3.5 transition-all duration-200 ${
+                isChosen
+                  ? 'border-primary bg-primary/8 shadow-sm shadow-primary/10'
+                  : isDimmed
+                  ? 'border-border/40 bg-muted/30 opacity-50 cursor-default'
+                  : 'border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 active:scale-[0.99]'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <span className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border text-xs font-semibold flex items-center justify-center transition-colors ${
+                  isChosen ? 'bg-primary border-primary text-primary-foreground' : 'border-border text-muted-foreground'
+                }`}>
+                  {isChosen ? <Check className="w-3 h-3" /> : opt.number}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-semibold leading-snug mb-0.5 ${isChosen ? 'text-primary' : 'text-foreground'}`}>
+                    {opt.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{opt.body}</p>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      {parsed.postamble && (
+        <p className="text-sm text-muted-foreground leading-relaxed mt-1 whitespace-pre-wrap italic">{parsed.postamble}</p>
+      )}
+    </div>
+  );
+}
+
+function MessageContent({
+  content,
+  onSend,
+}: {
+  content: string;
+  onSend: (text: string) => void;
+}) {
+  const parsed = parseOptionsList(content);
+  if (parsed) {
+    return <OptionsCards parsed={parsed} onChoose={onSend} />;
+  }
+  return (
+    <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">
+      <InlineMarkdown text={content} />
+    </p>
+  );
+}
 
 type OptimisticMessage = {
   id: string;
@@ -223,8 +360,10 @@ export function EventChat() {
                         <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                         <div className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
-                    ) : (
+                    ) : isUser ? (
                       <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">{msg.content}</p>
+                    ) : (
+                      <MessageContent content={msg.content} onSend={(text) => handleSend(undefined, text)} />
                     )}
                   </div>
                 </div>
