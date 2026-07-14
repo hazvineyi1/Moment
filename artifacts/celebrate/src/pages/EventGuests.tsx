@@ -4,7 +4,7 @@ import { useAuth } from '@clerk/react';
 import { useListGuests, useAddGuest, useDeleteGuest, useUpdateGuest } from '@workspace/api-client-react';
 import {
   Users, Plus, ChevronLeft, Loader2, Trash2, Check, X, Phone, Mail, AlertCircle,
-  ChevronDown, ChevronUp, Copy, Link2, ChevronRight, Sparkles, RefreshCw,
+  ChevronDown, ChevronUp, Copy, Link2, ChevronRight, Sparkles, RefreshCw, Send,
 } from 'lucide-react';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -415,6 +415,171 @@ function AddGuestDrawer({
   );
 }
 
+/* ─── Send-to-guests panel ──────────────────────────────────────────── */
+function GuestLinksSendPanel({ guests }: { guests: GuestShape[] }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState<number | null>(null);
+
+  const withLinks = guests.filter(g => g.questionnaireToken);
+  const completedCount = withLinks.filter(g => {
+    try { return !!(g.personality && JSON.parse(g.personality)?.selfProfile); } catch { return false; }
+  }).length;
+  const pendingCount = withLinks.length - completedCount;
+
+  if (withLinks.length === 0) return null;
+
+  const getUrl = (token: string) =>
+    `${window.location.origin}${BASE}/gq/${token}`;
+
+  const handleCopy = async (guestId: number, token: string) => {
+    await navigator.clipboard.writeText(getUrl(token));
+    setCopied(guestId);
+    setTimeout(() => setCopied(null), 2200);
+  };
+
+  const eyebrow: React.CSSProperties = {
+    fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#a89880',
+    fontFamily: "'Outfit', sans-serif",
+  };
+
+  return (
+    <div className="mb-6" style={{ border: '1px solid rgba(201,169,110,0.22)', background: 'rgba(201,169,110,0.03)' }}>
+      {/* Toggle header */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full px-5 py-4 flex items-center gap-3 text-left"
+        style={{ borderBottom: open ? '1px solid rgba(201,169,110,0.12)' : undefined }}
+      >
+        <Send className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#c9a96e' }} />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium" style={{ color: '#f5f0e8' }}>Send to guests</p>
+          <p className="text-xs mt-0.5" style={{ color: '#a89880' }}>
+            {pendingCount > 0
+              ? `${pendingCount} profile${pendingCount !== 1 ? 's' : ''} still pending · send each guest their personal link`
+              : `All ${completedCount} guest profiles complete`}
+          </p>
+        </div>
+        <span className="text-[11px] mr-1.5" style={{ color: '#a89880' }}>
+          {completedCount}/{withLinks.length}
+        </span>
+        <ChevronDown
+          className="w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200"
+          style={{ color: '#a89880', transform: open ? 'rotate(180deg)' : 'none' }}
+        />
+      </button>
+
+      {/* Guest rows */}
+      {open && (
+        <>
+          {/* Column headers */}
+          <div
+            className="px-5 py-2 grid gap-3 items-center"
+            style={{
+              gridTemplateColumns: '2rem 1fr 4.5rem 5rem',
+              borderBottom: '1px solid rgba(201,169,110,0.08)',
+              background: 'rgba(201,169,110,0.02)',
+            }}
+          >
+            <span />
+            <span style={eyebrow}>Guest</span>
+            <span style={{ ...eyebrow, textAlign: 'center' }}>Status</span>
+            <span style={{ ...eyebrow, textAlign: 'right' }}>Link</span>
+          </div>
+
+          {withLinks.map((guest) => {
+            const initials = guest.name
+              .split(' ')
+              .slice(0, 2)
+              .map(w => w[0])
+              .join('')
+              .toUpperCase();
+
+            let hasProfile = false;
+            try {
+              hasProfile = !!(guest.personality && JSON.parse(guest.personality)?.selfProfile);
+            } catch {}
+
+            const isCopied = copied === guest.id;
+
+            return (
+              <div
+                key={guest.id}
+                className="px-5 py-3 grid gap-3 items-center"
+                style={{
+                  gridTemplateColumns: '2rem 1fr 4.5rem 5rem',
+                  borderBottom: '1px solid rgba(201,169,110,0.06)',
+                }}
+              >
+                {/* Avatar */}
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+                  style={{ background: 'rgba(201,169,110,0.1)', color: '#c9a96e' }}
+                >
+                  {initials}
+                </div>
+
+                {/* Name + truncated URL */}
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate" style={{ color: '#f5f0e8' }}>
+                    {guest.name}
+                  </p>
+                  <p className="text-[11px] font-mono truncate mt-0.5" style={{ color: '#a89880' }}>
+                    /gq/{guest.questionnaireToken?.slice(0, 10)}…
+                  </p>
+                </div>
+
+                {/* Status badge */}
+                <div className="flex justify-center">
+                  {hasProfile ? (
+                    <span
+                      className="text-[10px] tracking-[0.14em] uppercase px-2 py-0.5"
+                      style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
+                    >
+                      Done
+                    </span>
+                  ) : (
+                    <span
+                      className="text-[10px] tracking-[0.14em] uppercase px-2 py-0.5"
+                      style={{ border: '1px solid rgba(201,169,110,0.12)', color: '#a89880' }}
+                    >
+                      Pending
+                    </span>
+                  )}
+                </div>
+
+                {/* Copy button */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => handleCopy(guest.id, guest.questionnaireToken!)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all"
+                    style={{
+                      border: `1px solid ${isCopied ? 'rgba(201,169,110,0.4)' : 'rgba(201,169,110,0.18)'}`,
+                      color: isCopied ? '#c9a96e' : '#a89880',
+                      background: isCopied ? 'rgba(201,169,110,0.07)' : 'transparent',
+                    }}
+                  >
+                    {isCopied
+                      ? <><Check className="w-3 h-3" /> Copied</>
+                      : <><Copy className="w-3 h-3" /> Copy</>}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Footer note */}
+          <div className="px-5 py-3" style={{ borderTop: '1px solid rgba(201,169,110,0.06)' }}>
+            <p className="text-[11px] leading-relaxed" style={{ color: '#a89880' }}>
+              Each link is unique to that guest. Once they fill in their personality, must-haves, and any dealbreakers,
+              A-Moment will factor them into seating, pairings, and activity design.
+            </p>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ─── Group Analysis ────────────────────────────────────────────────── */
 type GuestShape = {
   id: number;
@@ -789,6 +954,7 @@ export function EventGuests() {
       ) : (
         <>
           <GroupAnalysis guests={guests} eventId={id} />
+          <GuestLinksSendPanel guests={guests} />
           <GuestPairings guests={guests} eventId={id} />
           <div className="space-y-3">
             {guests.map((guest) => (
