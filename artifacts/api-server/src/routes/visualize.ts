@@ -1,15 +1,14 @@
 import { Router, type IRouter, type Request } from "express";
 import multer from "multer";
-import { eq, and } from "drizzle-orm";
-import { db, eventsTable } from "@workspace/db";
-import { openai } from "../lib/ai";
+import { openai, withTimeout } from "../lib/ai";
 import { requireAuth } from "../middlewares/requireAuth";
+import { fetchOwnedEvent } from "../lib/eventHelpers";
 
 const router: IRouter = Router();
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith("image/")) cb(null, true);
     else cb(new Error("Only image files are accepted"));
@@ -17,15 +16,6 @@ const upload = multer({
 });
 
 const VISUALIZE_TIMEOUT_MS = 120_000;
-
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms)
-    ),
-  ]);
-}
 
 /** Use GPT-4o-mini vision to describe the people in the uploaded photo. */
 async function describePeople(base64: string, mimeType: string): Promise<string> {
@@ -76,10 +66,7 @@ router.post(
 
     if (!req.file) { res.status(400).json({ error: "Photo is required" }); return; }
 
-    const userId = (req as any).userId as string;
-    const [event] = await db.select().from(eventsTable).where(
-      and(eq(eventsTable.id, eventId), eq(eventsTable.clerkUserId, userId))
-    );
+    const event = await fetchOwnedEvent((req as any).userId, eventId);
     if (!event) { res.status(404).json({ error: "Event not found" }); return; }
 
     const { optionName = "a curated experience", destination = "a beautiful destination", tagline = "", vibe = "" } = req.body ?? {};
