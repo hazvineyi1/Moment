@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'wouter';
 import { useGetDashboard } from '@workspace/api-client-react';
 import { useUser } from '@clerk/react';
-import { Plus, Calendar, Users, ArrowRight, Sparkles, MapPin } from 'lucide-react';
+import { Plus, Calendar, Users, ArrowRight, Loader2, MapPin } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
 export function Home() {
@@ -14,7 +14,7 @@ export function Home() {
       <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <div className="relative">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-primary" />
+            <Loader2 className="w-6 h-6 text-primary animate-spin" />
           </div>
           <div className="absolute -inset-1 rounded-full border-2 border-primary/20 animate-ping" />
         </div>
@@ -55,7 +55,7 @@ export function Home() {
           <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-7 h-7 text-primary" />
+              <Calendar className="w-7 h-7 text-primary" />
             </div>
             <div className="flex-1">
               <h2 className="font-serif text-xl font-medium mb-1">Ready when you are.</h2>
@@ -67,7 +67,6 @@ export function Home() {
               href="/events/new"
               className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium text-sm hover:bg-primary/90 transition-colors flex-shrink-0 whitespace-nowrap"
             >
-              <Sparkles className="w-4 h-4" />
               Start planning
             </Link>
           </div>
@@ -168,7 +167,7 @@ export function Home() {
           <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
 
           <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl flex items-center justify-center mb-8 relative z-10">
-            <Sparkles className="w-10 h-10 text-primary" />
+            <Calendar className="w-10 h-10 text-primary" />
           </div>
 
           <h2 className="text-3xl font-serif font-medium mb-4 relative z-10">Your first celebration awaits.</h2>
@@ -190,7 +189,6 @@ export function Home() {
             href="/events/new"
             className="inline-flex items-center gap-2.5 bg-primary text-primary-foreground px-10 py-4 rounded-full font-medium text-base hover:bg-primary/90 transition-colors duration-300 relative z-10 hover:shadow-lg hover:shadow-primary/20"
           >
-            <Sparkles className="w-5 h-5" />
             Start planning
           </Link>
         </div>

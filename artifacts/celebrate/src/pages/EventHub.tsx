@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'wouter';
 import { useAuth } from '@clerk/react';
 import { useGetEvent, useGetEventSummary, useListGuests, useUpdateEvent, useDeleteEvent } from '@workspace/api-client-react';
 import {
-  MessageSquare, Users, Sparkles, MapPin, Calendar as CalendarIcon,
+  MessageSquare, Users, MapPin, Calendar as CalendarIcon,
   CheckCircle2, ChevronRight, Loader2, DollarSign, TrendingUp, RefreshCw,
   Pencil, Check, X, Link, Copy, Wand2, ScrollText, AlertCircle, ClipboardCopy,
   ClipboardList, ChevronDown,
@@ -487,7 +487,7 @@ function CostEstimateWidget({ eventId }: { eventId: number }) {
             onClick={fetch_}
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            <Sparkles className="w-3.5 h-3.5" /> Estimate costs
+            Estimate costs
           </button>
         </div>
       )}
@@ -851,7 +851,7 @@ export function EventHub() {
               className="w-full mt-6 flex items-center justify-between p-4 bg-foreground text-background rounded-xl hover:bg-primary transition-colors group"
             >
               <span className="font-medium flex items-center gap-2">
-                <Sparkles className="w-5 h-5" /> Ask A-Moment what to do next
+                <MessageSquare className="w-5 h-5" /> Ask A-Moment what to do next
               </span>
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -1018,7 +1018,7 @@ export function EventHub() {
           <div className="space-y-2">
             {[
               { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with A-Moment', color: 'bg-primary/10 text-primary', href: `plan` },
-              { icon: <Sparkles className="w-5 h-5" />, label: 'View / change plan options', color: 'bg-accent/20 text-foreground', href: `options` },
+              { icon: <CalendarIcon className="w-5 h-5" />, label: 'View / change plan options', color: 'bg-accent/20 text-foreground', href: `options` },
               { icon: <Users className="w-5 h-5" />, label: 'Manage Guests', color: 'bg-muted text-muted-foreground', href: `guests` },
             ].map((item) => (
               <button

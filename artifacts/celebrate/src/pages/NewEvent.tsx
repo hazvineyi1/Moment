@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useCreateEvent } from '@workspace/api-client-react';
-import { ArrowRight, ArrowLeft, Loader2, MapPin, Calendar, Users, Sparkles, Check } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2, MapPin, Calendar, Users, Check } from 'lucide-react';
 
 /* ─── Data ──────────────────────────────────────────────────────────── */
 const OCCASIONS = [
@@ -630,7 +630,7 @@ export function NewEvent() {
                 {createEvent.isPending ? (
                   <><Loader2 className="w-5 h-5 animate-spin" /> {planningFor === 'someone' ? 'Creating...' : 'Building your options...'}</>
                 ) : (
-                  <><Sparkles className="w-5 h-5" /> {planningFor === 'someone' ? 'Create event' : 'Show me my options'}</>
+                  <>{planningFor === 'someone' ? 'Create event' : 'Show me my options'}</>
                 )}
               </button>
               {createEvent.isError && (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, Check, AlertCircle, Sparkles } from 'lucide-react';
+import { Loader2, Check, AlertCircle } from 'lucide-react';
 import { QUESTIONS } from '../lib/questionnaire-questions';
 import type { Question } from '../lib/questionnaire-questions';
 
@@ -114,7 +114,7 @@ function IntroScreen({ eventInfo, onStart }: { eventInfo: EventInfo; onStart: ()
 
       <div className="relative z-10 flex flex-col items-center gap-4 max-w-xs">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-          <Sparkles className="w-8 h-8 text-primary" />
+          <Check className="w-8 h-8 text-primary" />
         </div>
 
         <div className="hero-text">
@@ -272,7 +272,6 @@ export function QuestionnairePage({ token }: { token: string }) {
       <div className="min-h-[100dvh] flex flex-col bg-background">
         {/* Header */}
         <div className="px-6 pt-8 pb-4 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
           <span className="font-serif text-base font-medium text-foreground">A-Moment</span>
         </div>
 

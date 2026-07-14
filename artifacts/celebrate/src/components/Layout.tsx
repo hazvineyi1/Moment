@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'wouter';
-import { Home, CalendarHeart, Sparkles, LogOut, User } from 'lucide-react';
+import { Home, CalendarHeart, LogOut, User } from 'lucide-react';
 import { useClerk, useUser } from '@clerk/react';
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -20,7 +20,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-40 w-full glass-panel border-b border-border/40">
           <div className="container mx-auto px-4 h-16 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <Sparkles className="w-5 h-5 text-primary group-hover:rotate-12 transition-transform duration-500" />
               <span className="font-serif text-2xl font-bold tracking-tight text-foreground">A-Moment</span>
             </Link>
 

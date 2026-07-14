@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useGetEvent, useUpdateEvent } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
-import { ArrowRight, ChevronDown, ChevronUp, Sparkles, MapPin, Clock, Users, RefreshCw, Plane, Bus } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronUp, Loader2, MapPin, Clock, Users, RefreshCw, Plane, Bus } from 'lucide-react';
 
 interface PlanOption {
   id: string;
@@ -201,7 +201,7 @@ function LoadingState() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-8 relative">
-        <Sparkles className="w-7 h-7 text-primary" />
+        <Loader2 className="w-7 h-7 text-primary animate-spin" />
         <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
       </div>
       <h2 className="text-2xl md:text-3xl font-serif font-medium mb-3">A-Moment is thinking.</h2>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'wouter';
 import { useListSessions, useCreateSession, useListMessages, useSendMessage, useGetEvent } from '@workspace/api-client-react';
-import { Send, Sparkles, ChevronLeft, User as UserIcon, RefreshCw, Check } from 'lucide-react';
+import { Send, Bot, ChevronLeft, User as UserIcon, RefreshCw, Check } from 'lucide-react';
 
 // ─── Option card parser ────────────────────────────────────────────────────────
 interface ParsedOption {
@@ -264,7 +264,7 @@ export function EventChat() {
       <div className="flex-1 flex flex-col items-center justify-center min-h-[100dvh] bg-background gap-6">
         <div className="relative">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <Sparkles className="w-8 h-8 text-primary" />
+            <Bot className="w-8 h-8 text-primary" />
           </div>
           <div className="absolute -inset-1 rounded-full border-2 border-primary/20 animate-ping" />
         </div>
@@ -330,7 +330,7 @@ export function EventChat() {
           ) : allMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-primary" />
+                <Bot className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-serif text-2xl font-medium">Let's make this unforgettable</h3>
               <p className="text-muted-foreground max-w-md">
@@ -347,7 +347,7 @@ export function EventChat() {
                       ? 'bg-foreground text-background'
                       : 'bg-primary/10 text-primary border border-primary/20'
                   }`}>
-                    {isUser ? <UserIcon className="w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    {isUser ? <UserIcon className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
                   </div>
                   <div className={`max-w-[78%] rounded-2xl px-4 py-3 ${
                     isUser
