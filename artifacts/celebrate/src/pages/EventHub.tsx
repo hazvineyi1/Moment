@@ -1523,7 +1523,7 @@ export function EventHub() {
                   {!confirmReset ? (
                     <button
                       onClick={() => { setConfirmReset(true); setConfirmDelete(false); }}
-                      className="flex-shrink-0 px-3 py-1.5 text-xs font-medium border border-border rounded-lg hover:border-destructive/50 hover:text-destructive transition-colors"
+                      className="flex-shrink-0 px-3 py-1.5 text-xs font-medium border border-border text-foreground rounded-lg hover:border-destructive/50 hover:text-destructive transition-colors"
                     >
                       Reset
                     </button>
