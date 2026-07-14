@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useGetEvent, useUpdateEvent } from '@workspace/api-client-react';
 import { useAuth } from '@clerk/react';
-import { ArrowRight, ChevronDown, ChevronUp, Loader2, MapPin, Clock, Users, RefreshCw, Plane, Bus, Copy, Check, MessageSquare } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, MapPin, Clock, Users, RefreshCw, Plane, Bus, Copy, Check, MessageSquare, Sparkles, CalendarDays } from 'lucide-react';
 
 interface PlanOption {
   id: string;
@@ -18,6 +18,8 @@ interface PlanOption {
   addOns: string[];
   whyThisWorks: string;
   vibe?: string;
+  travelStyleMatch?: string;
+  optimalTiming?: string;
 }
 
 const LOADING_LINES = [
@@ -69,6 +71,17 @@ function PlanCard({
         </div>
         <h2 className="font-serif text-2xl md:text-3xl leading-tight mb-2" style={{ color: '#f5f0e8' }}>{option.name}</h2>
         <p className="text-sm font-light leading-relaxed" style={{ color: '#8a7a65' }}>{option.tagline}</p>
+
+        {/* Personalisation indicator */}
+        {option.travelStyleMatch && (
+          <div className="mt-3 flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 flex-shrink-0" style={{ color: '#c9a96e' }} />
+            <span className="text-[10px] tracking-[0.12em] uppercase" style={{ color: '#c9a96e' }}>
+              Matched to your style —{' '}
+              <span className="font-medium">{option.travelStyleMatch}</span>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Meta row */}
@@ -85,6 +98,12 @@ function PlanCard({
           <Users className="w-3.5 h-3.5 text-primary flex-shrink-0" />
           {option.venue}
         </span>
+        {option.optimalTiming && (
+          <span className="flex items-center gap-1.5" style={{ color: '#c9a96e' }}>
+            <CalendarDays className="w-3.5 h-3.5 flex-shrink-0" />
+            {option.optimalTiming}
+          </span>
+        )}
       </div>
 
       {/* Pricing block */}

@@ -190,7 +190,9 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
   "highlights": ["<specific highlight 1>", "<specific highlight 2>", "<specific highlight 3>"],
   "addOns": ["<optional upgrade 1>", "<optional upgrade 2>"],
   "whyThisWorks": "<one sentence: why this fits this specific group and occasion — be personal and specific>",
-  "vibe": "<one or two words — e.g. Intimate luxury, Wild and remote, Urban sophistication>"
+  "vibe": "<one or two words — e.g. Intimate luxury, Wild and remote, Urban sophistication>",
+  "travelStyleMatch": "<optional: 2–4 words echoing the planner's travel style if personality was provided, e.g. 'Boutique & Slow Travel' or 'Off-the-beaten-path' — omit if no personality data>",
+  "optimalTiming": "<optional: specific timing recommendation within the flexible window, e.g. 'Best mid-September to mid-October' — omit if dates are fixed or no timing insight applies>"
 }`;
 
   const promptParts: string[] = [
