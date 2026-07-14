@@ -95,7 +95,7 @@ export function EventInspirations({ eventId }: Props) {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
-      <div className="flex-1 flex flex-col container mx-auto px-6 py-10 max-w-2xl">
+      <div className="flex-1 flex flex-col container mx-auto px-6 py-8 max-w-2xl">
 
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-10">

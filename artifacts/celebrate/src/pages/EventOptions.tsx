@@ -724,7 +724,7 @@ export function EventOptions() {
     <div className="min-h-[100dvh] flex flex-col bg-background">
       <div className="h-px" style={{ background: '#c9a96e' }} />
 
-      <div className="flex-1 mx-auto px-8 md:px-16 py-12 md:py-20 max-w-7xl w-full">
+      <div className="flex-1 mx-auto px-8 md:px-16 py-8 md:py-12 max-w-7xl w-full">
         {loading && <LoadingState />}
 
         {error && !loading && (
@@ -741,15 +741,15 @@ export function EventOptions() {
 
         {options && !loading && (
           <>
-            <div className="mb-12">
-              <p className="uppercase text-xs tracking-[0.22em] mb-5" style={{ color: '#c6b7a1' }}>
+            <div className="mb-8">
+              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c9a96e' }}>
                 Your options
               </p>
               <h1 className="font-serif text-4xl md:text-6xl mb-4" style={{ color: '#f5f0e8' }}>
                 Six directions.{' '}
                 <span className="italic" style={{ color: '#c6b7a1' }}>Pick one.</span>
               </h1>
-              <p className="text-sm font-normal max-w-lg leading-relaxed" style={{ color: '#c6b7a1' }}>
+              <p className="text-base font-normal max-w-lg leading-relaxed" style={{ color: '#c6b7a1' }}>
                 Each is a real, specific plan. Once you choose, A-Moment will help you lock in every detail.
               </p>
             </div>
