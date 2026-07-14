@@ -17,11 +17,11 @@ const upload = multer({
 
 const VISUALIZE_TIMEOUT_MS = 120_000;
 
-/** Use GPT-4o-mini vision to describe the people in the uploaded photo. */
+/** Use GPT-4o vision to describe the people in the uploaded photo. */
 async function describePeople(base64: string, mimeType: string): Promise<string> {
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    max_tokens: 120,
+    model: "gpt-4o",
+    max_tokens: 180,
     messages: [
       {
         role: "user",
@@ -30,15 +30,23 @@ async function describePeople(base64: string, mimeType: string): Promise<string>
             type: "image_url",
             image_url: {
               url: `data:${mimeType};base64,${base64}`,
-              detail: "low",
+              detail: "high",
             },
           },
           {
             type: "text",
-            text: `Describe the people in this photo concisely for an image generation prompt.
-Include: how many people, apparent age range, gender presentation, ethnicity (if clearly visible), hair colour/style, and the mood/energy of the group.
-Keep it to 1–2 sentences, neutral and descriptive. Focus only on the people, not the background.
-Example: "A group of four women in their late twenties, mixed ethnicity, laughing together, dressed casually — relaxed and joyful energy."`,
+            text: `Look carefully at this photo and describe the people in it for an image generation prompt.
+Be precise and literal — your description will be used to recreate these exact people in a new scene.
+Include:
+- How many people
+- Each person's apparent age range
+- Each person's gender presentation
+- Each person's skin tone and ethnicity (be specific: e.g. "dark brown skin", "medium brown South Asian complexion", "East Asian", "light-skinned Black", "olive Mediterranean complexion" — do not default to or assume white/light skin)
+- Hair colour and style for each person
+- The group's mood and energy
+
+Write 2–3 sentences. Be accurate and faithful to what you actually see. Do not generalise or substitute.
+Example: "A group of five people in their thirties: two Black women with natural afro hair, one South Asian man with short dark hair, one mixed-race woman with curly auburn hair, and one East Asian woman with straight black hair. They are laughing and relaxed, dressed in smart-casual clothes."`,
           },
         ],
       },
@@ -86,14 +94,14 @@ router.post(
       // Step 2: Build a rich scene prompt
       const highlightSummary = highlights.slice(0, 3).join(", ");
       const prompt = [
-        `Professional luxury travel photograph.`,
-        `${peopleDesc}`,
+        `Ultra-high quality editorial travel photograph for a luxury lifestyle magazine.`,
+        `The people in this scene must match this description exactly — skin tones, ethnicities, hair, and count are non-negotiable: ${peopleDesc}`,
+        `Do not alter, lighten, or substitute any person's appearance. Render every individual faithfully as described.`,
         `They are ${vibe ? `experiencing a ${vibe.toLowerCase()} celebration —` : "celebrating —"}`,
         `${optionName} in ${destination}.`,
         tagline ? `The moment captures: ${tagline}.` : "",
         highlightSummary ? `Setting details: ${highlightSummary}.` : "",
-        `Ultra-high quality editorial travel photography. Cinematic composition. Warm golden light.`,
-        `Shot for a luxury lifestyle magazine. No text overlays. Photorealistic.`,
+        `Cinematic composition. Warm golden light. Photorealistic. No text overlays.`,
       ].filter(Boolean).join(" ");
 
       // Step 3: Generate the scene with gpt-image-1
