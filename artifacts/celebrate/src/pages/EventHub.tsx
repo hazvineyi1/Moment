@@ -596,6 +596,10 @@ function CostEstimateWidget({ eventId }: { eventId: number }) {
   );
 }
 
+/* ─── Currency normaliser ─────────────────────────────────────── */
+/** Replace legacy £ answers (stored before the USD switch) with $ on display */
+const normalizeCurrency = (v: string) => v.split('£').join('$');
+
 /* ─── Celebrant answered confirmation card ──────────────────────────── */
 function CelebrantAnsweredCard({
   celebrantName,
@@ -679,7 +683,7 @@ function CelebrantAnsweredCard({
                   {questionMap[key] ?? key}
                 </p>
                 <p className="text-sm font-normal leading-snug" style={{ color: '#f5f0e8' }}>
-                  {value}
+                  {normalizeCurrency(value)}
                 </p>
               </div>
             ))}
@@ -747,20 +751,17 @@ function CelebrantPreferencesCard({
         />
       </button>
 
-      {/* Compact answer grid */}
+      {/* Stacked answer list */}
       {open && (
-        <div className="px-5 py-3 grid grid-cols-1 gap-y-2.5">
+        <div className="divide-y" style={{ borderColor: 'rgba(201,169,110,0.07)' }}>
           {entries.map(([key, value]) => (
-            <div key={key} className="flex gap-2 items-baseline">
-              <span
-                className="flex-shrink-0 text-[10px] tracking-[0.14em] uppercase whitespace-nowrap"
-                style={{ color: '#a89880', minWidth: '6rem' }}
-              >
+            <div key={key} className="px-5 py-3">
+              <p className="text-[10px] tracking-[0.18em] uppercase mb-1" style={{ color: '#a89880' }}>
                 {questionMap[key] ?? key}
-              </span>
-              <span className="text-xs leading-snug" style={{ color: '#f5f0e8' }}>
-                {value}
-              </span>
+              </p>
+              <p className="text-sm leading-snug" style={{ color: '#f5f0e8' }}>
+                {normalizeCurrency(value)}
+              </p>
             </div>
           ))}
         </div>
