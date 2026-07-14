@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ClerkProvider, SignIn, SignUp, useClerk, useAuth } from '@clerk/react';
+import { setAuthTokenGetter } from '@workspace/api-client-react';
 import { Loader2 } from 'lucide-react';
 import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
@@ -171,6 +172,16 @@ function LandingPage() {
   );
 }
 
+// ── Auth token bridge — wires customFetch to Clerk's getToken ─────────────
+function ClerkAuthBridge() {
+  const { getToken } = useAuth();
+  useEffect(() => {
+    setAuthTokenGetter(() => getToken());
+    return () => setAuthTokenGetter(null);
+  }, [getToken]);
+  return null;
+}
+
 // ── Cache invalidator on user switch ──────────────────────────────────────
 function ClerkQueryClientCacheInvalidator() {
   const { addListener } = useClerk();
@@ -209,6 +220,7 @@ function AppRouter() {
     >
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          <ClerkAuthBridge />
           <ClerkQueryClientCacheInvalidator />
           <Switch>
             <Route path="/" component={HomeRoute} />
