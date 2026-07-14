@@ -804,6 +804,7 @@ export function EventHub() {
   const [revealLoading, setRevealLoading] = useState(false);
   const [revealError, setRevealError] = useState('');
   const [revealCopied, setRevealCopied] = useState(false);
+  const [copiedInvite, setCopiedInvite] = useState(false);
 
   const generateRevealScript = async () => {
     setRevealLoading(true);
@@ -1289,7 +1290,6 @@ export function EventHub() {
 
           {/* Invite co-planner */}
           {(() => {
-            const [copiedInvite, setCopiedInvite] = React.useState(false);
             const inviteUrl = `${window.location.origin}/i/${eventId}`;
             const inviteMsg = `Hey! I'm planning ${event.title ? `"${event.title}"` : 'something special'} on A-Moment and would love your input. Take a look: ${inviteUrl}`;
 
