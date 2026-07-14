@@ -925,6 +925,7 @@ export function EventHub() {
   const [actionBusy, setActionBusy] = useState(false);
   const [dangerError, setDangerError] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [hubTab, setHubTab] = useState<'actions' | 'share' | 'danger'>('actions');
 
   // ── Reveal script ────────────────────────────────────────────────────
   type RevealScript = {
@@ -1371,214 +1372,159 @@ export function EventHub() {
           {/* Cost snapshot */}
           <CostEstimateWidget eventId={id} />
 
-          {/* Smart quick nav */}
+          {/* Compact tabbed nav block */}
           {(() => {
             const hasPlan = !!(event.description?.includes(PLAN_MARKER));
             const guestCount = guests?.length ?? 0;
             const hasChats = (summary?.sessionCount ?? 0) > 0;
-
-            // Determine recommended next action
             let recommended = 'plan';
             if (guestCount === 0) recommended = 'guests';
             else if (!hasPlan) recommended = 'options';
             else if (!hasChats) recommended = 'plan';
 
-            const items = [
-              {
-                icon: <MessageSquare className="w-5 h-5" />,
-                label: 'Chat with A-Moment',
-                sub: 'Plan details, ask questions, iterate',
-                color: 'bg-primary/10 text-primary',
-                href: 'plan',
-              },
-              {
-                icon: <CalendarIcon className="w-5 h-5" />,
-                label: 'Plan options',
-                sub: 'View or swap your 6 curated proposals',
-                color: 'bg-accent/20 text-foreground',
-                href: 'options',
-              },
-              {
-                icon: <Users className="w-5 h-5" />,
-                label: 'Guests',
-                sub: `${guestCount > 0 ? `${guestCount} added` : 'None yet'} · manage & invite`,
-                color: 'bg-muted text-muted-foreground',
-                href: 'guests',
-              },
+            type HubTab = 'actions' | 'share' | 'danger';
+
+            const tabStyle = (t: HubTab) => ({
+              color: hubTab === t ? '#c9a96e' : '#8a7a65',
+              borderBottom: hubTab === t ? '1px solid #c9a96e' : '1px solid transparent',
+              marginBottom: '-1px',
+            });
+
+            const actionItems = [
+              { label: 'Chat with A-Moment', sub: 'Plan · ask · iterate', href: 'plan' },
+              { label: 'Plan options', sub: '6 curated proposals', href: 'options' },
+              { label: 'Guests', sub: `${guestCount > 0 ? `${guestCount} added` : 'None yet'} · manage`, href: 'guests' },
+            ];
+
+            const shareItems = [
+              { label: 'Inspiration board', sub: 'URLs → shape the plan', href: `/events/${eventId}/inspirations` },
+              { label: 'Share the plan', sub: 'Show your curated picks', href: `/events/${eventId}/share-experiences` },
+              { label: 'Bring someone in', sub: 'Collaborate or hand over', href: `/events/${eventId}/share-collab` },
             ];
 
             return (
-              <div
-                className="p-6 space-y-0"
-                style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
-              >
-                <p className="uppercase text-[10px] tracking-[0.22em] mb-6" style={{ color: '#8a7a65', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
-                  Quick actions
-                </p>
-                {items.map((item) => {
+              <div style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}>
+                {/* Tab bar */}
+                <div
+                  className="flex px-4"
+                  style={{ borderBottom: '1px solid rgba(201,169,110,0.12)' }}
+                >
+                  {(['actions', 'share', 'danger'] as HubTab[]).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setHubTab(t)}
+                      className="py-3 mr-6 text-[9px] tracking-[0.18em] uppercase font-medium transition-colors whitespace-nowrap"
+                      style={tabStyle(t)}
+                    >
+                      {t === 'danger' ? '⚠ Zone' : t === 'share' ? 'Share' : 'Actions'}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Actions tab */}
+                {hubTab === 'actions' && actionItems.map((item) => {
                   const isRec = item.href === recommended;
                   return (
                     <button
                       key={item.href}
                       onClick={() => setLocation(`/events/${eventId}/${item.href}`)}
-                      className="w-full flex items-center justify-between py-4 text-left transition-colors group"
-                      style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}
+                      className="w-full flex items-center justify-between px-4 py-3 text-left group transition-colors"
+                      style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}
                     >
-                      <div>
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span
-                            className="text-xs font-light tracking-wide transition-colors"
-                            style={{ color: isRec ? '#c9a96e' : '#f5f0e8' }}
-                          >
-                            {item.label}
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xs font-light truncate" style={{ color: isRec ? '#c9a96e' : '#f5f0e8' }}>
+                          {item.label}
+                        </span>
+                        {isRec && (
+                          <span className="flex-shrink-0 text-[7px] tracking-[0.12em] uppercase px-1.5 py-0.5" style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}>
+                            rec
                           </span>
-                          {isRec && (
-                            <span
-                              className="text-[8px] tracking-[0.15em] uppercase px-1.5 py-0.5"
-                              style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
-                            >
-                              Recommended
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[10px]" style={{ color: '#8a7a65' }}>{item.sub}</p>
+                        )}
                       </div>
-                      <span
-                        className="text-base font-light tracking-[-0.08em] transition-transform group-hover:translate-x-1 duration-200"
-                        style={{ color: isRec ? '#c9a96e' : '#8a7a65' }}
-                      >
-                        →
-                      </span>
+                      <span className="text-xs font-light ml-3 transition-transform group-hover:translate-x-0.5 duration-150 flex-shrink-0" style={{ color: '#8a7a65' }}>→</span>
                     </button>
                   );
                 })}
+
+                {/* Share tab */}
+                {hubTab === 'share' && shareItems.map((item) => (
+                  <button
+                    key={item.href}
+                    onClick={() => setLocation(item.href)}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left group transition-colors"
+                    style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}
+                  >
+                    <div className="min-w-0">
+                      <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>{item.label}</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: '#8a7a65' }}>{item.sub}</p>
+                    </div>
+                    <ChevronRight className="w-3 h-3 flex-shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" style={{ color: '#8a7a65' }} />
+                  </button>
+                ))}
+
+                {/* Danger tab */}
+                {hubTab === 'danger' && (
+                  <div>
+                    {dangerError && (
+                      <div className="px-4 py-2 text-xs" style={{ color: '#ef4444', background: 'rgba(239,68,68,0.04)', borderBottom: '1px solid rgba(239,68,68,0.1)' }}>
+                        {dangerError}
+                      </div>
+                    )}
+                    {/* Reset plan */}
+                    <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>Reset plan</p>
+                          <p className="text-[9px] mt-0.5" style={{ color: '#8a7a65' }}>Remove chosen plan · pick again</p>
+                        </div>
+                        {!confirmReset ? (
+                          <button
+                            onClick={() => { setConfirmReset(true); setConfirmDelete(false); }}
+                            className="flex-shrink-0 px-3 py-1 text-xs border border-border rounded hover:border-destructive/50 hover:text-destructive transition-colors"
+                            style={{ color: '#8a7a65' }}
+                          >
+                            Reset
+                          </button>
+                        ) : (
+                          <div className="flex gap-1.5 flex-shrink-0">
+                            <button onClick={() => setConfirmReset(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#8a7a65' }}>Cancel</button>
+                            <button onClick={handleResetPlan} disabled={actionBusy} className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40 transition-colors" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}>
+                              {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null} Confirm
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {/* Delete event */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-light" style={{ color: '#ef4444' }}>Delete event</p>
+                          <p className="text-[9px] mt-0.5" style={{ color: '#8a7a65' }}>Permanent · cannot be undone</p>
+                        </div>
+                        {!confirmDelete ? (
+                          <button
+                            onClick={() => { setConfirmDelete(true); setConfirmReset(false); }}
+                            className="flex-shrink-0 px-3 py-1 text-xs rounded transition-colors"
+                            style={{ border: '1px solid rgba(239,68,68,0.35)', color: '#ef4444' }}
+                          >
+                            Delete
+                          </button>
+                        ) : (
+                          <div className="flex gap-1.5 flex-shrink-0">
+                            <button onClick={() => setConfirmDelete(false)} disabled={actionBusy} className="px-2.5 py-1 text-xs border border-border rounded hover:bg-muted disabled:opacity-40 transition-colors" style={{ color: '#8a7a65' }}>Cancel</button>
+                            <button onClick={handleDeleteEvent} disabled={actionBusy} className="px-2.5 py-1 text-xs rounded flex items-center gap-1 disabled:opacity-40 transition-colors" style={{ background: 'rgba(239,68,68,0.85)', color: '#fff' }}>
+                              {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null} Delete forever
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })()}
-
-          {/* Share */}
-          <div style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}>
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(201,169,110,0.1)' }}>
-              <p className="uppercase text-[10px] tracking-[0.22em]" style={{ color: '#8a7a65' }}>Share</p>
-            </div>
-            <div className="divide-y" style={{ borderColor: 'rgba(201,169,110,0.08)' }}>
-              {[
-                {
-                  label: 'Inspiration board',
-                  sub: 'Drop URLs — Instagram, TikTok, blogs — to shape the plan',
-                  href: `/events/${eventId}/inspirations`,
-                },
-                {
-                  label: 'Share the plan',
-                  sub: 'Show someone what you\'ve curated',
-                  href: `/events/${eventId}/share-experiences`,
-                },
-                {
-                  label: 'Bring someone in',
-                  sub: 'Collaborate or hand it over entirely',
-                  href: `/events/${eventId}/share-collab`,
-                },
-              ].map(({ label, sub, href }) => (
-                <button
-                  key={href}
-                  onClick={() => setLocation(href)}
-                  className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors group"
-                  style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}
-                >
-                  <div>
-                    <p className="text-xs font-medium mb-0.5" style={{ color: '#f5f0e8' }}>{label}</p>
-                    <p className="text-[10px]" style={{ color: '#8a7a65' }}>{sub}</p>
-                  </div>
-                  <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: '#8a7a65' }} />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Danger zone */}
-          <div style={{ border: '1px solid rgba(239,68,68,0.15)' }}>
-            <div className="px-5 py-3" style={{ borderBottom: '1px solid rgba(239,68,68,0.12)', background: 'rgba(239,68,68,0.03)' }}>
-              <p className="text-[9px] tracking-[0.2em] uppercase" style={{ color: 'rgba(239,68,68,0.6)' }}>Danger zone</p>
-            </div>
-            {dangerError && (
-              <div className="px-4 py-3 text-xs" style={{ color: '#ef4444', borderBottom: '1px solid rgba(239,68,68,0.12)', background: 'rgba(239,68,68,0.04)' }}>
-                {dangerError}
-              </div>
-            )}
-            <div className="divide-y" style={{ '--tw-divide-opacity': 1, borderColor: 'rgba(201,169,110,0.06)' } as React.CSSProperties}>
-              {/* Reset plan */}
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium">Reset plan</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Remove the chosen plan and pick a new one from options.</p>
-                  </div>
-                  {!confirmReset ? (
-                    <button
-                      onClick={() => { setConfirmReset(true); setConfirmDelete(false); }}
-                      className="flex-shrink-0 px-3 py-1.5 text-xs font-medium border border-border text-foreground rounded-lg hover:border-destructive/50 hover:text-destructive transition-colors"
-                    >
-                      Reset
-                    </button>
-                  ) : (
-                    <div className="flex gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => setConfirmReset(false)}
-                        disabled={actionBusy}
-                        className="px-3 py-1.5 text-xs border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-40"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleResetPlan}
-                        disabled={actionBusy}
-                        className="px-3 py-1.5 text-xs font-medium bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-40 flex items-center gap-1"
-                      >
-                        {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                        Confirm
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Delete event */}
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium">Delete event</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Permanently remove this event and all its data.</p>
-                  </div>
-                  {!confirmDelete ? (
-                    <button
-                      onClick={() => { setConfirmDelete(true); setConfirmReset(false); }}
-                      className="flex-shrink-0 px-3 py-1.5 text-xs font-medium border border-destructive/40 text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  ) : (
-                    <div className="flex gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => setConfirmDelete(false)}
-                        disabled={actionBusy}
-                        className="px-3 py-1.5 text-xs border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-40"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleDeleteEvent}
-                        disabled={actionBusy}
-                        className="px-3 py-1.5 text-xs font-medium bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors disabled:opacity-40 flex items-center gap-1"
-                      >
-                        {actionBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-                        Delete forever
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
