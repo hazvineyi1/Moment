@@ -679,7 +679,7 @@ function CelebrantAnsweredCard({
                 className="pb-4 mb-1"
                 style={{ borderBottom: '1px solid rgba(201,169,110,0.07)' }}
               >
-                <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#c6b7a1' }}>
+                <p className="text-xs tracking-[0.18em] uppercase mb-1.5" style={{ color: '#c6b7a1' }}>
                   {questionMap[key] ?? key}
                 </p>
                 <p className="text-sm font-normal leading-snug" style={{ color: '#f5f0e8' }}>
@@ -707,7 +707,7 @@ function CelebrantAnsweredCard({
         className="px-5 py-3 flex items-center justify-between gap-4"
         style={{ borderTop: '1px solid rgba(201,169,110,0.1)', background: 'rgba(201,169,110,0.02)' }}
       >
-        <p className="text-[11px] tracking-[0.1em] leading-relaxed" style={{ color: '#c6b7a1' }}>
+        <p className="text-xs tracking-[0.1em] leading-relaxed" style={{ color: '#c6b7a1' }}>
           These preferences are shaping every A-Moment recommendation for this event
         </p>
         <button
@@ -741,10 +741,10 @@ function CelebrantPreferencesCard({
         style={{ borderBottom: open ? '1px solid rgba(201,169,110,0.1)' : undefined }}
       >
         <CheckCircle2 className="w-3 h-3 flex-shrink-0" style={{ color: '#c9a96e' }} />
-        <p className="flex-1 uppercase text-[11px] tracking-[0.22em]" style={{ color: '#c6b7a1' }}>
+        <p className="flex-1 uppercase text-xs tracking-[0.22em]" style={{ color: '#c6b7a1' }}>
           {name}&apos;s preferences
         </p>
-        <span className="text-[11px] mr-2" style={{ color: '#c6b7a1' }}>{entries.length}</span>
+        <span className="text-xs mr-2" style={{ color: '#c6b7a1' }}>{entries.length}</span>
         <ChevronDown
           className="w-3.5 h-3.5 flex-shrink-0 transition-transform"
           style={{ color: '#c6b7a1', transform: open ? 'rotate(180deg)' : 'none' }}
@@ -948,7 +948,7 @@ function PlanningJourney({
                 {/* Label */}
                 <div className="text-center">
                   <p
-                    className="text-[11px] tracking-[0.15em] uppercase whitespace-nowrap"
+                    className="text-xs tracking-[0.15em] uppercase whitespace-nowrap"
                     style={{ color: step.done || isCurrent ? '#c9a96e' : '#c6b7a1' }}
                   >
                     {step.label}
@@ -1120,13 +1120,13 @@ export function EventHub() {
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <span
-            className="uppercase text-[11px] tracking-[0.22em] px-2.5 py-1"
+            className="uppercase text-xs tracking-[0.22em] px-2.5 py-1"
             style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
           >
             {event.type}
           </span>
           <span
-            className="uppercase text-[11px] tracking-[0.22em] px-2.5 py-1"
+            className="uppercase text-xs tracking-[0.22em] px-2.5 py-1"
             style={{ border: '1px solid rgba(201,169,110,0.15)', color: '#c6b7a1' }}
           >
             {event.status}
@@ -1421,7 +1421,7 @@ export function EventHub() {
                 { label: 'Invites', value: summary.inviteCount },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <p className="text-[11px] tracking-[0.18em] uppercase mb-1" style={{ color: '#c6b7a1' }}>{label}</p>
+                  <p className="text-xs tracking-[0.18em] uppercase mb-1" style={{ color: '#c6b7a1' }}>{label}</p>
                   <p className="font-serif text-3xl" style={{ color: '#f5f0e8' }}>{value}</p>
                 </div>
               ))}
@@ -1491,7 +1491,7 @@ export function EventHub() {
                     <button
                       key={t}
                       onClick={() => setHubTab(t)}
-                      className="py-3 mr-6 text-[11px] tracking-[0.18em] uppercase font-medium transition-colors whitespace-nowrap"
+                      className="py-3 mr-6 text-xs tracking-[0.18em] uppercase font-medium transition-colors whitespace-nowrap"
                       style={tabStyle(t)}
                     >
                       {t === 'danger' ? '⚠ Zone' : t === 'share' ? 'Share' : 'Actions'}
@@ -1534,7 +1534,7 @@ export function EventHub() {
                   >
                     <div className="min-w-0">
                       <p className="text-xs font-normal" style={{ color: '#f5f0e8' }}>{item.label}</p>
-                      <p className="text-[11px] mt-0.5" style={{ color: '#c6b7a1' }}>{item.sub}</p>
+                      <p className="text-xs mt-0.5" style={{ color: '#c6b7a1' }}>{item.sub}</p>
                     </div>
                     <ChevronRight className="w-3 h-3 flex-shrink-0 ml-3 transition-transform group-hover:translate-x-0.5" style={{ color: '#c6b7a1' }} />
                   </button>
@@ -1553,7 +1553,7 @@ export function EventHub() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-normal" style={{ color: '#f5f0e8' }}>Reset plan</p>
-                          <p className="text-[11px] mt-0.5" style={{ color: '#c6b7a1' }}>Remove chosen plan · pick again</p>
+                          <p className="text-xs mt-0.5" style={{ color: '#c6b7a1' }}>Remove chosen plan · pick again</p>
                         </div>
                         {!confirmReset ? (
                           <button
@@ -1578,7 +1578,7 @@ export function EventHub() {
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs font-normal" style={{ color: '#ef4444' }}>Delete event</p>
-                          <p className="text-[11px] mt-0.5" style={{ color: '#c6b7a1' }}>Permanent · cannot be undone</p>
+                          <p className="text-xs mt-0.5" style={{ color: '#c6b7a1' }}>Permanent · cannot be undone</p>
                         </div>
                         {!confirmDelete ? (
                           <button

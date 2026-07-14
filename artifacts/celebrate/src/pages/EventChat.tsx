@@ -216,7 +216,7 @@ function ConversationDone({ eventId }: { eventId: string }) {
       className="mx-auto max-w-xl mt-4 mb-2 px-6 py-5"
       style={{ border: '1px solid rgba(201,169,110,0.28)', background: 'rgba(201,169,110,0.04)' }}
     >
-      <p className="text-[11px] tracking-[0.18em] uppercase mb-2" style={{ color: '#c6b7a1' }}>
+      <p className="text-xs tracking-[0.18em] uppercase mb-2" style={{ color: '#c6b7a1' }}>
         Planning complete
       </p>
       <p className="text-sm font-normal leading-snug mb-4" style={{ color: '#f5f0e8' }}>
@@ -251,7 +251,7 @@ function SuggestionsNudge({ eventId }: { eventId: string }) {
         style={{ border: '1px solid rgba(201,169,110,0.22)', background: 'rgba(201,169,110,0.04)' }}
       >
         <div className="min-w-0">
-          <p className="text-[11px] tracking-[0.18em] uppercase mb-1.5" style={{ color: '#c6b7a1' }}>Good moment to step back</p>
+          <p className="text-xs tracking-[0.18em] uppercase mb-1.5" style={{ color: '#c6b7a1' }}>Good moment to step back</p>
           <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
             You have 6 curated plan options waiting. See what A-Moment has built for you.
           </p>
@@ -402,14 +402,14 @@ export function EventChat() {
           </div>
           <div className="flex items-center gap-2">
             {isDone ? (
-              <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: '#c9a96e' }}>Complete</span>
+              <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#c9a96e' }}>Complete</span>
             ) : (
               <>
                 <span className="relative flex h-[6px] w-[6px]">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-50" style={{ background: '#c9a96e' }} />
                   <span className="relative inline-flex rounded-full h-[6px] w-[6px]" style={{ background: '#c9a96e' }} />
                 </span>
-                <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: '#c6b7a1' }}>Live</span>
+                <span className="text-xs tracking-[0.15em] uppercase" style={{ color: '#c6b7a1' }}>Live</span>
               </>
             )}
           </div>
