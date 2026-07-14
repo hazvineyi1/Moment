@@ -169,7 +169,7 @@ function PlanCard({
       {/* Why this works */}
       <div className="px-6 pb-5">
         <div className="bg-muted/50 rounded-2xl px-4 py-3">
-          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-widest">Cele's take</p>
+          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-widest">A-Moment's take</p>
           <p className="text-sm leading-relaxed italic text-foreground/80">{option.whyThisWorks}</p>
         </div>
       </div>
@@ -204,7 +204,7 @@ function LoadingState() {
         <Sparkles className="w-7 h-7 text-primary" />
         <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
       </div>
-      <h2 className="text-2xl md:text-3xl font-serif font-medium mb-3">Cele is thinking.</h2>
+      <h2 className="text-2xl md:text-3xl font-serif font-medium mb-3">A-Moment is thinking.</h2>
       <p
         key={lineIdx}
         className="text-muted-foreground text-base max-w-xs animate-in fade-in slide-in-from-bottom-2 duration-500"
@@ -316,7 +316,7 @@ export function EventOptions() {
                 <span className="text-muted-foreground">Pick one.</span>
               </h1>
               <p className="text-base text-muted-foreground max-w-lg">
-                Each is a real, specific plan. Once you choose, Cele will help you lock in every detail inside the conversation.
+                Each is a real, specific plan. Once you choose, A-Moment will help you lock in every detail inside the conversation.
               </p>
             </div>
 

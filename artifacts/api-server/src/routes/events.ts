@@ -179,7 +179,7 @@ router.get("/events/:eventId/summary", requireAuth, async (req, res): Promise<vo
   if (!event.location) nextSteps.push("Add a destination or location");
   if (!event.startDate) nextSteps.push("Set event dates");
   if (guestCount === 0) nextSteps.push("Add your first guests");
-  if (sessionCount === 0) nextSteps.push("Start a planning chat with Cele");
+  if (sessionCount === 0) nextSteps.push("Start a planning chat with A-Moment");
 
   res.json(GetEventSummaryResponse.parse({
     eventId,

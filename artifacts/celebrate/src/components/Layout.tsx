@@ -21,7 +21,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="container mx-auto px-4 h-16 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
               <Sparkles className="w-5 h-5 text-primary group-hover:rotate-12 transition-transform duration-500" />
-              <span className="font-serif text-2xl font-bold tracking-tight text-foreground">Moment</span>
+              <span className="font-serif text-2xl font-bold tracking-tight text-foreground">A-Moment</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-6">

@@ -308,7 +308,7 @@ export function NewEvent() {
                     className="w-full text-lg bg-transparent border-b-2 border-border focus:border-primary outline-none py-2 transition-colors placeholder:text-muted-foreground/50"
                   />
                   <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                    After creating the event you can send them a short questionnaire — their answers feed straight into Cele.
+                    After creating the event you can send them a short questionnaire — their answers feed straight into A-Moment.
                   </p>
                 </div>
               )}
@@ -383,7 +383,7 @@ export function NewEvent() {
             <div className="mb-7">
               <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 2 of 3</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">What kind of experience?</h1>
-              <p className="text-base text-muted-foreground">Pick what resonates — Cele can mix and match.</p>
+              <p className="text-base text-muted-foreground">Pick what resonates — A-Moment can mix and match.</p>
             </div>
 
             {/* Experience types */}
@@ -470,7 +470,7 @@ export function NewEvent() {
             <div className="mb-8">
               <p className="text-xs font-semibold text-primary mb-2 tracking-widest uppercase">Step 3 of 3</p>
               <h1 className="text-3xl md:text-5xl font-serif font-medium mb-2">The details.</h1>
-              <p className="text-base text-muted-foreground">Rough is fine — Cele fills in the rest.</p>
+              <p className="text-base text-muted-foreground">Rough is fine — A-Moment fills in the rest.</p>
             </div>
 
             <div className="max-w-xl space-y-8">
@@ -572,7 +572,7 @@ export function NewEvent() {
                 <div className="border-t border-border/40 pt-7 space-y-6 animate-in fade-in duration-300">
                   <div>
                     <p className="text-sm font-medium mb-0.5">A couple of things about you</p>
-                    <p className="text-xs text-muted-foreground">Optional — helps Cele curate for you specifically, not just the event.</p>
+                    <p className="text-xs text-muted-foreground">Optional — helps A-Moment curate for you specifically, not just the event.</p>
                   </div>
 
                   <div>
@@ -638,8 +638,8 @@ export function NewEvent() {
               )}
               <p className="text-xs text-muted-foreground">
                 {planningFor === 'someone'
-                  ? "You'll get a link to share with them — their answers feed straight into Cele."
-                  : 'Cele will propose 6 plans — pick one, then refine it in conversation.'}
+                  ? "You'll get a link to share with them — their answers feed straight into A-Moment."
+                  : 'A-Moment will propose 6 plans — pick one, then refine it in conversation.'}
               </p>
             </div>
           </div>

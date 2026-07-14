@@ -79,7 +79,7 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
           </h1>
           <p className="text-muted-foreground leading-relaxed max-w-sm">
             Send {celebrantName ? celebrantName : 'them'} this link — a short questionnaire that
-            feeds their preferences straight into Cele. Takes less than a minute.
+            feeds their preferences straight into A-Moment. Takes less than a minute.
           </p>
         </div>
 

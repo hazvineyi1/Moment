@@ -342,7 +342,7 @@ function AddGuestDrawer({
 
           <div>
             <p className="text-sm font-medium mb-1.5">How would you describe them? <span className="text-muted-foreground font-normal">(optional)</span></p>
-            <p className="text-xs text-muted-foreground mb-2.5">Moment uses this for seating, pairings, and activity design.</p>
+            <p className="text-xs text-muted-foreground mb-2.5">A-Moment uses this for seating, pairings, and activity design.</p>
             <div className="grid grid-cols-3 gap-1.5">
               {GUEST_ARCHETYPES.map(a => (
                 <button
@@ -384,7 +384,7 @@ function AddGuestDrawer({
           <div>
             <p className="text-sm font-medium mb-2">Notes <span className="text-muted-foreground font-normal">(optional)</span></p>
             <textarea
-              placeholder="Anything Moment should know about them..."
+              placeholder="Anything A-Moment should know about them..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
@@ -468,7 +468,7 @@ export function EventGuests() {
           <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-30" />
           <h3 className="font-serif text-xl mb-2">No guests yet</h3>
           <p className="text-muted-foreground text-sm mb-6 max-w-xs mx-auto">
-            Add your guests and Cele will factor them into every recommendation.
+            Add your guests and A-Moment will factor them into every recommendation.
           </p>
           <button
             onClick={() => setShowAdd(true)}

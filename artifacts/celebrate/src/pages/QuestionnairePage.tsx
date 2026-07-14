@@ -244,7 +244,7 @@ export function QuestionnairePage({ token }: { token: string }) {
           </div>
           <h2 className="font-serif text-3xl">You&apos;re all set 🎊</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Your answers have been sent to the planner. Moment will use them to make this celebration feel like it was made for you.
+            Your answers have been sent to the planner. A-Moment will use them to make this celebration feel like it was made for you.
           </p>
         </div>
       </div>
@@ -273,7 +273,7 @@ export function QuestionnairePage({ token }: { token: string }) {
         {/* Header */}
         <div className="px-6 pt-8 pb-4 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" />
-          <span className="font-serif text-base font-medium text-foreground">Cele</span>
+          <span className="font-serif text-base font-medium text-foreground">A-Moment</span>
         </div>
 
         {/* Progress bar */}

@@ -287,7 +287,7 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="font-medium text-sm">Your context for this event</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">Moment reads this. Different from your global profile — specific to this plan.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">A-Moment reads this. Different from your global profile — specific to this plan.</p>
         </div>
         {!editing && (
           <button
@@ -327,7 +327,7 @@ function EventContextPanel({ eventId, description }: { eventId: number; descript
         <p className="text-sm text-foreground/80 leading-relaxed italic">{existing}</p>
       ) : (
         <p className="text-sm text-muted-foreground/60 italic">
-          Tell Moment who you are in the context of this specific event — your role, constraints, what this group means to you.
+          Tell A-Moment who you are in the context of this specific event — your role, constraints, what this group means to you.
         </p>
       )}
     </div>
@@ -587,8 +587,8 @@ function QuestionnaireBanner({
         <p className="font-medium text-sm flex items-center gap-2">
           <Link className="w-4 h-4 text-primary" />
           {celebrantName
-            ? `Share with ${celebrantName} — their answers feed into Moment`
-            : 'Send your celebrant the questionnaire — their answers feed into Moment'}
+            ? `Share with ${celebrantName} — their answers feed into A-Moment`
+            : 'Send your celebrant the questionnaire — their answers feed into A-Moment'}
         </p>
         {url && (
           <p className="text-xs text-muted-foreground mt-1 font-mono truncate">{url}</p>
@@ -842,7 +842,7 @@ export function EventHub() {
                 })
               ) : (
                 <div className="p-6 text-center text-muted-foreground bg-card rounded-xl border border-border/50">
-                  <p>All caught up. Chat with Moment to figure out what&apos;s next.</p>
+                  <p>All caught up. Chat with A-Moment to figure out what&apos;s next.</p>
                 </div>
               )}
             </div>
@@ -851,7 +851,7 @@ export function EventHub() {
               className="w-full mt-6 flex items-center justify-between p-4 bg-foreground text-background rounded-xl hover:bg-primary transition-colors group"
             >
               <span className="font-medium flex items-center gap-2">
-                <Sparkles className="w-5 h-5" /> Ask Moment what to do next
+                <Sparkles className="w-5 h-5" /> Ask A-Moment what to do next
               </span>
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -1008,7 +1008,7 @@ export function EventHub() {
             onManage={() => setLocation(`/events/${eventId}/guests`)}
           />
 
-          {/* Per-event context for Moment */}
+          {/* Per-event context for A-Moment */}
           <EventContextPanel eventId={id} description={event.description} />
 
           {/* Cost snapshot */}
@@ -1017,7 +1017,7 @@ export function EventHub() {
           {/* Quick nav */}
           <div className="space-y-2">
             {[
-              { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with Moment', color: 'bg-primary/10 text-primary', href: `plan` },
+              { icon: <MessageSquare className="w-5 h-5" />, label: 'Chat with A-Moment', color: 'bg-primary/10 text-primary', href: `plan` },
               { icon: <Sparkles className="w-5 h-5" />, label: 'View / change plan options', color: 'bg-accent/20 text-foreground', href: `options` },
               { icon: <Users className="w-5 h-5" />, label: 'Manage Guests', color: 'bg-muted text-muted-foreground', href: `guests` },
             ].map((item) => (

@@ -60,7 +60,7 @@ export function Home() {
             <div className="flex-1">
               <h2 className="font-serif text-xl font-medium mb-1">Ready when you are.</h2>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-lg">
-                Tell Moment what you want to plan — it handles the rest. No forms, no agencies, no chasing quotes.
+                Tell A-Moment what you want to plan — it handles the rest. No forms, no agencies, no chasing quotes.
               </p>
             </div>
             <Link
@@ -182,7 +182,7 @@ export function Home() {
           </div>
 
           <p className="text-muted-foreground max-w-md mb-8 relative z-10 leading-relaxed">
-            Moment plans 24 types of celebrations — from intimate winery weekends to month-long sailing expeditions.
+            A-Moment plans 24 types of celebrations — from intimate winery weekends to month-long sailing expeditions.
             Tell it what you have in mind and it will take it from there.
           </p>
 

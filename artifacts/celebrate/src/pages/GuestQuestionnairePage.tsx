@@ -167,7 +167,7 @@ export function GuestQuestionnairePage() {
           <div className="text-6xl mb-6">🎉</div>
           <h2 className="font-serif text-3xl font-medium mb-3">You're all set</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Cele has your profile. Your host's planner will use this to make sure the experience feels right for you.
+            A-Moment has your profile. Your host's planner will use this to make sure the experience feels right for you.
           </p>
           <div className="mt-8 flex items-center justify-center gap-2 text-primary">
             <Heart className="w-4 h-4 fill-current" />
@@ -203,7 +203,7 @@ export function GuestQuestionnairePage() {
           You're going to <strong>{eventInfo?.eventTitle}</strong>.
         </p>
         <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mb-10">
-          Answer 4 quick questions and Cele will use your profile to make sure the experience feels right — for you specifically.
+          Answer 4 quick questions and A-Moment will use your profile to make sure the experience feels right — for you specifically.
         </p>
         <button
           onClick={() => setPhase('q1')}
@@ -283,7 +283,7 @@ export function GuestQuestionnairePage() {
         <div className="flex-1 container mx-auto px-4 py-8 max-w-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
           <ProgressBar current={2} total={4} />
           <h2 className="font-serif text-2xl md:text-3xl font-medium mb-1">What completely kills the vibe?</h2>
-          <p className="text-sm text-muted-foreground mb-6">Be honest — nobody sees this except Cele.</p>
+          <p className="text-sm text-muted-foreground mb-6">Be honest — nobody sees this except A-Moment.</p>
           <div className="flex flex-wrap gap-2 mb-10">
             {DEALBREAKERS.map(v => (
               <Chip key={v} label={v} selected={dealbreakers.includes(v)} onClick={() => toggleDealbreaker(v)} />

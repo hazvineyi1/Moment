@@ -123,7 +123,7 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     guestProfilesText ? `Guest personalities: ${guestProfilesText}` : null,
   ].filter(Boolean).join("\n");
 
-  const system = `You are Moment — a world-class celebration curator. Generate exactly 6 distinct, opinionated, specific plan proposals for a group celebration. Each option must feel meaningfully different from the others in destination, price tier, and character. Be specific: name real venues, real neighborhoods, real properties that actually exist.
+  const system = `You are A-Moment — a world-class celebration curator. Generate exactly 6 distinct, opinionated, specific plan proposals for a group celebration. Each option must feel meaningfully different from the others in destination, price tier, and character. Be specific: name real venues, real neighborhoods, real properties that actually exist.
 
 When guest personality profiles or a celebrant age are provided, use them to inform each plan's character, pacing, and activity mix. The whyThisWorks field must reference the group's specific personality mix or the celebrant's age/vibe — never be generic.
 
@@ -179,7 +179,7 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
     const options = parsed.options;
     if (!Array.isArray(options) || options.length === 0) {
       console.error("plan-options: missing or empty options array. Parsed:", JSON.stringify(parsed).slice(0, 300));
-      res.status(500).json({ error: "Cele couldn't format options correctly. Please try again." });
+      res.status(500).json({ error: "A-Moment couldn't format options correctly. Please try again." });
       return;
     }
 
@@ -192,7 +192,7 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
     res.json({ options });
   } catch (err: any) {
     console.error("plan-options error:", err?.message ?? err);
-    res.status(500).json({ error: "Cele had trouble generating options. Please try again." });
+    res.status(500).json({ error: "A-Moment had trouble generating options. Please try again." });
   }
 });
 

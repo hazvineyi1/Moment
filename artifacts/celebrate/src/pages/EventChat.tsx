@@ -269,7 +269,7 @@ export function EventChat() {
           <div className="absolute -inset-1 rounded-full border-2 border-primary/20 animate-ping" />
         </div>
         <div className="text-center">
-          <p className="font-serif text-xl text-foreground mb-1">Cele is preparing your session</p>
+          <p className="font-serif text-xl text-foreground mb-1">A-Moment is preparing your session</p>
           <p className="text-sm text-muted-foreground">Setting the stage for something remarkable…</p>
         </div>
       </div>
@@ -284,7 +284,7 @@ export function EventChat() {
         </div>
         <div className="text-center max-w-sm">
           <p className="font-serif text-xl mb-2">Something went sideways</p>
-          <p className="text-sm text-muted-foreground mb-6">Cele couldn't start the session. This sometimes happens on first load.</p>
+          <p className="text-sm text-muted-foreground mb-6">A-Moment couldn't start the session. This sometimes happens on first load.</p>
           <button
             onClick={() => { setSessionError(false); setSessionCreating(false); }}
             className="px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors"
@@ -306,7 +306,7 @@ export function EventChat() {
               <ChevronLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h2 className="font-serif font-medium text-lg leading-tight">Cele</h2>
+              <h2 className="font-serif font-medium text-lg leading-tight">A-Moment</h2>
               <p className="text-xs text-muted-foreground truncate max-w-[180px] md:max-w-sm">{event?.title}</p>
             </div>
           </div>
@@ -397,7 +397,7 @@ export function EventChat() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Talk to Cele…"
+              placeholder="Talk to A-Moment…"
               className="w-full bg-card border border-border rounded-full pl-5 pr-14 py-3.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-sm md:text-base"
               disabled={sendMessage.isPending}
             />
