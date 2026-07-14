@@ -12,6 +12,7 @@ import guestQuestionnaireRouter from "./guestQuestionnaire";
 import revealScriptRouter from "./revealScript";
 import memoriesRouter from "./memories";
 import inspirationsRouter from "./inspirations";
+import visualizeRouter from "./visualize";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(guestQuestionnaireRouter);
 router.use(revealScriptRouter);
 router.use(memoriesRouter);
 router.use(inspirationsRouter);
+router.use(visualizeRouter);
 
 export default router;
