@@ -83,13 +83,36 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     ? event.description.split(OPTIONS_MARKER)[0].trim()
     : null;
 
+  // Helper: extract a single-line marker value from description
+  function extractMarkerLine(desc: string, marker: string): string | null {
+    const idx = desc.indexOf(marker);
+    if (idx === -1) return null;
+    return desc.slice(idx + marker.length).split("\n")[0].trim() || null;
+  }
+
   // Extract age range from description
-  const ageMarker = "__AGE__:";
   let ageContext: string | null = null;
   if (event.description) {
-    const ageIdx = event.description.indexOf(ageMarker);
-    if (ageIdx !== -1) {
-      ageContext = event.description.slice(ageIdx + ageMarker.length).split("\n")[0].trim() || null;
+    ageContext = extractMarkerLine(event.description, "__AGE__:");
+  }
+
+  // Extract personality preferences
+  let personality: { travelStyle?: string; dealbreakers?: string[] } | null = null;
+  if (event.description) {
+    const persRaw = extractMarkerLine(event.description, "__PERSONALITY__:");
+    if (persRaw) {
+      try { personality = JSON.parse(persRaw); } catch {}
+    }
+  }
+
+  // Extract date type and flexible date info
+  let dateType: string | null = null;
+  let dateFlexible: { month?: string; duration?: string } | null = null;
+  if (event.description) {
+    dateType = extractMarkerLine(event.description, "__DATE_TYPE__:");
+    const dfRaw = extractMarkerLine(event.description, "__DATE_FLEXIBLE__:");
+    if (dfRaw) {
+      try { dateFlexible = JSON.parse(dfRaw); } catch {}
     }
   }
 
@@ -110,6 +133,30 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     guestProfilesText = profiles.join("; ");
   }
 
+  // Build date context string
+  let dateContext: string | null = null;
+  if (dateType === "fixed" && event.startDate) {
+    dateContext = `Fixed date: ${event.startDate}`;
+  } else if (dateType === "flexible" && dateFlexible) {
+    const durMap: Record<string, string> = { day: "a day trip", weekend: "a long weekend", week: "about a week", twoweeks: "2 weeks+" };
+    const parts: string[] = [];
+    if (dateFlexible.month) parts.push(`around ${dateFlexible.month}`);
+    if (dateFlexible.duration) parts.push(durMap[dateFlexible.duration] ?? dateFlexible.duration);
+    dateContext = parts.length > 0 ? `Timing is flexible: ${parts.join(", ")}` : null;
+  } else if (event.startDate) {
+    dateContext = `Target date: ${event.startDate}`;
+    if (event.endDate) dateContext += ` – ${event.endDate}`;
+  }
+
+  // Build personality context string
+  let personalityContext: string | null = null;
+  if (personality && (personality.travelStyle || (personality.dealbreakers?.length ?? 0) > 0)) {
+    const parts: string[] = [];
+    if (personality.travelStyle) parts.push(`Travel style: ${personality.travelStyle}`);
+    if (personality.dealbreakers?.length) parts.push(`Strongly dislikes: ${personality.dealbreakers.join(", ")}`);
+    personalityContext = parts.join(". ");
+  }
+
   const eventCtx = [
     `Occasion/type: ${event.type}`,
     ageContext ? `Celebrant age range: ${ageContext}` : null,
@@ -117,8 +164,8 @@ router.post("/events/:eventId/plan-options", requireAuth, async (req, res): Prom
     event.isInternational ? "Open to international destinations: yes" : "Prefers domestic/local",
     event.budget ? `Budget tier: ${event.budget}` : null,
     event.guestCount ? `Group size: ~${event.guestCount} people` : null,
-    event.startDate ? `Target date: ${event.startDate}` : null,
-    event.endDate ? `End date: ${event.endDate}` : null,
+    dateContext,
+    personalityContext ? `Planner personality — ${personalityContext}` : null,
     descForAI ? `Additional context: ${descForAI}` : null,
     guestProfilesText ? `Guest personalities: ${guestProfilesText}` : null,
   ].filter(Boolean).join("\n");
@@ -146,7 +193,21 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
   "vibe": "<one or two words — e.g. Intimate luxury, Wild and remote, Urban sophistication>"
 }`;
 
-  const prompt = `EVENT CONTEXT:\n${eventCtx}\n\nGenerate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation tailored to this specific group's personality mix.`;
+  const promptParts: string[] = [
+    `EVENT CONTEXT:\n${eventCtx}`,
+  ];
+
+  if (personalityContext) {
+    promptParts.push(`The planner has shared their travel personality: ${personalityContext}. Use this to sharpen each proposal — avoid dealbreakers entirely, and lean into their travel style for at least 3 of the 6 options. The whyThisWorks field must reference this personality explicitly.`);
+  }
+
+  if (dateType === "flexible" && dateContext) {
+    promptParts.push(`${dateContext}. Since timing is flexible, you may suggest the optimal season or specific month within that window that makes this destination shine — and say why.`);
+  }
+
+  promptParts.push(`Generate 6 distinct plan options. Vary the destinations, price points, and character significantly. At least one option should be unexpected or non-obvious. Make each feel like a genuine editorial recommendation tailored to this specific group's personality mix.`);
+
+  const prompt = promptParts.join("\n\n");
 
   const AI_TIMEOUT_MS = 45_000;
 
