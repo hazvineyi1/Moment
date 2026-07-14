@@ -1,13 +1,16 @@
 import express, { type Express } from "express";
+import path from "node:path";
+import fs from "node:fs";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import { clerkMiddleware } from "@clerk/express";
-import { publishableKeyFromHost } from "@clerk/shared/keys";
-import { CLERK_PROXY_PATH, clerkProxyMiddleware, getClerkProxyHost } from "./middlewares/clerkProxyMiddleware";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
+
+// Behind Railway's proxy
+app.set("trust proxy", true);
 
 app.use(
   pinoHttp({
@@ -23,22 +26,24 @@ app.use(
   }),
 );
 
-// Clerk proxy must come before body parsers (streams raw bytes)
-app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
-
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  clerkMiddleware((req) => ({
-    publishableKey: publishableKeyFromHost(
-      getClerkProxyHost(req) ?? "",
-      process.env.CLERK_PUBLISHABLE_KEY,
-    ),
-  })),
-);
+// Standard Clerk: reads CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY from env.
+app.use(clerkMiddleware());
 
 app.use("/api", router);
+
+// Serve the built frontend (copied into dist/public at build time)
+const publicDir = path.resolve(globalThis.__dirname, "public");
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+  app.get(/^(?!\/api).*/, (_req, res) => {
+    res.sendFile(path.join(publicDir, "index.html"));
+  });
+} else {
+  logger.warn({ publicDir }, "No frontend build found; serving API only");
+}
 
 export default app;

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ClerkProvider, SignIn, SignUp, useClerk, useAuth } from '@clerk/react';
 import { setAuthTokenGetter } from '@workspace/api-client-react';
 import { Loader2 } from 'lucide-react';
-import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
@@ -28,14 +27,8 @@ import { EventMemories } from '@/pages/EventMemories';
 
 // ── Clerk setup ────────────────────────────────────────────────────────────
 // Copy verbatim — resolves correct key for dev and prod custom domains
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-);
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!clerkPubKey) throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY');
-
-// Empty in dev (intentional), auto-set in prod — do NOT gate on NODE_ENV
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -377,7 +370,6 @@ function AppRouter() {
   return (
     <ClerkProvider
       publishableKey={clerkPubKey}
-      proxyUrl={clerkProxyUrl}
       appearance={clerkAppearance}
       signInUrl={`${basePath}/sign-in`}
       signUpUrl={`${basePath}/sign-up`}
