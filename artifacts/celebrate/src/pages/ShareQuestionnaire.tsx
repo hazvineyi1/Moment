@@ -12,6 +12,38 @@ function extractPlanningForName(description: string | null | undefined): string 
   return rest.split('\n')[0].trim();
 }
 
+type Tone = 'fun' | 'heartfelt' | 'mysterious';
+
+const TONES: { id: Tone; label: string; emoji: string; desc: string }[] = [
+  { id: 'fun',        label: 'Fun',        emoji: '🎉', desc: 'Playful & excited' },
+  { id: 'heartfelt',  label: 'Heartfelt',  emoji: '💛', desc: 'Warm & personal'   },
+  { id: 'mysterious', label: 'Mysterious', emoji: '🔐', desc: 'Intriguing & cryptic' },
+];
+
+function buildMessage(tone: Tone, name: string, url: string): string {
+  const n = name || 'you';
+  switch (tone) {
+    case 'fun':
+      return `🎉 Psst, ${n}! Something BIG is being planned just for you and I need your help to make it absolutely perfect. It takes 60 seconds, I promise — just answer a few questions and trust the process 👀\n\n${url}`;
+    case 'heartfelt':
+      return `Hey ${n} 💛\n\nI'm planning something really special for you and I want every detail to feel truly you. Could you take a moment to fill this in? Your answers will shape the whole thing.\n\n${url}`;
+    case 'mysterious':
+      return `${n}.\n\nSomething is being arranged. I can't say more right now. But I need one thing from you — fill this in and all will be revealed in time. 🔐\n\n${url}`;
+  }
+}
+
+function buildShortMessage(tone: Tone, name: string, url: string): string {
+  const n = name || 'you';
+  switch (tone) {
+    case 'fun':
+      return `Okay ${n}, don't ask questions 👀 Just fill this in and trust the process 😏 ${url}`;
+    case 'heartfelt':
+      return `Hi ${n} — I'm creating something just for you and your input will make all the difference. ${url}`;
+    case 'mysterious':
+      return `${n}. A secret is taking shape. Your mission: ${url} 🕵️`;
+  }
+}
+
 interface ShareQuestionnaireProps {
   eventId: string;
 }
@@ -35,6 +67,10 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
 
   const [copied, setCopied] = useState(false);
   const [showQuestions, setShowQuestions] = useState(false);
+  const [tone, setTone] = useState<Tone>('fun');
+
+  const fullMsg   = buildMessage(tone, celebrantName, questionnaireUrl);
+  const shortMsg  = buildShortMessage(tone, celebrantName, questionnaireUrl);
 
   const handleCopy = async () => {
     if (!questionnaireUrl) return;
@@ -44,19 +80,11 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
   };
 
   const handleWhatsApp = () => {
-    const name = celebrantName || 'your friend';
-    const msg = encodeURIComponent(
-      `Hey ${name}! I'm planning something special for you. Share your preferences so I can make it perfect:\n${questionnaireUrl}`
-    );
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
+    window.open(`https://wa.me/?text=${encodeURIComponent(fullMsg)}`, '_blank');
   };
 
   const handleSMS = () => {
-    const name = celebrantName || 'you';
-    const msg = encodeURIComponent(
-      `Hey ${name}! I'm planning something for you. Fill in this quick form: ${questionnaireUrl}`
-    );
-    window.location.href = `sms:?body=${msg}`;
+    window.location.href = `sms:?body=${encodeURIComponent(shortMsg)}`;
   };
 
   if (isLoading && !tokenFromUrl) {
@@ -77,10 +105,10 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
             <Check className="w-10 h-10 text-primary" />
           </div>
           <h1 className="text-3xl font-serif font-medium mb-2">
-            {celebrantName ? `${celebrantName}'s event is ready` : "Event created"}
+            {celebrantName ? `${celebrantName}'s event is ready` : 'Event created'}
           </h1>
           <p className="text-muted-foreground leading-relaxed max-w-sm">
-            Send {celebrantName ? celebrantName : 'them'} this link. A short questionnaire that
+            Send {celebrantName || 'them'} this link. A short questionnaire that
             feeds their preferences straight into A-Moment. Takes less than a minute.
           </p>
         </div>
@@ -113,6 +141,61 @@ export function ShareQuestionnaire({ eventId }: ShareQuestionnaireProps) {
         ) : (
           <div className="bg-muted/50 rounded-2xl p-5 mb-6 text-center text-sm text-muted-foreground">
             Questionnaire link unavailable. Find it in the event hub.
+          </div>
+        )}
+
+        {/* Tone picker + message preview */}
+        {questionnaireUrl && (
+          <div className="mb-6">
+            {/* Tone label */}
+            <p className="text-[10px] tracking-[0.18em] uppercase mb-3" style={{ color: '#8a7a65' }}>
+              Message tone
+            </p>
+
+            {/* Tone pills */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              {TONES.map((t) => {
+                const active = tone === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => setTone(t.id)}
+                    className="flex flex-col items-center gap-1 py-3 px-2 rounded-xl transition-all text-center"
+                    style={{
+                      border: `1px solid ${active ? 'rgba(201,169,110,0.6)' : 'rgba(201,169,110,0.15)'}`,
+                      background: active ? 'rgba(201,169,110,0.08)' : 'transparent',
+                    }}
+                  >
+                    <span className="text-xl leading-none">{t.emoji}</span>
+                    <span
+                      className="text-xs font-medium leading-tight"
+                      style={{ color: active ? '#c9a96e' : '#f5f0e8' }}
+                    >
+                      {t.label}
+                    </span>
+                    <span className="text-[9px] leading-tight" style={{ color: '#8a7a65' }}>
+                      {t.desc}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Message preview */}
+            <div
+              className="rounded-xl px-4 py-4"
+              style={{ background: 'rgba(201,169,110,0.04)', border: '1px solid rgba(201,169,110,0.12)' }}
+            >
+              <p className="text-[9px] tracking-[0.15em] uppercase mb-2" style={{ color: '#8a7a65' }}>
+                Preview
+              </p>
+              <p
+                className="text-xs font-light leading-relaxed whitespace-pre-wrap"
+                style={{ color: '#f5f0e8' }}
+              >
+                {fullMsg}
+              </p>
+            </div>
           </div>
         )}
 
