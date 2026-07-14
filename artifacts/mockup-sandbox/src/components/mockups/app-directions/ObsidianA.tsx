@@ -88,87 +88,69 @@ export default function ObsidianA() {
         </div>
 
         {/* ── Cards — full-bleed with overlay text ─────────────────────── */}
-        <div className="grid grid-cols-3 gap-5 mb-12">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '48px' }}>
 
           {/* Card 1 */}
-          <div className="ob-card relative overflow-hidden cursor-pointer" style={{ aspectRatio: '4/5' }}>
+          <div className="ob-card" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5', cursor: 'pointer' }}>
             <img
-              className="ob-card-img absolute inset-0 w-full h-full object-cover"
+              className="ob-card-img"
               src="/__mockup/images/venue-birthday-london.jpg"
               alt="Birthday in London"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            {/* Gradient scrim */}
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.3) 45%, rgba(10,10,10,0) 70%)' }}
-            />
-            {/* Overlay text */}
-            <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.3) 45%, rgba(10,10,10,0) 70%)' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
-                <h3 className="ob-serif text-2xl leading-tight" style={{ color: '#f5f0e8' }}>Birthday</h3>
-                <p className="ob-sans text-[10px] tracking-[0.18em] uppercase mt-1" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                <h3 className="ob-serif" style={{ fontSize: '22px', lineHeight: 1.1, color: '#f5f0e8' }}>Birthday</h3>
+                <p className="ob-sans" style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: '4px', color: 'rgba(245,240,232,0.5)' }}>
                   London · Aug 2025
                 </p>
               </div>
-              <div
-                className="ob-sans uppercase text-[9px] tracking-[0.2em] px-2 py-1 flex-shrink-0"
-                style={{ border: '1px solid rgba(201,169,110,0.4)', color: '#c9a96e' }}
-              >
+              <div className="ob-sans" style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 8px', border: '1px solid rgba(201,169,110,0.4)', color: '#c9a96e', flexShrink: 0 }}>
                 24 GUESTS
               </div>
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="ob-card relative overflow-hidden cursor-pointer" style={{ aspectRatio: '4/5' }}>
+          <div className="ob-card" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5', cursor: 'pointer' }}>
             <img
-              className="ob-card-img absolute inset-0 w-full h-full object-cover"
+              className="ob-card-img"
               src="/__mockup/images/venue-wedding-amalfi.jpg"
               alt="Wedding in Amalfi"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.3) 45%, rgba(10,10,10,0) 70%)' }}
-            />
-            <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.3) 45%, rgba(10,10,10,0) 70%)' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
-                <h3 className="ob-serif text-2xl leading-tight" style={{ color: '#f5f0e8' }}>Wedding</h3>
-                <p className="ob-sans text-[10px] tracking-[0.18em] uppercase mt-1" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                <h3 className="ob-serif" style={{ fontSize: '22px', lineHeight: 1.1, color: '#f5f0e8' }}>Wedding</h3>
+                <p className="ob-sans" style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: '4px', color: 'rgba(245,240,232,0.5)' }}>
                   Amalfi · Jul 2025
                 </p>
               </div>
-              <div
-                className="ob-sans uppercase text-[9px] tracking-[0.2em] px-2 py-1 flex-shrink-0"
-                style={{ border: '1px solid rgba(201,169,110,0.4)', color: '#c9a96e' }}
-              >
+              <div className="ob-sans" style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 8px', border: '1px solid rgba(201,169,110,0.4)', color: '#c9a96e', flexShrink: 0 }}>
                 CONFIRMED
               </div>
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="ob-card relative overflow-hidden cursor-pointer" style={{ aspectRatio: '4/5' }}>
+          <div className="ob-card" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5', cursor: 'pointer' }}>
             <img
-              className="ob-card-img absolute inset-0 w-full h-full object-cover"
+              className="ob-card-img"
               src="/__mockup/images/venue-anniversary-tokyo.jpg"
               alt="Anniversary in Tokyo"
-              style={{ filter: 'grayscale(80%)' }}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(80%)' }}
             />
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.3) 45%, rgba(10,10,10,0) 70%)' }}
-            />
-            <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.3) 45%, rgba(10,10,10,0) 70%)' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
-                <h3 className="ob-serif text-2xl leading-tight" style={{ color: '#f5f0e8' }}>Anniversary</h3>
-                <p className="ob-sans text-[10px] tracking-[0.18em] uppercase mt-1" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                <h3 className="ob-serif" style={{ fontSize: '22px', lineHeight: 1.1, color: '#f5f0e8' }}>Anniversary</h3>
+                <p className="ob-sans" style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: '4px', color: 'rgba(245,240,232,0.5)' }}>
                   Tokyo · Sep 2025
                 </p>
               </div>
-              <div
-                className="ob-sans uppercase text-[9px] tracking-[0.2em] px-2 py-1 flex-shrink-0"
-                style={{ border: '1px solid rgba(138,122,101,0.35)', color: '#8a7a65' }}
-              >
+              <div className="ob-sans" style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 8px', border: '1px solid rgba(138,122,101,0.35)', color: '#8a7a65', flexShrink: 0 }}>
                 DRAFT
               </div>
             </div>

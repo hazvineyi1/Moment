@@ -97,46 +97,41 @@ export default function ObsidianB() {
 
           {/* Hero card */}
           <div
-            className="ob-hero-card relative overflow-hidden cursor-pointer"
-            style={{ aspectRatio: '4/5' }}
+            className="ob-hero-card"
+            style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5', cursor: 'pointer' }}
           >
             <img
-              className="ob-hero-img absolute inset-0 w-full h-full object-cover"
+              className="ob-hero-img"
               src="/__mockup/images/venue-wedding-amalfi.jpg"
               alt="Wedding in Amalfi"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            {/* Richer scrim for large card */}
             <div
-              className="absolute inset-0"
               style={{
+                position: 'absolute', inset: 0,
                 background: 'linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.5) 35%, rgba(10,10,10,0.1) 65%, rgba(10,10,10,0) 100%)',
               }}
             />
-            {/* Top-left badge */}
-            <div className="absolute top-5 left-5">
+            <div style={{ position: 'absolute', top: '20px', left: '20px' }}>
               <span
-                className="ob-sans uppercase text-[9px] tracking-[0.22em] px-2.5 py-1"
-                style={{ border: '1px solid rgba(201,169,110,0.4)', color: '#c9a96e', background: 'rgba(10,10,10,0.4)' }}
+                className="ob-sans"
+                style={{ fontSize: '9px', letterSpacing: '0.22em', textTransform: 'uppercase', padding: '4px 10px', border: '1px solid rgba(201,169,110,0.4)', color: '#c9a96e', background: 'rgba(10,10,10,0.4)' }}
               >
                 Featured
               </span>
             </div>
-            {/* Overlay content */}
-            <div className="absolute bottom-0 left-0 right-0 p-7">
-              <p className="ob-sans uppercase text-[9px] tracking-[0.25em] mb-3" style={{ color: 'rgba(245,240,232,0.5)' }}>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px' }}>
+              <p className="ob-sans" style={{ fontSize: '9px', letterSpacing: '0.25em', textTransform: 'uppercase', marginBottom: '12px', color: 'rgba(245,240,232,0.5)' }}>
                 Amalfi · July 2025
               </p>
-              <h2 className="ob-serif text-4xl leading-tight mb-4" style={{ color: '#f5f0e8' }}>
+              <h2 className="ob-serif" style={{ fontSize: '36px', lineHeight: 1.15, marginBottom: '16px', color: '#f5f0e8' }}>
                 James & Emma's<br />Wedding
               </h2>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span className="ob-sans text-xs font-light" style={{ color: 'rgba(245,240,232,0.6)' }}>
+                <span className="ob-sans" style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(245,240,232,0.6)' }}>
                   48 guests · Confirmed
                 </span>
-                <button
-                  className="ob-sans flex items-center gap-3 uppercase text-[10px] tracking-[0.18em]"
-                  style={{ color: '#c9a96e' }}
-                >
+                <button className="ob-sans" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#c9a96e', background: 'none', border: 'none', cursor: 'pointer' }}>
                   Open <span style={{ fontSize: '14px', letterSpacing: '-0.08em' }}>→</span>
                 </button>
               </div>
@@ -148,29 +143,24 @@ export default function ObsidianB() {
 
             {/* Small card 1 */}
             <div
-              className="ob-sm-card relative overflow-hidden cursor-pointer"
-              style={{ flex: 1, minHeight: 0 }}
+              className="ob-sm-card"
+              style={{ position: 'relative', overflow: 'hidden', flex: 1, minHeight: 0, cursor: 'pointer' }}
             >
               <img
-                className="ob-sm-img absolute inset-0 w-full h-full object-cover"
+                className="ob-sm-img"
                 src="/__mockup/images/venue-birthday-london.jpg"
                 alt="Birthday in London"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
               />
-              <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.2) 55%, rgba(10,10,10,0) 100%)' }}
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.2) 55%, rgba(10,10,10,0) 100%)' }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <div>
-                  <h3 className="ob-serif text-xl leading-tight" style={{ color: '#f5f0e8' }}>Birthday</h3>
-                  <p className="ob-sans text-[10px] tracking-[0.15em] uppercase mt-1" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                  <h3 className="ob-serif" style={{ fontSize: '20px', lineHeight: 1.1, color: '#f5f0e8' }}>Birthday</h3>
+                  <p className="ob-sans" style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: '4px', color: 'rgba(245,240,232,0.5)' }}>
                     London · Aug
                   </p>
                 </div>
-                <div
-                  className="ob-sans uppercase text-[8px] tracking-[0.2em] px-2 py-1"
-                  style={{ border: '1px solid rgba(201,169,110,0.35)', color: '#c9a96e' }}
-                >
+                <div className="ob-sans" style={{ fontSize: '8px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '3px 8px', border: '1px solid rgba(201,169,110,0.35)', color: '#c9a96e' }}>
                   24 GST
                 </div>
               </div>
@@ -178,30 +168,24 @@ export default function ObsidianB() {
 
             {/* Small card 2 */}
             <div
-              className="ob-sm-card relative overflow-hidden cursor-pointer"
-              style={{ flex: 1, minHeight: 0 }}
+              className="ob-sm-card"
+              style={{ position: 'relative', overflow: 'hidden', flex: 1, minHeight: 0, cursor: 'pointer' }}
             >
               <img
-                className="ob-sm-img absolute inset-0 w-full h-full object-cover"
+                className="ob-sm-img"
                 src="/__mockup/images/venue-anniversary-tokyo.jpg"
                 alt="Anniversary in Tokyo"
-                style={{ filter: 'grayscale(70%)' }}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(70%)' }}
               />
-              <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.2) 55%, rgba(10,10,10,0) 100%)' }}
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between">
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.2) 55%, rgba(10,10,10,0) 100%)' }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <div>
-                  <h3 className="ob-serif text-xl leading-tight" style={{ color: '#f5f0e8' }}>Anniversary</h3>
-                  <p className="ob-sans text-[10px] tracking-[0.15em] uppercase mt-1" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                  <h3 className="ob-serif" style={{ fontSize: '20px', lineHeight: 1.1, color: '#f5f0e8' }}>Anniversary</h3>
+                  <p className="ob-sans" style={{ fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: '4px', color: 'rgba(245,240,232,0.5)' }}>
                     Tokyo · Sep
                   </p>
                 </div>
-                <div
-                  className="ob-sans uppercase text-[8px] tracking-[0.2em] px-2 py-1"
-                  style={{ border: '1px solid rgba(138,122,101,0.3)', color: '#8a7a65' }}
-                >
+                <div className="ob-sans" style={{ fontSize: '8px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '3px 8px', border: '1px solid rgba(138,122,101,0.3)', color: '#8a7a65' }}>
                   DRAFT
                 </div>
               </div>
