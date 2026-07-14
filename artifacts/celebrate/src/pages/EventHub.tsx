@@ -63,9 +63,11 @@ function extractHostContext(description: string | null | undefined): string {
   const ctxIdx = description.indexOf(CTX_MARKER);
   if (ctxIdx === -1) return '';
   let ctx = description.slice(ctxIdx + CTX_MARKER.length);
-  // strip chosen plan if it follows
-  const planIdx = ctx.indexOf(PLAN_MARKER);
-  if (planIdx !== -1) ctx = ctx.slice(0, planIdx);
+  // Truncate at any internal marker so raw JSON never bleeds into the display
+  for (const marker of [PLAN_MARKER, CELEBRANT_MARKER, PLANNING_FOR_MARKER, Q_DISABLED_MARKER, Q_CUSTOM_MARKER]) {
+    const mIdx = ctx.indexOf(marker);
+    if (mIdx !== -1) ctx = ctx.slice(0, mIdx);
+  }
   return ctx.trim();
 }
 
@@ -724,27 +726,45 @@ function CelebrantPreferencesCard({
   const name = celebrantName || 'Celebrant';
   const questionMap = Object.fromEntries(QUESTIONS.map(q => [q.key, q.label]));
   const entries = Object.entries(answers).filter(([, v]) => v && String(v).trim());
+  const [open, setOpen] = useState(false);
 
   return (
     <div style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}>
-      <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(201,169,110,0.1)' }}>
-        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#c9a96e' }} />
-        <p className="uppercase text-xs tracking-[0.22em]" style={{ color: '#a89880' }}>
+      {/* Toggle row */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full px-5 py-3 flex items-center gap-2 text-left"
+        style={{ borderBottom: open ? '1px solid rgba(201,169,110,0.1)' : undefined }}
+      >
+        <CheckCircle2 className="w-3 h-3 flex-shrink-0" style={{ color: '#c9a96e' }} />
+        <p className="flex-1 uppercase text-[11px] tracking-[0.22em]" style={{ color: '#a89880' }}>
           {name}&apos;s preferences
         </p>
-      </div>
-      <div className="px-5 py-4 space-y-3">
-        {entries.map(([key, value]) => (
-          <div key={key} className="pb-3 last:pb-0" style={{ borderBottom: '1px solid rgba(201,169,110,0.06)' }}>
-            <p className="text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: '#a89880' }}>
-              {questionMap[key] ?? key}
-            </p>
-            <p className="text-xs font-normal leading-snug" style={{ color: '#f5f0e8' }}>
-              {value}
-            </p>
-          </div>
-        ))}
-      </div>
+        <span className="text-[11px] mr-2" style={{ color: '#a89880' }}>{entries.length}</span>
+        <ChevronDown
+          className="w-3.5 h-3.5 flex-shrink-0 transition-transform"
+          style={{ color: '#a89880', transform: open ? 'rotate(180deg)' : 'none' }}
+        />
+      </button>
+
+      {/* Compact answer grid */}
+      {open && (
+        <div className="px-5 py-3 grid grid-cols-1 gap-y-2.5">
+          {entries.map(([key, value]) => (
+            <div key={key} className="flex gap-2 items-baseline">
+              <span
+                className="flex-shrink-0 text-[10px] tracking-[0.14em] uppercase whitespace-nowrap"
+                style={{ color: '#a89880', minWidth: '6rem' }}
+              >
+                {questionMap[key] ?? key}
+              </span>
+              <span className="text-xs leading-snug" style={{ color: '#f5f0e8' }}>
+                {value}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
