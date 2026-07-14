@@ -136,7 +136,7 @@ function SelectCard({
       className="relative p-4 text-left transition-all duration-150"
       style={{
         border: selected ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
-        background: selected ? 'rgba(201,169,110,0.06)' : '#141414',
+        background: selected ? 'rgba(201,169,110,0.06)' : 'transparent',
       }}
     >
       {selected && (
@@ -393,7 +393,7 @@ export function NewEvent() {
                       className="relative flex flex-col items-center justify-center gap-1.5 px-2 py-3.5 text-center transition-all duration-150"
                       style={{
                         border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
-                        background: sel ? 'rgba(201,169,110,0.06)' : '#141414',
+                        background: sel ? 'rgba(201,169,110,0.06)' : 'transparent',
                       }}
                     >
                       {sel && (
@@ -467,10 +467,10 @@ export function NewEvent() {
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
-            <div className="mb-10">
-              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>Step 2 of 3</p>
-              <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>What kind of experience?</h1>
-              <p className="text-sm font-normal" style={{ color: '#c6b7a1' }}>Pick what resonates. A-Moment will mix and match.</p>
+            <div className="mb-8">
+              <p className="uppercase text-[13px] tracking-[0.22em] mb-3" style={{ color: '#c9a96e' }}>Step 2 of 3</p>
+              <h1 className="font-serif text-4xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>What kind of experience?</h1>
+              <p className="text-base font-normal" style={{ color: '#c6b7a1' }}>Pick what resonates. A-Moment will mix and match.</p>
             </div>
 
             {/* Experience types */}
@@ -489,7 +489,7 @@ export function NewEvent() {
                       className="relative flex items-start gap-3 p-4 text-left transition-all duration-150"
                       style={{
                         border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
-                        background: sel ? 'rgba(201,169,110,0.06)' : '#141414',
+                        background: sel ? 'rgba(201,169,110,0.06)' : 'transparent',
                       }}
                     >
                       {sel && (
@@ -512,7 +512,7 @@ export function NewEvent() {
             </div>
 
             {/* Vibe */}
-            <div className="mb-10">
+            <div className="mb-8">
               <p className="text-xs tracking-[0.18em] uppercase mb-4" style={{ color: '#c6b7a1' }}>
                 Energy / vibe <span className="opacity-60">(pick one or two)</span>
               </p>
@@ -527,7 +527,7 @@ export function NewEvent() {
                       className="relative p-4 text-left transition-all duration-150"
                       style={{
                         border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
-                        background: sel ? 'rgba(201,169,110,0.06)' : '#141414',
+                        background: sel ? 'rgba(201,169,110,0.06)' : 'transparent',
                       }}
                     >
                       {sel && (
@@ -577,10 +577,10 @@ export function NewEvent() {
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
-            <div className="mb-10">
-              <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>Step 3 of 3</p>
-              <h1 className="font-serif text-3xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>The details.</h1>
-              <p className="text-sm font-normal" style={{ color: '#c6b7a1' }}>Rough is fine. A-Moment fills in the rest.</p>
+            <div className="mb-8">
+              <p className="uppercase text-[13px] tracking-[0.22em] mb-3" style={{ color: '#c9a96e' }}>Step 3 of 3</p>
+              <h1 className="font-serif text-4xl md:text-5xl mb-2" style={{ color: '#f5f0e8' }}>The details.</h1>
+              <p className="text-base font-normal" style={{ color: '#c6b7a1' }}>Rough is fine. A-Moment fills in the rest.</p>
             </div>
 
             <div className="max-w-xl space-y-8">
@@ -704,7 +704,7 @@ export function NewEvent() {
                             className="relative p-3 text-left transition-all"
                             style={{
                               border: sel ? '1px solid rgba(201,169,110,0.5)' : '1px solid rgba(201,169,110,0.12)',
-                              background: sel ? 'rgba(201,169,110,0.06)' : '#141414',
+                              background: sel ? 'rgba(201,169,110,0.06)' : 'transparent',
                             }}
                           >
                             {sel && (

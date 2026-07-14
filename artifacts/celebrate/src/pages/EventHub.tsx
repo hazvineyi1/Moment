@@ -878,7 +878,7 @@ function PlanningJourney({
   const nextStep = currentIdx !== -1 ? steps[currentIdx] : null;
 
   return (
-    <div className="mb-12">
+    <div className="mb-8">
       {/* Label row */}
       <div className="flex items-center justify-between mb-8">
         <p className="uppercase text-xs tracking-[0.22em]" style={{ color: '#c6b7a1' }}>
@@ -1105,12 +1105,12 @@ export function EventHub() {
   if (!event || !summary) return <div className="p-8">Event not found.</div>;
 
   return (
-    <div className="mx-auto px-8 md:px-16 py-12 md:py-20 max-w-7xl animate-in fade-in duration-700">
+    <div className="mx-auto px-8 md:px-16 py-8 md:py-12 max-w-7xl animate-in fade-in duration-700">
       {/* Hero — editorial text header */}
-      <header className="mb-12 pb-10" style={{ borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
+      <header className="mb-8 pb-8" style={{ borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
         <button
           onClick={() => setLocation('/')}
-          className="flex items-center gap-2 mb-8 uppercase text-xs tracking-[0.2em] transition-colors"
+          className="flex items-center gap-2 mb-6 uppercase text-xs tracking-[0.2em] transition-colors"
           style={{ color: '#c6b7a1' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#c9a96e')}
           onMouseLeave={e => (e.currentTarget.style.color = '#c6b7a1')}
@@ -1118,7 +1118,7 @@ export function EventHub() {
           ← Back
         </button>
 
-        <div className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-3 mb-5">
           <span
             className="uppercase text-xs tracking-[0.22em] px-2.5 py-1"
             style={{ border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e' }}
@@ -1134,7 +1134,7 @@ export function EventHub() {
         </div>
 
         <h1
-          className="font-serif text-4xl md:text-6xl mb-5 leading-tight"
+          className="font-serif text-4xl md:text-6xl mb-4 leading-tight"
           style={{ color: '#f5f0e8' }}
         >
           {event.title}
@@ -1196,15 +1196,15 @@ export function EventHub() {
         eventId={eventId}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
         {/* Left: progress + next steps */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-8">
           <section>
-            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#c6b7a1' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>
               Progress
             </p>
             <div
-              className="p-8"
+              className="p-6"
               style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
             >
               <div className="flex items-end justify-between mb-6">
@@ -1232,7 +1232,7 @@ export function EventHub() {
           </section>
 
           <section>
-            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#c6b7a1' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>
               Next steps
             </p>
             <div className="space-y-0">
@@ -1404,13 +1404,13 @@ export function EventHub() {
         </div>
 
         {/* Right: stats, actions, cost */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* At a glance */}
           <div
             className="p-6"
             style={{ border: '1px solid rgba(201,169,110,0.12)', background: 'rgba(201,169,110,0.02)' }}
           >
-            <p className="uppercase text-xs tracking-[0.22em] mb-6" style={{ color: '#c6b7a1', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
+            <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1', borderBottom: '1px solid rgba(201,169,110,0.1)', paddingBottom: '12px' }}>
               At a glance
             </p>
             <div className="grid grid-cols-2 gap-6">

@@ -418,7 +418,7 @@ export function EventChat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="max-w-3xl mx-auto space-y-5">
+        <div className="max-w-3xl mx-auto space-y-6">
           {messagesLoading ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3">
               <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" />
@@ -468,7 +468,7 @@ export function EventChat() {
                             : <Bot className="w-3.5 h-3.5" style={{ color: '#c9a96e' }} />}
                         </div>
                         <div
-                          className="max-w-[78%] px-4 py-3"
+                          className="max-w-[80%] px-5 py-3.5"
                           style={isUser
                             ? { background: 'rgba(245,240,232,0.95)', color: '#0a0a0a' }
                             : { background: '#242424', border: '1px solid rgba(201,169,110,0.1)', color: '#f5f0e8' }}
