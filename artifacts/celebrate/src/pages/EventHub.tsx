@@ -1105,7 +1105,7 @@ export function EventHub() {
   if (!event || !summary) return <div className="p-8">Event not found.</div>;
 
   return (
-    <div className="mx-auto px-8 md:px-16 py-8 md:py-12 max-w-7xl animate-in fade-in duration-700">
+    <div className="mx-auto px-8 md:px-16 py-8 md:py-12 max-w-4xl animate-in fade-in duration-700">
       {/* Hero — editorial text header */}
       <header className="mb-8 pb-8" style={{ borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
         <button
@@ -1196,9 +1196,9 @@ export function EventHub() {
         eventId={eventId}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+      <div className="flex flex-col gap-10">
         {/* Left: progress + next steps */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="space-y-8">
           <section>
             <p className="uppercase text-xs tracking-[0.22em] mb-4" style={{ color: '#c6b7a1' }}>
               Progress
@@ -1403,8 +1403,8 @@ export function EventHub() {
           })()}
         </div>
 
-        {/* Right: stats, actions, cost */}
-        <div className="space-y-6">
+        {/* Aux cards — tiled so they fill the row instead of stacking tall */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* At a glance */}
           <div
             className="p-6"
