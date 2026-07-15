@@ -180,14 +180,17 @@ Respond with a JSON object containing an "options" array of exactly 6 objects, e
           { role: "system", content: system },
           { role: "user", content: promptParts.join("\n\n") },
         ],
-        max_completion_tokens: 4000,
-        response_format: { type: "json_object" },
+        max_tokens: 4000,
       }),
       AI_TIMEOUT_MS,
       "plan-options"
     );
 
-    const text = response.choices[0]?.message?.content ?? "{}";
+    const rawText = response.choices[0]?.message?.content ?? "{}";
+    // Anthropic may wrap JSON in ```json fences or add prose — extract the object.
+    let text = rawText.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/,"").trim();
+    const fb = text.indexOf("{"); const lb = text.lastIndexOf("}");
+    if (fb !== -1 && lb !== -1) text = text.slice(fb, lb + 1);
     let parsed: { options?: PlanOption[] };
     try {
       parsed = JSON.parse(text);

@@ -58,7 +58,7 @@ async function aiInferFromUrl(url: string): Promise<{ title: string; description
   try {
     const response = await openai.chat.completions.create({
       model: CHAT_MODEL,
-      max_completion_tokens: 256,
+      max_tokens: 256,
       messages: [
         { role: "system", content: "You are a luxury event experience curator. Given a URL, infer the type of experience or venue it showcases. Respond with JSON only." },
         { role: "user", content: `URL: ${url}\n\nRespond as JSON: { "title": "<5-8 word evocative title>", "description": "<1-2 sentences about atmosphere, style, and experience type>", "vibes": ["<tag1>", "<tag2>", "<tag3>"] }` },
@@ -75,7 +75,7 @@ async function aiExtractVibes(title: string, description: string): Promise<strin
   try {
     const response = await openai.chat.completions.create({
       model: CHAT_MODEL,
-      max_completion_tokens: 80,
+      max_tokens: 80,
       messages: [{ role: "user", content: `Given this title and description, return 3-5 short vibe/mood tags as a JSON array.\nTitle: ${title}\nDescription: ${description}\nRespond with JSON array only.` }],
     });
     const parsed = JSON.parse((response.choices[0]?.message?.content ?? "[]").replace(/```json|```/g, "").trim());
