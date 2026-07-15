@@ -11,7 +11,7 @@ export const CHAT_MODEL = process.env.CHAT_MODEL || "claude-sonnet-5";
 
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
-const AI_TIMEOUT_MS = 45_000;
+const AI_TIMEOUT_MS = 90_000;
 
 export function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([

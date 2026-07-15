@@ -10,7 +10,7 @@ import { readInspirations } from "./inspirations";
 const router: IRouter = Router();
 
 const OPTIONS_MARKER = "__PLAN_OPTIONS__:";
-const AI_TIMEOUT_MS = 45_000;
+const AI_TIMEOUT_MS = 120_000;
 
 interface PlanOption {
   id: string;
